@@ -19,7 +19,7 @@ if sys.platform.startswith("darwin"):
         )
 
 elif sys.platform.startswith("win"):
-    msys_root = "C:\\msys64\\mingw64"
+    msys_root = "C:\\Users\\develop\\scoop\\apps\\MSYS2\\current\\mingw64"
     sdl_include = os.path.join(msys_root, "include")
     sdl_lib = os.path.join(msys_root, "lib")
     if os.path.exists(sdl_include):

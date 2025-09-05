@@ -11,6 +11,7 @@
 
 #include "lvgl.h"
 #include "app_hal.h"
+#include "gui.h"
 
 #include "demos/lv_demos.h"
 
@@ -20,7 +21,7 @@
 void setup() {
   lv_init();
   hal_setup();
-  lv_demo_widgets();
+  show_gui();
 }
 
 void loop() {
@@ -35,7 +36,7 @@ int main(void)
 
 	hal_setup();
 
-  lv_demo_widgets();
+  show_gui();
 
 	hal_loop();
 }
