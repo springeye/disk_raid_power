@@ -62,7 +62,7 @@ void hal_setup(void)
   pinMode(GFX_BL, OUTPUT);
   digitalWrite(GFX_BL, HIGH);
 #endif
-  lv_init();
+  // lv_init();
   /* Set display rotation to landscape */
   // tft.setRotation(1);
 
