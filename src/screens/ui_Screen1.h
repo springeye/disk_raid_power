@@ -16,15 +16,28 @@ extern void ui_Screen1_screen_destroy(void);
 extern lv_obj_t * ui_Screen1;
 extern lv_obj_t * ui_top;
 extern lv_obj_t * ui_Container4;
+extern lv_obj_t * ui_percent;
 extern lv_obj_t * ui_topright;
 extern lv_obj_t * ui_Container6;
 extern lv_obj_t * ui_Container9;
 extern lv_obj_t * ui_center;
 extern lv_obj_t * ui_Container7;
+extern lv_obj_t * ui_Container10;
+extern lv_obj_t * ui_Label3;
+extern lv_obj_t * ui_pwin;
+extern lv_obj_t * ui_Container1;
+extern lv_obj_t * ui_Label1;
+extern lv_obj_t * ui_pwout;
+extern lv_obj_t * ui_Container2;
+extern lv_obj_t * ui_Label2;
+extern lv_obj_t * ui_v6s;
 extern lv_obj_t * ui_Container8;
 extern lv_obj_t * ui_bottom;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_Screen1;
+extern lv_obj_t * uic_pwin;
+extern lv_obj_t * uic_pwout;
+extern lv_obj_t * uic_v6s;
 
 #ifdef __cplusplus
 } /*extern "C"*/
