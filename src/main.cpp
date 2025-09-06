@@ -48,7 +48,8 @@ void setup() {
     Serial.begin(9600);
     while (!Serial) {}
 #endif
-    myprintln("setup.....");
+    delay(500);
+    mylog.println("setup.....");
     lv_init();
     hal_setup();
     ui_init();
@@ -57,10 +58,10 @@ void setup() {
     //     myprintln("Single Pressed!");
     // });
     btn.attachClick([]() {
-        myprintln("Single click!");
+        mylog.println("Single click!");
     });
     btn.attachDoubleClick([]() {
-        myprintln("Double Pressed!");
+        mylog.println("Double Pressed!");
         if (lv_scr_act()==ui_schome){
             ui_scota_screen_init();
             lv_scr_load_anim(ui_scota, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, true);
@@ -73,11 +74,11 @@ void setup() {
     });
 
     btn.attachLongPressStart([]() {
-        myprintln("Long Pressed start!");
+        mylog.println("Long Pressed start!");
     });
     btn.attachLongPressStop([]()
     {
-        myprintln("Long Pressed stop!");
+        mylog.println("Long Pressed stop!");
     });
 
 }
