@@ -14,6 +14,7 @@
 #include "ui.h"
 
 #include "demos/lv_demos.h"
+#include <WiFi.h>
 
 #ifdef ARDUINO
 #include <log.h>
@@ -29,6 +30,16 @@ OneButton btn = OneButton(
   false         // Enable internal pull-up resistor
 );
 bool need_setup_ota = false;
+char g_ip[32] = {0};
+volatile bool wifi_ready = false;
+
+void setup_ota_task(void *param) {
+    setup_ota(); // WiFi初始化
+    snprintf(g_ip, sizeof(g_ip), "%s", WiFi.localIP().toString().c_str());
+    wifi_ready = true;
+    vTaskDelete(NULL);
+}
+
 void setup() {
 #ifdef USE_HWCDC
     USBSerial.begin(9600);
@@ -53,7 +64,7 @@ void setup() {
         if (lv_scr_act()==ui_schome){
             ui_scota_screen_init();
             lv_scr_load_anim(ui_scota, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, true);
-            need_setup_ota = true; // 异步执行OTA
+            xTaskCreate(setup_ota_task, "setup_ota", 4096, NULL, 1, NULL); // 启动异步任务
         }else if (lv_scr_act()==ui_scota){
             ui_schome_screen_init();
             lv_scr_load_anim(ui_schome, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 200, 0, true);
@@ -74,11 +85,11 @@ void setup() {
 void loop() {
     hal_loop();
     btn.tick();
-    if (need_setup_ota) {
-        setup_ota();
-        need_setup_ota = false;
-    }
     ota_loop();
+    if (wifi_ready) {
+        wifi_ready = false;
+        lv_label_set_text(ui_Label3, g_ip); // 显示IP到页面
+    }
 }
 #endif /* ARDUINO */
 
