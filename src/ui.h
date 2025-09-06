@@ -27,7 +27,8 @@ extern "C" {
 
 ///////////////////// SCREENS ////////////////////
 
-#include "ui_Screen1.h"
+#include "ui_schome.h"
+#include "ui_scota.h"
 
 ///////////////////// VARIABLES ////////////////////
 

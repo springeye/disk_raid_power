@@ -1,4 +1,14 @@
 # Run LittlevGL via PlatformIO
+# 分区表
+## partition1.csv
+应用分区1.25MB
+spiffs分区1.44MB
+
+## partition2.csv
+应用分区1.5MB
+spiffs分区960KB
+
+
 
 [![CI](https://github.com/lvgl/lv_platformio/workflows/CI/badge.svg?branch=master)](https://github.com/lvgl/lv_platformio/actions)
 

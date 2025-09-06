@@ -3,17 +3,17 @@
 // LVGL version: 9.1.0
 // Project name: SquareLine_Project
 
-#ifndef UI_SCREEN1_H
-#define UI_SCREEN1_H
+#ifndef UI_SCHOME_H
+#define UI_SCHOME_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// SCREEN: ui_Screen1
-extern void ui_Screen1_screen_init(void);
-extern void ui_Screen1_screen_destroy(void);
-extern lv_obj_t * ui_Screen1;
+// SCREEN: ui_schome
+extern void ui_schome_screen_init(void);
+extern void ui_schome_screen_destroy(void);
+extern lv_obj_t * ui_schome;
 extern lv_obj_t * ui_top;
 extern lv_obj_t * ui_Container4;
 extern lv_obj_t * ui_percent;
@@ -39,7 +39,7 @@ extern lv_obj_t * ui_Container11;
 extern lv_obj_t * ui_Container12;
 extern lv_obj_t * ui_bottom;
 // CUSTOM VARIABLES
-extern lv_obj_t * uic_Screen1;
+extern lv_obj_t * uic_schome;
 extern lv_obj_t * uic_pwin;
 extern lv_obj_t * uic_pwout;
 extern lv_obj_t * uic_v6s;
