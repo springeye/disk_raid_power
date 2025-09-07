@@ -21,8 +21,8 @@
 #include <Arduino.h>
 #include <OneButton.h>
 #include <ota.h>
-
-#define BUTTON_PIN 40
+#include "pin_config.h"
+#define BUTTON_PIN KEY_01
 
 OneButton btn = OneButton(
   BUTTON_PIN,  // Input pin for the button
