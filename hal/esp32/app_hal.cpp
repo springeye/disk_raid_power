@@ -3,12 +3,12 @@
 
 #include <Arduino_DataBus.h>
 #include <Arduino_GFX_Library.h>
-#include "pin_config.h"
+#include "hal_config.h"
 #include "lvgl.h"
 
 #define GFX_BL DF_GFX_BL // default backlight pin, you may replace DF_GFX_BL to actual backlight pin
-static const uint32_t screenWidth = 240;
-static const uint32_t screenHeight = 280;
+static const uint32_t screenWidth = SCREEN_WIDTH;
+static const uint32_t screenHeight = SCREEN_HEIGHT;
 Arduino_DataBus *bus = new Arduino_ESP32SPI(LCD_DC, LCD_CS, LCD_SCK, LCD_MOSI);
 
 /* More display class: https://github.com/moononournation/Arduino_GFX/wiki/Display-Class */

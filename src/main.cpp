@@ -21,7 +21,7 @@
 #include <Arduino.h>
 #include <OneButton.h>
 #include <ota.h>
-#include "pin_config.h"
+#include "hal_config.h"
 #define BUTTON_PIN KEY_01
 
 OneButton btn = OneButton(

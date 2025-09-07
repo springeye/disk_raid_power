@@ -1,5 +1,7 @@
 #pragma once
 
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 280
 
 #define LCD_DC 4
 #define LCD_CS 5
