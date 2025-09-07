@@ -5,6 +5,7 @@
 #include "ota.h"
 
 #include <log.h>
+#include <ota_web_ui.h>
 
 #include "lvgl.h"
 #include "ui_scota.h"
@@ -101,7 +102,12 @@ void setup_ota()
     server.on("/update", HTTP_GET, []()
     {
         server.sendHeader("Connection", "close");
+
         server.send(200, "text/html", updateIndex);
+        // auto content = getOTAPageHTML().c_str();
+        // server.setContentLength(strlen_P(content));
+        // server.send(200, "text/html", "");
+        // server.sendContent_P(content);
     });
 
     server.on("/update", HTTP_POST, []()

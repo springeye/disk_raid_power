@@ -50,9 +50,20 @@ void setup() {
 #endif
     delay(500);
     mylog.println("setup.....");
+
     lv_init();
     hal_setup();
     ui_init();
+    if (digitalRead(BUTTON_PIN)==LOW)
+    {
+        mylog.println("btn is pressed");
+        lv_disp_load_scr(ui_scota);
+    }else
+    {
+        mylog.println("btn not pressed");
+        lv_disp_load_scr(ui_schome);
+    }
+
     // btn.attachPress([]
     // {
     //     myprintln("Single Pressed!");
