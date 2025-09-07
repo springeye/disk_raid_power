@@ -22,6 +22,12 @@
 #include <OneButton.h>
 #include <ota.h>
 #include "hal_config.h"
+#ifdef ESP32
+extern "C"{
+    #include <esp_ota_ops.h>
+    }
+#include "esp_efuse.h"
+#endif
 #define BUTTON_PIN KEY_01
 
 OneButton btn = OneButton(
@@ -39,7 +45,34 @@ void setup_ota_task(void *param) {
     wifi_ready = true;
     vTaskDelete(NULL);
 }
+bool runSelfTest() {
+    // 在这里放自检逻辑：外设初始化、传感器、存储、联网等
+    // 返回 true 表示 ok，false 表示失败
+    // 为演示，这里简单返回 true
+    return false;
+}
 
+void checkPendingAndValidate() {
+    const esp_partition_t* running = esp_ota_get_running_partition();
+    esp_ota_img_states_t ota_state;
+    if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
+        if (ota_state == ESP_OTA_IMG_PENDING_VERIFY) {
+            mylog.println("New firmware PENDING_VERIFY -> run self test...");
+            bool ok = runSelfTest();
+            if (ok) {
+                mylog.println("Self test OK -> mark app valid");
+                esp_ota_mark_app_valid_cancel_rollback();
+            } else {
+                mylog.println("Self test FAILED -> mark invalid and reboot (roll back)");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+            }
+        } else {
+            mylog.printf("OTA state: %d\n", (int)ota_state);
+        }
+    } else {
+        mylog.println("esp_ota_get_state_partition FAILED");
+    }
+}
 void setup() {
 #ifdef USE_HWCDC
     USBSerial.begin(9600);
@@ -50,6 +83,10 @@ void setup() {
 #endif
     delay(500);
     mylog.println("setup.....");
+    // mylog.printf("%d\n",1 / 0);
+    //TODO  以下代码是主动回滚OTA更新
+
+
 
     lv_init();
     hal_setup();
@@ -91,7 +128,7 @@ void setup() {
     {
         mylog.println("Long Pressed stop!");
     });
-
+    checkPendingAndValidate();
 }
 
 void loop() {
