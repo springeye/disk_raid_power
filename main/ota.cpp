@@ -28,6 +28,26 @@ void handleRoot(AsyncWebServerRequest *request)
 {
     request->redirect("/update");
 }
+//显示一个二维码
+void lv_example_qrcode_1(void)
+{
+    lv_color_t bg_color = lv_palette_lighten(LV_PALETTE_LIGHT_BLUE, 5);
+    lv_color_t fg_color = lv_palette_darken(LV_PALETTE_BLUE, 4);
+
+    lv_obj_t * qr = lv_qrcode_create(lv_screen_active());
+    lv_qrcode_set_size(qr, 150);
+    lv_qrcode_set_dark_color(qr, fg_color);
+    lv_qrcode_set_light_color(qr, bg_color);
+
+    /*Set data*/
+    const char * data = "https://lvgl.io";
+    lv_qrcode_update(qr, data, strlen(data));
+    lv_obj_center(qr);
+
+    /*Add a border with bg_color*/
+    lv_obj_set_style_border_color(qr, bg_color, 0);
+    lv_obj_set_style_border_width(qr, 5, 0);
+}
 
 void setup_ota()
 {
@@ -46,6 +66,10 @@ void setup_ota()
     char buf[32];
     snprintf(buf, sizeof(buf), "IP: %s", local_ip.toString().c_str());
     lv_label_set_text(uic_ipaddr, buf);
+
+
+
+
     // OTA进度接口
     server.on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
         int percent = 0;
@@ -57,7 +81,8 @@ void setup_ota()
     });
 
     server.on("/", HTTP_GET, handleRoot);
-    server.serveStatic("/update", LittleFS, "/").setDefaultFile("ota.html");
+    server.serveStatic("/update", LittleFS, "/web/").setDefaultFile("ota.html");
+    server.serveStatic("/", LittleFS, "/web/");
     server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
         String message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
         request->send(200, "text/html", "<span style='font-size: 24px;'>" + message + "</span>");

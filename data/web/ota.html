@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>便携式磁盘阵列OTA升级</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="mobileWarning" class="mobile-warning">
+    <i class="fas fa-mobile-alt"></i>
+    <div>
+        <p>您正在使用移动设备访问，建议在WiFi环境下进行升级</p>
+        <p class="ios-warning" style="display:none;">iOS设备可能需要多次点击文件选择</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-database"></i> 便携式磁盘阵列OTA升级</h1>
+        <p>无线固件与资源更新系统</p>
+    </div>
+
+    <div class="status-card">
+        <div class="status-info">
+            <h3>设备状态</h3>
+            <p>已连接 · 固件版本: v2.1.8 · 阵列状态: 正常</p>
+        </div>
+        <div class="status-icon">
+            <i class="fas fa-server"></i>
+        </div>
+    </div>
+
+    <div class="upgrade-type">
+        <h3>选择升级类型</h3>
+        <div class="radio-group">
+            <label class="radio-option">
+                <input type="radio" name="upgradeType" value="firmware" checked>
+                <span class="radio-label">
+                        <i class="fas fa-microchip"></i>
+                        <span>固件升级</span>
+                    </span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="upgradeType" value="resource">
+                <span class="radio-label">
+                        <i class="fas fa-file-code"></i>
+                        <span>资源升级</span>
+                    </span>
+            </label>
+        </div>
+    </div>
+
+    <div id="uploadArea" class="upload-area">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>拖放文件到此处或点击选择文件</p>
+        <input type="file" id="firmwareFile" style="display: none;">
+    </div>
+
+    <div class="file-info" id="fileInfo">
+        <h3>文件信息</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">文件名:</span>
+                <span class="info-value" id="fileName">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">文件大小:</span>
+                <span class="info-value" id="fileSize">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">文件类型:</span>
+                <span class="info-value" id="fileType">-</span>
+            </div>
+        </div>
+    </div>
+
+    <button id="uploadBtn" class="btn ripple">
+        <i class="fas fa-upload"></i> 开始升级
+    </button>
+
+    <div id="progressContainer" class="progress-container">
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+        <div id="progressText" class="progress-text">准备上传...</div>
+    </div>
+
+    <div class="warning-box">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>升级过程中请勿断开电源或网络连接</p>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 便携式磁盘阵列系统 | 安全升级保障</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
