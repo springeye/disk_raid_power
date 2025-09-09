@@ -129,7 +129,8 @@ void setup_ota()
                   HTTPUpload& upload = server.upload();
                   if (upload.status == UPLOAD_FILE_START)
                   {
-                      ota_total_size = 0;
+
+                      ota_total_size = upload.totalSize;
                       ota_written_size = 0;
                       ota_has_error = false;
                       mylog.printf("Update: %s\n", upload.filename.c_str());
