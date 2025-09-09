@@ -13,7 +13,6 @@
 #include "app_hal.h"
 #include "ui.h"
 
-#include "demos/lv_demos.h"
 #include <WiFi.h>
 
 #ifdef ARDUINO
