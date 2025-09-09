@@ -74,6 +74,7 @@ void checkPendingAndValidate() {
     }
 }
 void setup() {
+    try {
 #ifdef USE_HWCDC
     USBSerial.begin(9600);
     while (!USBSerial) {}
@@ -129,6 +130,9 @@ void setup() {
         mylog.println("Long Pressed stop!");
     });
     checkPendingAndValidate();
+    } catch (...) {
+        mylog.println("未知异常");
+    }
 }
 
 void loop() {
