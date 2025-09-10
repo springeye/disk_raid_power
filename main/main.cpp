@@ -113,7 +113,7 @@ void setup()
         mylog.println("1111");
         hal_setup();
         mylog.println("2222");
-        lv_init();
+        // lv_init();
         mylog.println("3333");
         ui_init();
 
