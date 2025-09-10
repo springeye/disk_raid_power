@@ -1,14 +1,14 @@
 
 #include "app_hal.h"
 
+#include <log.h>
 #include <TFT_eSPI.h>
 
-#include "hal_config.h"
 #include "lvgl.h"
 
 #define GFX_BL DF_GFX_BL // default backlight pin, you may replace DF_GFX_BL to actual backlight pin
-static const uint32_t screenWidth = SCREEN_WIDTH;
-static const uint32_t screenHeight = SCREEN_HEIGHT;
+static const uint32_t screenWidth = TFT_WIDTH;
+static const uint32_t screenHeight = TFT_HEIGHT;
 TFT_eSPI tft = TFT_eSPI();
 
 const unsigned int lvBufferSize = screenWidth * 30;
@@ -47,13 +47,14 @@ static uint32_t my_tick(void)
 
 void hal_setup(void)
 {
-
+  mylog.println("aaaaa");
   tft.begin();
+  mylog.println("bbbbb");
   // tft.setRotation(1); // 根据你的屏幕调整方向
   tft.fillScreen(TFT_BLACK);
 #ifdef GFX_BL
-  pinMode(LCD_BL, OUTPUT);
-  digitalWrite(LCD_BL, HIGH);
+  pinMode(TFT_BLK, OUTPUT);
+  digitalWrite(TFT_BLK, HIGH);
 #endif
 
 

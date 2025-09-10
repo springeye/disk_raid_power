@@ -9,7 +9,6 @@
 #include <Arduino.h>
 #include <OneButton.h>
 #include <ota.h>
-#include "hal_config.h"
 #include <LittleFS.h>
 #include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
@@ -84,12 +83,12 @@ void setup()
     try
     {
 #ifdef USE_HWCDC
-        USBSerial.begin(9600);
+        USBSerial.begin(115200);
         while (!USBSerial)
         {
         }
 #else
-        Serial.begin(9600);
+        Serial.begin(115200);
         while (!Serial)
         {
         }
@@ -110,9 +109,14 @@ void setup()
         mylog.printf("总空间: %u 字节, 已用: %u 字节\n", total, used);
 
 
-        lv_init();
+
+        mylog.println("1111");
         hal_setup();
+        mylog.println("2222");
+        lv_init();
+        mylog.println("3333");
         ui_init();
+
         if (digitalRead(BUTTON_PIN) == LOW)
         {
             mylog.println("btn is pressed");
