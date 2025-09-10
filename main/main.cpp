@@ -11,6 +11,7 @@
 #include <ota.h>
 #include "hal_config.h"
 #include <LittleFS.h>
+#include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
 #ifdef ESP32
 extern "C" {
