@@ -10,6 +10,8 @@
 #include <OneButton.h>
 #include <ota.h>
 #include <LittleFS.h>
+#include <soc/io_mux_reg.h>
+
 #include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
 #ifdef ESP32
@@ -95,6 +97,8 @@ void setup()
 #endif
         delay(500);
         mylog.println("setup.....");
+        pinMode(12, OUTPUT);
+        digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
         // 初始化 SPIFFS，如果挂载失败则自动格式化
         if (!SPIFFS.begin(true))
         {
@@ -152,10 +156,10 @@ void setup()
                 destory_ota();
             }
         });
-
         btn.attachLongPressStart([]()
         {
             mylog.println("Long Pressed start!");
+            digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
         });
         btn.attachLongPressStop([]()
         {
