@@ -1,16 +1,16 @@
 
 #include "app_hal.h"
 
-#include <TFT_eSPI.h>
-
-#include "hal_config.h"
+#include <log.h>
+#include <Arduino_GFX_Library.h>
 #include "lvgl.h"
 
-#define GFX_BL DF_GFX_BL // default backlight pin, you may replace DF_GFX_BL to actual backlight pin
-static const uint32_t screenWidth = SCREEN_WIDTH;
-static const uint32_t screenHeight = SCREEN_HEIGHT;
-TFT_eSPI tft = TFT_eSPI();
+static const uint32_t screenWidth = TFT_WIDTH;
+static const uint32_t screenHeight = TFT_HEIGHT;
+Arduino_DataBus *bus = new Arduino_HWSPI(TFT_DC,TFT_CS,TFT_SCLK,TFT_MOSI,-1);
 
+/* More display class: https://github.com/moononournation/Arduino_GFX/wiki/Display-Class */
+Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST,0,true);
 const unsigned int lvBufferSize = screenWidth * 30;
 uint8_t lvBuffer[2][lvBufferSize];
 
@@ -28,14 +28,12 @@ static void lv_log_print_g_cb(lv_log_level_t level, const char *buf)
 /* Display flushing */
 void my_disp_flush(lv_display_t *disp, const lv_area_t *area, unsigned char *data)
 {
+
   uint32_t w = lv_area_get_width(area);
   uint32_t h = lv_area_get_height(area);
+  gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)data, w, h);
 
-  tft.startWrite();
-  tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushImageDMA(area->x1, area->y1, w, h, (uint16_t*)data);
-  tft.endWrite();
-
+  /*Call it to tell LVGL you are ready*/
   lv_disp_flush_ready(disp);
 }
 
@@ -47,17 +45,21 @@ static uint32_t my_tick(void)
 
 void hal_setup(void)
 {
-
-  tft.begin();
+  mylog.println("aaaaa");
+  if (!gfx->begin())
+  {
+    Serial.println("gfx->begin() failed!");
+  }
+  mylog.println("bbbbb");
   // tft.setRotation(1); // 根据你的屏幕调整方向
-  tft.fillScreen(TFT_BLACK);
-#ifdef GFX_BL
-  pinMode(LCD_BL, OUTPUT);
-  digitalWrite(LCD_BL, HIGH);
+  gfx->fillScreen(RGB565_BLACK);
+#ifdef TFT_BLK
+  pinMode(TFT_BLK, OUTPUT);
+  digitalWrite(TFT_BLK, HIGH);
 #endif
 
-
-  // lv_init();
+  mylog.println("ccc");
+  lv_init();
   /* Set display rotation to landscape */
   // tft.setRotation(1);
 

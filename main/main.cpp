@@ -9,8 +9,9 @@
 #include <Arduino.h>
 #include <OneButton.h>
 #include <ota.h>
-#include "hal_config.h"
 #include <LittleFS.h>
+#include <soc/io_mux_reg.h>
+
 #include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
 #ifdef ESP32
@@ -84,18 +85,20 @@ void setup()
     try
     {
 #ifdef USE_HWCDC
-        USBSerial.begin(9600);
+        USBSerial.begin(115200);
         while (!USBSerial)
         {
         }
 #else
-        Serial.begin(9600);
+        Serial.begin(115200);
         while (!Serial)
         {
         }
 #endif
         delay(500);
         mylog.println("setup.....");
+        pinMode(12, OUTPUT);
+        digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
         // 初始化 SPIFFS，如果挂载失败则自动格式化
         if (!SPIFFS.begin(true))
         {
@@ -110,9 +113,14 @@ void setup()
         mylog.printf("总空间: %u 字节, 已用: %u 字节\n", total, used);
 
 
-        lv_init();
+
+        mylog.println("1111");
         hal_setup();
+        mylog.println("2222");
+        // lv_init();
+        mylog.println("3333");
         ui_init();
+
         if (digitalRead(BUTTON_PIN) == LOW)
         {
             mylog.println("btn is pressed");
@@ -148,10 +156,10 @@ void setup()
                 destory_ota();
             }
         });
-
         btn.attachLongPressStart([]()
         {
             mylog.println("Long Pressed start!");
+            digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
         });
         btn.attachLongPressStop([]()
         {
