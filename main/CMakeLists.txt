@@ -1,6 +1,13 @@
-# This file was automatically generated for projects
-# without default 'CMakeLists.txt' file.
+SET(SOURCES ui_schome.c
+    ui_scota.c
+    ui.c
+    ui_comp_hook.c
+    ui_helpers.c
+    fonts/ui_font_milight50.c
+    fonts/ui_font_mibold50.c
+    fonts/ui_font_mibol20.c
+    fonts/ui_font_mibol40.c
+    fonts/ui_font_milight20.c
+    fonts/ui_font_milight15.c)
 
-FILE(GLOB_RECURSE app_sources ${CMAKE_SOURCE_DIR}/main/*.*)
-
-idf_component_register(SRCS ${app_sources})
+add_library(ui ${SOURCES})

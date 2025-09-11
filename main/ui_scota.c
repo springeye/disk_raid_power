@@ -42,7 +42,7 @@ void ui_scota_screen_init(void)
     lv_obj_set_width(ui_ipaddr, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_ipaddr, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_ipaddr, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ipaddr, "IP: wait....");
+    lv_label_set_text(ui_ipaddr, "IP: 192.168.99.1");
     lv_obj_set_style_text_color(ui_ipaddr, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ipaddr, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui_ipaddr, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
