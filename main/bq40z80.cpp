@@ -1,5 +1,7 @@
 #include "bq40z80.h"
 
+#include <log.h>
+
 
 BQ40Z80::BQ40Z80()
 {
@@ -31,11 +33,14 @@ uint8_t BQ40Z80::calculate_crc8(uint8_t InitialValue, uint8_t* message, uint8_t 
 
 void BQ40Z80::read_word(uint8_t memory_addr)
 {
-    word_buf[0] = BQ40Z80_ADDR;
-    word_buf[1] = memory_addr;
-    word_buf[2] = BQ40Z80_ADDR + 1;
-    word_buf[3] = word_buf[4] = word_buf[5] = 0;
+    word_buf[0] = 0;
+    word_buf[1] = 0;
+    word_buf[2] = 0;
+    word_buf[3] = 0;
+    word_buf[4] = 0;
+    word_buf[5] = 0;
 
+    // 1. 发送命令字
     Wire.beginTransmission(BQ40Z80_ADDR);
     Wire.write(memory_addr);
     if (Wire.endTransmission(false) != 0)
@@ -43,18 +48,40 @@ void BQ40Z80::read_word(uint8_t memory_addr)
         state_flag = 1; // 通讯连接错误
         return;
     }
-    Wire.requestFrom(BQ40Z80_ADDR, 3);
-    for (uint8_t i = 0; i < 3 && Wire.available(); i++)
+
+    // 2. 请求 3 字节：LSB, MSB, CRC
+    uint8_t count = Wire.requestFrom(BQ40Z80_ADDR, (uint8_t)3);
+    if (count != 3)
     {
-        word_buf[3 + i] = Wire.read();
+        state_flag = 1; // 通讯错误
+        return;
     }
-    if (calculate_crc8(0, word_buf, 5) == word_buf[5])
+
+    word_buf[3] = Wire.read(); // LSB
+    word_buf[4] = Wire.read(); // MSB
+    word_buf[5] = Wire.read(); // CRC
+
+    // 3. 构造 CRC 校验数组：SLA+W, CMD, SLA+R, LSB, MSB
+    uint8_t crc_buf[5];
+    crc_buf[0] = (BQ40Z80_ADDR << 1) | 0; // SLA+W
+    crc_buf[1] = memory_addr;             // 命令
+    crc_buf[2] = (BQ40Z80_ADDR << 1) | 1; // SLA+R
+    crc_buf[3] = word_buf[3];             // LSB
+    crc_buf[4] = word_buf[4];             // MSB
+
+    // 4. 计算 CRC 并比较
+    if (calculate_crc8(0x00, crc_buf, 5) == word_buf[5])
     {
-        state_flag = 0;
+        state_flag = 0; // CRC 校验通过
     }
     else
     {
-        state_flag = 2;
+        state_flag = 2; // CRC 校验失败
+        // 调试期间可以打印 CRC
+        mylog.print("CRC fail, calc=");
+        mylog.print(calculate_crc8(0x00, crc_buf, 5), HEX);
+        mylog.print(", read=");
+        mylog.println(word_buf[5], HEX);
     }
 }
 

@@ -189,6 +189,8 @@ void loop()
         wifi_ready = false;
         lv_label_set_text(ui_Label3, g_ip); // 显示IP到页面
     }
+    mylog.printf("剩余放电时间:%d\n",bq.read_AverageTimeToEmpty());
+    mylog.printf("剩余充电时间:%d\n",bq.read_AverageTimeToFull());
     mylog.printf("电芯1:%d\n",bq.read_cell_voltage(1));
     mylog.printf("电芯2:%d\n",bq.read_cell_voltage(2));
     mylog.printf("电芯3:%d\n",bq.read_cell_voltage(3));
@@ -197,6 +199,7 @@ void loop()
     mylog.printf("电芯6:%d\n",bq.read_cell_voltage(6));
     mylog.println("");
     mylog.println("");
+    delay(1000);;
 }
 #endif /* ARDUINO */
 
