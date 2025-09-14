@@ -329,6 +329,38 @@ bool BQ40Z80::is_discharging()
     uint16_t status = read_battery_status();
     return (status & (1 << 10)) != 0; // DISCHARGING 位
 }
+float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutoff_v = 3.0f)
+{
+    uint16_t remaining_mAh = read_Remaining_Capacity(); // mAh
+    uint16_t pack_mV = read_voltage();                 // mV
 
+    // 转换单位
+    float remaining_Ah = remaining_mAh / 1000.0f;
+    float pack_V = pack_mV / 1000.0f;
+
+    // 放电截止电压总和
+    float cutoff_V = cell_cutoff_v * cell_count;
+
+    // 近似平均电压（线性估算）
+    float avg_V = cutoff_V + (pack_V - cutoff_V) / 2.0f;
+
+    // 剩余能量
+    float energy_Wh = remaining_Ah * avg_V;
+
+    return energy_Wh;
+}
+
+
+// C API 实现
+#include "bq40z80_c_api.h"
+
+extern "C" {
+    uint8_t bq_get_percent(void) {
+        return bq.read_RelativeStateOfCharge();
+    }
+    uint16_t bq_get_cell_voltage(uint8_t cell_index) {
+        return bq.read_cell_voltage(cell_index);
+    }
+}
 
 BQ40Z80 bq40z80;

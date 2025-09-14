@@ -25,7 +25,7 @@ extern "C" {
 #include "esp_efuse.h"
 #endif
 #define BUTTON_PIN KEY_01
-
+BQ40Z80 bq;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
     true, // Button is active LOW
@@ -178,7 +178,8 @@ void setup()
         mylog.println("未知异常");
     }
 }
-BQ40Z80 bq;
+
+
 void loop()
 {
     hal_loop();
@@ -193,6 +194,7 @@ void loop()
     mylog.printf("当前电流:%.3FA\n",bq.read_current()/1000.0f);
     mylog.printf("当前温度:%.2f°\n",bq.read_temp()/10.0f);
     mylog.printf("当前电量:%d%%\n",bq.read_capacity());
+    mylog.printf("当前容量:%.2fWh\n",bq.read_remaining_energy_wh(6,3.0f));
     if (bq.is_charging())
     {
         mylog.println("剩余放电时间:未放电");
@@ -216,6 +218,7 @@ void loop()
     mylog.printf("电芯6:%d\n",bq.read_cell_voltage(6));
     mylog.println("");
     mylog.println("");
+    lv_label_set_text_fmt(ui_percent,"%d", bq.read_capacity());
     delay(1000);;
 }
 #endif /* ARDUINO */

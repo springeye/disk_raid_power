@@ -40,12 +40,13 @@ public:
     uint16_t read_battery_status();//读取电池状态
     bool is_charging();
     bool is_discharging();
+    float read_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v);
 
 private:
     uint8_t calculate_crc8(uint8_t InitialValue, uint8_t *message, uint8_t len);
     void read_word(uint8_t memory_addr);
 };
 
-extern BQ40Z80 bq40z80;
+extern BQ40Z80 bq;
 
 #endif

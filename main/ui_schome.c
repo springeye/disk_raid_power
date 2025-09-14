@@ -4,7 +4,7 @@
 // Project name: SquareLine_Project
 
 #include "ui.h"
-
+#include "bq40z80_c_api.h"
 lv_obj_t * uic_bat;
 lv_obj_t * uic_v6s;
 lv_obj_t * uic_pwout;
@@ -90,7 +90,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_width(ui_percent, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_percent, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_percent, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_percent, "98");
+    lv_label_set_text_fmt(ui_percent,"%d", bq_get_percent());
     lv_obj_set_style_text_color(ui_percent, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_percent, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_percent, &ui_font_mibol40, LV_PART_MAIN | LV_STATE_DEFAULT);
