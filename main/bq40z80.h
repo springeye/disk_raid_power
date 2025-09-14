@@ -27,6 +27,19 @@ public:
     uint8_t read_RelativeStateOfCharge(); // 读取电池健康值 单位：%
     uint8_t read_block(uint8_t command, uint8_t* buf, uint8_t len);
     uint16_t read_cell_voltage(uint8_t cell_index); // 读取单体电池电压 单位：mv cell_index:1~6
+    /**
+    15	FULLY_CHARGED	电池满电
+    14	FULLY_DISCHARGED	电池放空
+    13	TERMINATE_CHARGE	充电终止条件
+    12	TERMINATE_DISCHARGE	放电终止条件
+    11	CHARGING	电池正在充电
+    10	DISCHARGING	电池正在放电
+    9	SOC_ALERT	SOC 警告
+    8	TIME_TO_EMPTY_ALERT	放电时间警告
+     */
+    uint16_t read_battery_status();//读取电池状态
+    bool is_charging();
+    bool is_discharging();
 
 private:
     uint8_t calculate_crc8(uint8_t InitialValue, uint8_t *message, uint8_t len);

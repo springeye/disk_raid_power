@@ -189,8 +189,25 @@ void loop()
         wifi_ready = false;
         lv_label_set_text(ui_Label3, g_ip); // 显示IP到页面
     }
-    mylog.printf("剩余放电时间:%d\n",bq.read_AverageTimeToEmpty());
-    mylog.printf("剩余充电时间:%d\n",bq.read_AverageTimeToFull());
+    mylog.printf("当前电压:%.3fV\n",bq.read_voltage()/1000.0f);
+    mylog.printf("当前电流:%.3FA\n",bq.read_current()/1000.0f);
+    mylog.printf("当前温度:%.2f°\n",bq.read_temp()/10.0f);
+    mylog.printf("当前电量:%d%%\n",bq.read_capacity());
+    if (bq.is_charging())
+    {
+        mylog.println("剩余放电时间:未放电");
+    }else
+    {
+        mylog.printf("剩余放电时间:%d分钟\n",bq.read_AverageTimeToEmpty()/60);
+    }
+    if (bq.is_discharging())
+    {
+        mylog.println("剩余充电时间:未充电");
+    }else
+    {
+        mylog.printf("剩余充电时间:%d分钟\n",bq.read_AverageTimeToFull()/60);
+    }
+
     mylog.printf("电芯1:%d\n",bq.read_cell_voltage(1));
     mylog.printf("电芯2:%d\n",bq.read_cell_voltage(2));
     mylog.printf("电芯3:%d\n",bq.read_cell_voltage(3));

@@ -290,25 +290,44 @@ uint8_t BQ40Z80::read_block(uint8_t command, uint8_t *buf, uint8_t len)
  */
 uint16_t BQ40Z80::read_cell_voltage(uint8_t cell_index)
 {
-    if (cell_index < 1 || cell_index > 8) return 0;
+    if (cell_index < 1 || cell_index > 7) return 0;
 
-    uint8_t buf[32];
-
-    if (cell_index <= 4) {
-        // DAStatus1
+    if (cell_index <= 3) {
+        uint8_t buf[8];
         uint8_t n = read_block(0x71, buf, sizeof(buf));
-        if (state_flag == 0 && n >= 8) {
+        if (state_flag == 0 && n >= 6) {
             return (uint16_t)buf[(cell_index-1)*2] | ((uint16_t)buf[(cell_index-1)*2+1] << 8);
         }
     } else {
-        // DAStatus2
-        uint8_t n = read_block(0x72, buf, sizeof(buf));
-        if (state_flag == 0 && n >= 8) {
-            uint8_t idx = cell_index - 5; // 5->0, 6->1, 7->2, 8->3
-            return (uint16_t)buf[idx*2] | ((uint16_t)buf[idx*2+1] << 8);
+        // cell4~cell7分别对应0x3F~0x3C
+        uint8_t cell_addr = 0x3F - (cell_index - 4);
+        read_word(cell_addr);
+        if (state_flag == 0) {
+            return (uint16_t)(word_buf[4] << 8 | word_buf[3]);
         }
     }
     return 0;
+}
+uint16_t BQ40Z80::read_battery_status()
+{
+    read_word(0x16); // BatteryStatus
+    if (state_flag == 0)
+    {
+        return (word_buf[4] << 8) | word_buf[3];
+    }
+    return 0;
+}
+
+bool BQ40Z80::is_charging()
+{
+    uint16_t status = read_battery_status();
+    return (status & (1 << 11)) != 0; // CHARGING 位
+}
+
+bool BQ40Z80::is_discharging()
+{
+    uint16_t status = read_battery_status();
+    return (status & (1 << 10)) != 0; // DISCHARGING 位
 }
 
 
