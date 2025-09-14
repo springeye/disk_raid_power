@@ -3,7 +3,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define BQ40Z80_ADDR 0xB // 设备I2C地址
 
 class BQ40Z80 {
 public:
