@@ -7,6 +7,9 @@
 #ifdef ARDUINO
 #include <log.h>
 #include <Arduino.h>
+#include <bq40z80.h>
+#include <bq40z80.h>
+#include <i2c_utils.h>
 #include <OneButton.h>
 #include <ota.h>
 #include <LittleFS.h>
@@ -79,7 +82,6 @@ void checkPendingAndValidate()
         mylog.println("esp_ota_get_state_partition FAILED");
     }
 }
-
 void setup()
 {
     try
@@ -97,6 +99,10 @@ void setup()
 #endif
         delay(500);
         mylog.println("setup.....");
+        Wire.begin(26,25);
+        list_i2c_devices(Wire,1);
+
+
         pinMode(12, OUTPUT);
         digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
         // 初始化 SPIFFS，如果挂载失败则自动格式化
@@ -172,7 +178,7 @@ void setup()
         mylog.println("未知异常");
     }
 }
-
+BQ40Z80 bq;
 void loop()
 {
     hal_loop();
@@ -183,6 +189,14 @@ void loop()
         wifi_ready = false;
         lv_label_set_text(ui_Label3, g_ip); // 显示IP到页面
     }
+    mylog.printf("电芯1:%d\n",bq.read_cell_voltage(1));
+    mylog.printf("电芯2:%d\n",bq.read_cell_voltage(2));
+    mylog.printf("电芯3:%d\n",bq.read_cell_voltage(3));
+    mylog.printf("电芯4:%d\n",bq.read_cell_voltage(4));
+    mylog.printf("电芯5:%d\n",bq.read_cell_voltage(5));
+    mylog.printf("电芯6:%d\n",bq.read_cell_voltage(6));
+    mylog.println("");
+    mylog.println("");
 }
 #endif /* ARDUINO */
 
