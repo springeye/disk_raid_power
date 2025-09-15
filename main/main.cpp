@@ -13,6 +13,7 @@
 #include <OneButton.h>
 #include <ota.h>
 #include <LittleFS.h>
+#include <sw6306v.h>
 #include <soc/io_mux_reg.h>
 
 #include "lv_conf.h"
@@ -82,6 +83,9 @@ void checkPendingAndValidate()
         mylog.println("esp_ota_get_state_partition FAILED");
     }
 }
+unsigned long previousMillis = 0;
+const long interval = 30*1000; // 间隔时间(毫秒)
+SW6306V powerManager;
 void setup()
 {
     try
@@ -93,11 +97,8 @@ void setup()
         }
 #else
         Serial.begin(115200);
-        while (!Serial)
-        {
-        }
 #endif
-        delay(500);
+        delay(1000);
         mylog.println("setup.....");
         Wire.begin(26,25);
         list_i2c_devices(Wire,1);
@@ -126,17 +127,17 @@ void setup()
         // lv_init();
         mylog.println("3333");
         ui_init();
-
-        if (digitalRead(BUTTON_PIN) == LOW)
-        {
-            mylog.println("btn is pressed");
-            lv_disp_load_scr(ui_scota);
-        }
-        else
-        {
-            mylog.println("btn not pressed");
-            lv_disp_load_scr(ui_schome);
-        }
+        //
+        // if (digitalRead(BUTTON_PIN) == LOW)
+        // {
+        //     mylog.println("btn is pressed");
+        //     lv_disp_load_scr(ui_scota);
+        // }
+        // else
+        // {
+        //     mylog.println("btn not pressed");
+        //     lv_disp_load_scr(ui_schome);
+        // }
 
         // btn.attachPress([]
         // {
@@ -172,6 +173,9 @@ void setup()
             mylog.println("Long Pressed stop!");
         });
         checkPendingAndValidate();
+        if (!powerManager.unlock()) {
+            mylog.println("Failed to unlock SW6306V!");
+        }
     }
     catch (...)
     {
@@ -182,6 +186,13 @@ void setup()
 
 void loop()
 {
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= interval) {
+        previousMillis = currentMillis;
+        digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
+        Serial.println("断电");
+    }
     hal_loop();
     btn.tick();
     ota_loop();
@@ -219,6 +230,7 @@ void loop()
     mylog.println("");
     mylog.println("");
     lv_label_set_text_fmt(ui_percent,"%d", bq.read_capacity());
+    powerManager.printChargingStatus();
     delay(1000);;
 }
 #endif /* ARDUINO */
