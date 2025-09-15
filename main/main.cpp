@@ -85,7 +85,7 @@ void checkPendingAndValidate()
 }
 unsigned long previousMillis = 0;
 const long interval = 30*1000; // 间隔时间(毫秒)
-SW6306V powerManager;
+SW6306V_PowerMonitor powerManager;
 void setup()
 {
     try
