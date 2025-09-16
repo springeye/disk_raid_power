@@ -10,6 +10,7 @@
 #include <bq40z80.h>
 #include <bq40z80.h>
 #include <i2c_utils.h>
+#include <ip2366.h>
 #include <OneButton.h>
 #include <ota.h>
 #include <LittleFS.h>
@@ -86,6 +87,7 @@ void checkPendingAndValidate()
 unsigned long previousMillis = 0;
 const long interval = 30*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
+IP2366 ip2366(10);
 void setup()
 {
     try
@@ -106,6 +108,9 @@ void setup()
 
         pinMode(12, OUTPUT);
         digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
+        //IP2366
+        // pinMode(10, OUTPUT);
+        // digitalWrite(10, HIGH);
         // 初始化 SPIFFS，如果挂载失败则自动格式化
         if (!SPIFFS.begin(true))
         {
@@ -176,6 +181,7 @@ void setup()
         if (!powerManager.unlock()) {
             mylog.println("Failed to unlock SW6306V!");
         }
+        ip2366.begin();
     }
     catch (...)
     {
@@ -233,7 +239,15 @@ void loop()
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }
-    powerManager.printChargingStatus();
+    // powerManager.printChargingStatus();
+
+    if (ip2366.canCommunicate()) {
+        // 读取所有数据并打印
+        ip2366.readAllData();
+
+    } else {
+        Serial.println("INT pin low, waiting for communication...");
+    }
     delay(1000);;
 }
 #endif /* ARDUINO */
