@@ -207,21 +207,14 @@ void SW6306V_PowerMonitor::printChargingStatus() {
     } else {
         Serial.println("STANDBY");
     }
-    if (status.sys.isInput) {
-        Serial.print("Charging Voltage: ");
-        Serial.print(status.volt.actualVoltage / 1000.0, 1);
-        Serial.println("V");
-        Serial.print("Input Current: ");
-        Serial.print(status.inputCurrent);
-        Serial.println("mA");
-        Serial.print("Charging Protocol: ");
-        Serial.println(status.protocol.protocolName);
-    }else if (status.sys.isOutput)
-    {
-        Serial.print("Charging Protocol: ");
-        Serial.println(status.protocol.protocolName);
-    }
-
+    Serial.print("Voltage: ");
+    Serial.print(status.volt.actualVoltage / 1000.0, 1);
+    Serial.println("V");
+    Serial.print("Input Current: ");
+    Serial.print(status.inputCurrent);
+    Serial.println("mA");
+    Serial.print("Protocol: ");
+    Serial.println(status.protocol.protocolName);
     Serial.println("============================");
 }
 

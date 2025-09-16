@@ -230,6 +230,9 @@ void loop()
     mylog.println("");
     mylog.println("");
     lv_label_set_text_fmt(ui_percent,"%d", bq.read_capacity());
+    if (!powerManager.unlock()) {
+        mylog.println("Failed to unlock SW6306V!");
+    }
     powerManager.printChargingStatus();
     delay(1000);;
 }
