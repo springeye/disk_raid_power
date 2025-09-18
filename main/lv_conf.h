@@ -64,7 +64,14 @@
 #define LV_USE_DEMO_BENCHMARK 0
 #define LV_USE_DEMO_STRESS    0
 #define LV_USE_DEMO_MUSIC     0
-#define LV_USE_SPRINTF 1
+
+
+// #define LV_USE_SPRINTF 1
+// #define LV_USE_ARABIC_PERSIAN_CHARS 0
+// #define LV_SPRINTF_CUSTOM 1
+// #define LV_SPRINTF_DISABLE_FLOAT 0  // 确保这是0（启用浮点）
+
+
 /* 关闭日志和动画 */
 #define LV_USE_LOG            0
 #define LV_USE_ANIMATION      0

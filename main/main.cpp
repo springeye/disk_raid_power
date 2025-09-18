@@ -9,6 +9,7 @@
 #include <Arduino.h>
 #include <bq40z80.h>
 #include <bq40z80.h>
+#include <bq40z80_c_api.h>
 #include <i2c_utils.h>
 #include <ip2366.h>
 #include <OneButton.h>
@@ -28,6 +29,7 @@ extern "C" {
 #endif
 #define BUTTON_PIN KEY_01
 BQ40Z80 bq;
+IP2366 ip2366;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
     true, // Button is active LOW
@@ -87,7 +89,14 @@ void checkPendingAndValidate()
 unsigned long previousMillis = 0;
 const long interval = 30*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
-IP2366 ip2366(10);
+void lv_label_set_text_float(lv_obj_t* label, const char* fmt, float val, int decimals) {
+    char buf[32];
+    dtostrf(val, 0, decimals, buf);   // Arduino 自带函数
+    char out[64];
+    snprintf(out, sizeof(out), fmt, buf);
+    lv_label_set_text(label, out);
+}
+
 void setup()
 {
     try
@@ -244,11 +253,14 @@ void loop()
     if (ip2366.canCommunicate()) {
         // 读取所有数据并打印
         ip2366.readAllData();
+        lv_label_set_text_float(ui_2366_current, "%sA", get2366Current(), 2);
+        lv_label_set_text_float(ui_2366_voltage, "%sV", get2366Voltage(), 2);
+        lv_label_set_text_float(ui_2366_power, "%sW", get2366Power(), 2);
 
     } else {
         Serial.println("INT pin low, waiting for communication...");
     }
-    delay(1000);;
+    delay(100);;
 }
 #endif /* ARDUINO */
 

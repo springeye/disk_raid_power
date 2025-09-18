@@ -50,11 +50,11 @@ extern lv_obj_t * ui_Label14;
 extern lv_obj_t * ui_div1;
 extern lv_obj_t * ui_Container12;
 extern lv_obj_t * ui_Container13;
-extern lv_obj_t * ui_Label15;
-extern lv_obj_t * ui_Label16;
+extern lv_obj_t * ui_2366_direct;
+extern lv_obj_t * ui_2366_power;
 extern lv_obj_t * ui_Container14;
-extern lv_obj_t * ui_Label17;
-extern lv_obj_t * ui_Label18;
+extern lv_obj_t * ui_2366_voltage;
+extern lv_obj_t * ui_2366_current;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_schome;
 extern lv_obj_t * uic_div;

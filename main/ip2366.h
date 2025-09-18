@@ -7,7 +7,7 @@
 class IP2366 {
 public:
   // 构造函数
-  IP2366(uint8_t intPin = 2);
+  IP2366(uint8_t intPin = 10);
 
   // 初始化函数
   void begin();
@@ -104,5 +104,5 @@ private:
   // 读取16位寄存器
   uint16_t read16BitRegister(uint8_t lowReg, uint8_t highReg);
 };
-
+extern IP2366 ip2366;
 #endif // IP2366_H

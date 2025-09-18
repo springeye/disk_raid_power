@@ -361,6 +361,14 @@ extern "C" {
     uint16_t bq_get_cell_voltage(uint8_t cell_index) {
         return bq.read_cell_voltage(cell_index);
     }
+    float read_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v)
+    {
+        return bq.read_remaining_energy_wh(cell_count, cell_cutoff_v);
+    }
+    float read_voltage()
+    {
+        return bq.read_voltage();
+    }
 }
 
 BQ40Z80 bq40z80;

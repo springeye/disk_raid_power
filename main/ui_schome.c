@@ -47,11 +47,11 @@ lv_obj_t* ui_Label14 = NULL;
 lv_obj_t* ui_div1 = NULL;
 lv_obj_t* ui_Container12 = NULL;
 lv_obj_t* ui_Container13 = NULL;
-lv_obj_t* ui_Label15 = NULL;
-lv_obj_t* ui_Label16 = NULL;
+lv_obj_t* ui_2366_direct = NULL;
+lv_obj_t* ui_2366_power = NULL;
 lv_obj_t* ui_Container14 = NULL;
-lv_obj_t* ui_Label17 = NULL;
-lv_obj_t* ui_Label18 = NULL;
+lv_obj_t* ui_2366_voltage = NULL;
+lv_obj_t* ui_2366_current = NULL;
 // event funtions
 
 // build funtions
@@ -206,7 +206,9 @@ void ui_schome_screen_init(void)
     lv_obj_set_width(ui_Label1, LV_SIZE_CONTENT); /// 1
     lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label1, "25.2V");
+    char bufv[32];
+    snprintf(bufv, sizeof(bufv), "%.2fV",read_voltage()/1000);  // 使用 Arduino 的 snprintf
+    lv_label_set_text(ui_Label1, bufv);
     lv_obj_set_style_text_color(ui_Label1, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label1, &ui_font_mibol16, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -250,7 +252,9 @@ void ui_schome_screen_init(void)
     lv_obj_set_width(ui_Label10, LV_SIZE_CONTENT); /// 1
     lv_obj_set_height(ui_Label10, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label10, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label10, "85Wh");
+    char bufwh[32];
+    snprintf(bufwh, sizeof(bufwh), "%.2fWh",read_remaining_energy_wh(6,3.0F));  // 使用 Arduino 的 snprintf
+    lv_label_set_text(ui_Label10, bufwh);
     lv_obj_set_style_text_color(ui_Label10, lv_color_hex(0xED9104), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label10, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label10, &ui_font_mibol16, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -389,14 +393,14 @@ void ui_schome_screen_init(void)
                                  r, 1);                 /* 行位置 + 跨度 */
             /* 设置文字居中对齐 */
             lv_obj_set_style_text_align(item, LV_TEXT_ALIGN_CENTER, 0);
-
+            lv_obj_set_style_text_color(item,lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
             /* 设置 label 内部内容居中（上下左右）*/
             lv_obj_set_style_pad_all(item, 0, 0);   // 去掉 padding
             lv_obj_set_style_align(item, LV_ALIGN_CENTER, 0);
             float value = bq_get_cell_voltage(i)/1000.0f;
 
             char buf[32];
-            snprintf(buf, sizeof(buf), "%d %.2f",i, value);  // 使用 Arduino 的 snprintf
+            snprintf(buf, sizeof(buf), "%.2f", value);  // 使用 Arduino 的 snprintf
             lv_label_set_text(item,buf);
             i++;
 
@@ -528,33 +532,34 @@ void ui_schome_screen_init(void)
     lv_obj_set_flex_align(ui_Container13, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_remove_flag(ui_Container13, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
-    ui_Label15 = lv_label_create(ui_Container13);
-    lv_obj_set_width(ui_Label15, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_height(ui_Label15, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label15, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label15, "OUT");
-    lv_obj_set_style_text_color(ui_Label15, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label15, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label15, &ui_font_mibol12, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_radius(ui_Label15, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_Label15, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Label15, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Label15, 16, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Label15, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Label15, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Label15, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_2366_direct = lv_label_create(ui_Container13);
+    lv_obj_set_width(ui_2366_direct, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_height(ui_2366_direct, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_align(ui_2366_direct, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_2366_direct, "OUT");
+    lv_obj_set_style_text_color(ui_2366_direct, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_2366_direct, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_2366_direct, &ui_font_mibol12, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(ui_2366_direct, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_2366_direct, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_2366_direct, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_2366_direct, 16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_2366_direct, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_2366_direct, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_2366_direct, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label16 = lv_label_create(ui_Container13);
-    lv_obj_set_width(ui_Label16, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_height(ui_Label16, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label16, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label16, "55W");
-    lv_obj_set_style_text_color(ui_Label16, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label16, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Label16, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Label16, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Label16, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Label16, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_2366_power = lv_label_create(ui_Container13);
+    lv_obj_set_width(ui_2366_power, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_height(ui_2366_power, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_align(ui_2366_power, LV_ALIGN_CENTER);
+
+    lv_label_set_text_fmt(ui_2366_power,"%d", get2366Power());
+    lv_obj_set_style_text_color(ui_2366_power, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_2366_power, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_2366_power, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_2366_power, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_2366_power, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_2366_power, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Container14 = lv_obj_create(ui_Container12);
     lv_obj_remove_style_all(ui_Container14);
@@ -565,25 +570,25 @@ void ui_schome_screen_init(void)
     lv_obj_set_flex_align(ui_Container14, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_remove_flag(ui_Container14, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
-    ui_Label17 = lv_label_create(ui_Container14);
-    lv_obj_set_width(ui_Label17, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_height(ui_Label17, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label17, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label17, "20V");
-    lv_obj_set_style_text_color(ui_Label17, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label17, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_2366_voltage = lv_label_create(ui_Container14);
+    lv_obj_set_width(ui_2366_voltage, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_height(ui_2366_voltage, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_align(ui_2366_voltage, LV_ALIGN_CENTER);
+    lv_label_set_text_fmt(ui_2366_voltage, "%d",get2366Voltage());
+    lv_obj_set_style_text_color(ui_2366_voltage, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_2366_voltage, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label18 = lv_label_create(ui_Container14);
-    lv_obj_set_width(ui_Label18, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_height(ui_Label18, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label18, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label18, "5A");
-    lv_obj_set_style_text_color(ui_Label18, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label18, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Label18, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Label18, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Label18, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Label18, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_2366_current = lv_label_create(ui_Container14);
+    lv_obj_set_width(ui_2366_current, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_height(ui_2366_current, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_align(ui_2366_current, LV_ALIGN_CENTER);
+    lv_label_set_text_fmt(ui_2366_current, "%d",get2366Current());
+    lv_obj_set_style_text_color(ui_2366_current, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_2366_current, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_2366_current, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_2366_current, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_2366_current, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_2366_current, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     uic_schome = ui_schome;
     uic_div = ui_div;
@@ -636,9 +641,9 @@ void ui_schome_screen_destroy(void)
     ui_div1 = NULL;
     ui_Container12 = NULL;
     ui_Container13 = NULL;
-    ui_Label15 = NULL;
-    ui_Label16 = NULL;
+    ui_2366_direct = NULL;
+    ui_2366_power = NULL;
     ui_Container14 = NULL;
-    ui_Label17 = NULL;
-    ui_Label18 = NULL;
+    ui_2366_voltage = NULL;
+    ui_2366_current = NULL;
 }
