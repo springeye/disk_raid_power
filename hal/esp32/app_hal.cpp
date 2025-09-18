@@ -10,7 +10,7 @@ static const uint32_t screenHeight = TFT_HEIGHT;
 Arduino_DataBus *bus = new Arduino_HWSPI(TFT_DC,TFT_CS,TFT_SCLK,TFT_MOSI,-1);
 
 /* More display class: https://github.com/moononournation/Arduino_GFX/wiki/Display-Class */
-Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST,0,true);
+Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST,0,true,240,280,0,20,0,20);
 const unsigned int lvBufferSize = screenWidth * 30;
 uint8_t lvBuffer[2][lvBufferSize];
 

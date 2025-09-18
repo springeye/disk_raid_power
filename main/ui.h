@@ -37,12 +37,12 @@ extern "C" {
 
 extern lv_obj_t * ui____initial_actions0;
 
+// IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_mainboard_png);    // assets/mainboard.png
+LV_IMG_DECLARE(ui_img_ic_bat_png);    // assets/ic_bat.png
+
 // FONTS
-LV_FONT_DECLARE(ui_font_milight50);
-LV_FONT_DECLARE(ui_font_mibold50);
-LV_FONT_DECLARE(ui_font_mibol20);
 LV_FONT_DECLARE(ui_font_mibol40);
-LV_FONT_DECLARE(ui_font_milight15);
 LV_FONT_DECLARE(ui_font_mibol16);
 
 // UI INIT
