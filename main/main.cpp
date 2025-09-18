@@ -245,6 +245,7 @@ void loop()
     mylog.println("");
     mylog.println("");
     lv_label_set_text_fmt(ui_percent,"%d%%", bq.read_capacity());
+    lv_label_set_text_float(ui_power, "%sWh", bq.read_remaining_energy_wh(6,3.0f), 2);
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }

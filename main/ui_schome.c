@@ -26,7 +26,7 @@ lv_obj_t* ui_Label1 = NULL;
 lv_obj_t* ui_div = NULL;
 lv_obj_t* ui_Container8 = NULL;
 lv_obj_t* ui_Label4 = NULL;
-lv_obj_t* ui_Label10 = NULL;
+lv_obj_t* ui_power = NULL;
 lv_obj_t* ui_center = NULL;
 lv_obj_t* ui_Container7 = NULL;
 lv_obj_t* ui_Container1 = NULL;
@@ -248,20 +248,20 @@ void ui_schome_screen_init(void)
     lv_obj_set_style_text_opa(ui_Label4, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label4, &ui_font_mibol16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label10 = lv_label_create(ui_Container8);
-    lv_obj_set_width(ui_Label10, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_height(ui_Label10, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label10, LV_ALIGN_CENTER);
+    ui_power = lv_label_create(ui_Container8);
+    lv_obj_set_width(ui_power, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_height(ui_power, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_align(ui_power, LV_ALIGN_CENTER);
     char bufwh[32];
     snprintf(bufwh, sizeof(bufwh), "%.2fWh",read_remaining_energy_wh(6,3.0F));  // 使用 Arduino 的 snprintf
-    lv_label_set_text(ui_Label10, bufwh);
-    lv_obj_set_style_text_color(ui_Label10, lv_color_hex(0xED9104), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label10, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label10, &ui_font_mibol16, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Label10, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Label10, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Label10, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Label10, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_text(ui_power, bufwh);
+    lv_obj_set_style_text_color(ui_power, lv_color_hex(0xED9104), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_power, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_power, &ui_font_mibol16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_power, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_power, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_power, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_power, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_center = lv_obj_create(ui_schome);
     lv_obj_remove_style_all(ui_center);
@@ -619,7 +619,7 @@ void ui_schome_screen_destroy(void)
     ui_div = NULL;
     ui_Container8 = NULL;
     ui_Label4 = NULL;
-    ui_Label10 = NULL;
+    ui_power = NULL;
     ui_center = NULL;
     ui_Container7 = NULL;
     ui_Container1 = NULL;

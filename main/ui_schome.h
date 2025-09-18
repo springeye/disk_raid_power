@@ -29,7 +29,7 @@ extern lv_obj_t * ui_Label1;
 extern lv_obj_t * ui_div;
 extern lv_obj_t * ui_Container8;
 extern lv_obj_t * ui_Label4;
-extern lv_obj_t * ui_Label10;
+extern lv_obj_t * ui_power;
 extern lv_obj_t * ui_center;
 extern lv_obj_t * ui_Container7;
 extern lv_obj_t * ui_Container1;
