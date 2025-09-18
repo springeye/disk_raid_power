@@ -9,6 +9,9 @@
 #define LV_MEM_SIZE           (32U * 1024U)   /* 可根据实际需求调整 */
 #define LV_COLOR_DEPTH        16
 
+
+
+
 /* 基础控件，仅保留按钮和标签 */
 #define LV_USE_BTN            1
 #define LV_USE_LABEL          1
@@ -39,19 +42,20 @@
 #define LV_USE_MENU           0
 #define LV_USE_COLORWHEEL     0
 #define LV_USE_IMGBTN         0
-#define LV_USE_GRID           0
+#define LV_USE_GRID           1
 #define LV_USE_OBJ            1
 #define LV_USE_OBJMASK        0
 
 /* 字体，仅保留12号字体 */
-#define LV_FONT_MONTSERRAT_10 1
-#define LV_FONT_MONTSERRAT_12 1
+#define LV_FONT_MONTSERRAT_10 0
+#define LV_FONT_MONTSERRAT_12 0
 #define LV_FONT_MONTSERRAT_14 1
-#define LV_FONT_MONTSERRAT_16 1
-#define LV_FONT_MONTSERRAT_20 1
-#define LV_FONT_MONTSERRAT_44 1
+#define LV_FONT_MONTSERRAT_16 0
+#define LV_FONT_MONTSERRAT_20 0
+#define LV_FONT_MONTSERRAT_44 0
 
 /* 关闭所有主题和demo */
+#define LV_USE_THEME_DEFAULT  1
 #define LV_USE_THEME_DEFAULT  1
 #define LV_USE_THEME_BASIC    0
 #define LV_USE_THEME_MONO     0
@@ -60,7 +64,7 @@
 #define LV_USE_DEMO_BENCHMARK 0
 #define LV_USE_DEMO_STRESS    0
 #define LV_USE_DEMO_MUSIC     0
-
+#define LV_USE_SPRINTF 1
 /* 关闭日志和动画 */
 #define LV_USE_LOG            0
 #define LV_USE_ANIMATION      0

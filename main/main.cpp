@@ -235,7 +235,7 @@ void loop()
     mylog.printf("电芯6:%d\n",bq.read_cell_voltage(6));
     mylog.println("");
     mylog.println("");
-    lv_label_set_text_fmt(ui_percent,"%d", bq.read_capacity());
+    lv_label_set_text_fmt(ui_percent,"%d%%", bq.read_capacity());
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }

@@ -5,7 +5,6 @@
 
 #ifndef _SQUARELINE_PROJECT_UI_H
 #define _SQUARELINE_PROJECT_UI_H
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,6 +43,8 @@ LV_IMG_DECLARE(ui_img_ic_bat_png);    // assets/ic_bat.png
 // FONTS
 LV_FONT_DECLARE(ui_font_mibol40);
 LV_FONT_DECLARE(ui_font_mibol16);
+LV_FONT_DECLARE(ui_font_mibol12);
+
 
 // UI INIT
 void ui_init(void);
