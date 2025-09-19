@@ -147,10 +147,12 @@ void updateUI()
     {
         lv_label_set_text(ui_ip2366,"OUT");
         lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
     }else if (is2366Charging())
     {
         lv_label_set_text(ui_ip2366,"IN");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
     update_cells();
 }
