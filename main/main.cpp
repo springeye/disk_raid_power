@@ -202,17 +202,16 @@ void loop()
 {
     // bleManager.loop();
     unsigned long currentMillis = millis();
-    if (bq_get_power()>0.2)
-    {
-        previousMillis = currentMillis;
-    } // 电流大于200mW
-    else{
+    auto total_power = bq_get_power();
 
-        if (currentMillis - previousMillis >= interval) {
-            previousMillis = currentMillis;
-            digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
-            Serial.println("断电");
-        }
+    // 如果电流大于等于0.1，则不执行断电操作，重置计时器
+    if (total_power >= 0.1f) {
+        previousMillis = currentMillis;
+    } else if (currentMillis - previousMillis >= interval) {
+        //断电关机
+        previousMillis = currentMillis;
+        digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
+        Serial.println("断电");
     }
     hal_loop();
     btn.tick();
@@ -225,12 +224,13 @@ void loop()
     // }
     updateUI();
     update_cells();
-    read_temp();
+    auto temp=read_temp();
+    mylog.printf("Temperature: %.2f C\n", temp);
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }
 
-    delay(300);;
+    delay(300);
 }
 #endif /* ARDUINO */
 
