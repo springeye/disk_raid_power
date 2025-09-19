@@ -207,7 +207,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
     char bufv[32];
-    snprintf(bufv, sizeof(bufv), "%.2fV",read_voltage()/1000);  // 使用 Arduino 的 snprintf
+    snprintf(bufv, sizeof(bufv), "%.2fV",bq_get_voltage()/1000);  // 使用 Arduino 的 snprintf
     lv_label_set_text(ui_Label1, bufv);
     lv_obj_set_style_text_color(ui_Label1, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -253,7 +253,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_height(ui_power, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_power, LV_ALIGN_CENTER);
     char bufwh[32];
-    snprintf(bufwh, sizeof(bufwh), "%.2fWh",read_remaining_energy_wh(6,3.0F));  // 使用 Arduino 的 snprintf
+    snprintf(bufwh, sizeof(bufwh), "%.2fWh",bg_get_remaining_energy_wh(6,3.0F));  // 使用 Arduino 的 snprintf
     lv_label_set_text(ui_power, bufwh);
     lv_obj_set_style_text_color(ui_power, lv_color_hex(0xED9104), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_power, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
