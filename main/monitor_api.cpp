@@ -10,45 +10,45 @@
 // C API 实现
 
 extern "C" {
-    uint8_t bq_get_percent(void) {
+    uint8_t get_bq_percent(void) {
         return bq.read_RelativeStateOfCharge();
     }
-    uint16_t bq_get_cell_voltage(uint8_t cell_index) {
+    uint16_t get_bq_cell_voltage(uint8_t cell_index) {
         return bq.read_cell_voltage(cell_index);
     }
-    float bg_get_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v)
+    float get_bg_remaining_wh(uint8_t cell_count, float cell_cutoff_v)
     {
         return bq.read_remaining_energy_wh(cell_count, cell_cutoff_v);
     }
-    float bq_get_voltage()
+    float get_bq_voltage()
     {
         return bq.read_voltage();
     }
-    float bq_get_current()
+    float get_bq_current()
     {
         return bq.read_current();
     }
 }
 extern "C" {
-    float get2366Voltage()
+    float get_2366_voltage()
     {
         return ip2366.getTypeCVoltage();
     }
-    float get2366Current()
+    float get_2366_current()
     {
         return ip2366.getTypeCCurrent();
     }
-    float get2366Power()
+    float get_2366_power()
     {
 
         float power = ip2366.getSystemPower();
         return power;
     }
-    bool is2366Charging()
+    bool is_charging_2366()
     {
         return ip2366.isCharging();
     }
-    bool is2366DisCharging()
+    bool is_discharging_2366()
     {
         return ip2366.isDischarging();
     }
@@ -57,10 +57,10 @@ extern "C" {
 extern "C" {
 void updateUI()
 {
-    float bq_voltage = bq_get_voltage()/1000.0f;
-    float bq_current = bq_get_current()/1000.0f;
+    float bq_voltage = get_bq_voltage()/1000.0f;
+    float bq_current = get_bq_current()/1000.0f;
     float bq_power = bq_voltage*bq_current;
-    float bq_wh=bg_get_remaining_energy_wh(6,3.0f);
+    float bq_wh=get_bg_remaining_wh(6,3.0f);
     float bq_temp=static_cast<float>(bq.read_temp())/10.0f;
     bool bq_is_charging = bq.is_charging();
     bool bq_is_discharging = bq.is_discharging();
@@ -88,7 +88,7 @@ void updateUI()
     mylog.printf("BQ电芯5:%d\n",cell[4]);
     mylog.printf("BQ电芯6:%d\n",cell[5]);
 
-    mylog.printf("2366电压:%.2f\n",ip2366.getTypeCVoltage());
+    mylog.printf("2366电压:%.2f\n",get_2366_voltage());
     mylog.printf("2366电流:%.2f\n",ip2366.getTypeCCurrent());
     mylog.printf("2366功率:%.2f\n",ip2366.getSystemPower());
 }

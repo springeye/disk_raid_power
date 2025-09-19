@@ -207,7 +207,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
     char bufv[32];
-    snprintf(bufv, sizeof(bufv), "%.2fV",bq_get_voltage()/1000);  // 使用 Arduino 的 snprintf
+    snprintf(bufv, sizeof(bufv), "%.2fV",get_bq_voltage()/1000);  // 使用 Arduino 的 snprintf
     lv_label_set_text(ui_Label1, bufv);
     lv_obj_set_style_text_color(ui_Label1, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -253,7 +253,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_height(ui_power, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_power, LV_ALIGN_CENTER);
     char bufwh[32];
-    snprintf(bufwh, sizeof(bufwh), "%.2fWh",bg_get_remaining_energy_wh(6,3.0F));  // 使用 Arduino 的 snprintf
+    snprintf(bufwh, sizeof(bufwh), "%.2fWh",get_bg_remaining_wh(6,3.0F));  // 使用 Arduino 的 snprintf
     lv_label_set_text(ui_power, bufwh);
     lv_obj_set_style_text_color(ui_power, lv_color_hex(0xED9104), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_power, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -397,7 +397,7 @@ void ui_schome_screen_init(void)
             /* 设置 label 内部内容居中（上下左右）*/
             lv_obj_set_style_pad_all(item, 0, 0);   // 去掉 padding
             lv_obj_set_style_align(item, LV_ALIGN_CENTER, 0);
-            float value = bq_get_cell_voltage(i)/1000.0f;
+            float value = get_bq_cell_voltage(i)/1000.0f;
 
             char buf[32];
             snprintf(buf, sizeof(buf), "%.2f", value);  // 使用 Arduino 的 snprintf
@@ -553,7 +553,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_height(ui_2366_power, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_2366_power, LV_ALIGN_CENTER);
 
-    lv_label_set_text_fmt(ui_2366_power,"%d", get2366Power());
+    lv_label_set_text_fmt(ui_2366_power,"%d", get_2366_power());
     lv_obj_set_style_text_color(ui_2366_power, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_2366_power, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui_2366_power, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -574,7 +574,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_width(ui_2366_voltage, LV_SIZE_CONTENT); /// 1
     lv_obj_set_height(ui_2366_voltage, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_2366_voltage, LV_ALIGN_CENTER);
-    lv_label_set_text_fmt(ui_2366_voltage, "%d",get2366Voltage());
+    lv_label_set_text_fmt(ui_2366_voltage, "%d",get_2366_voltage());
     lv_obj_set_style_text_color(ui_2366_voltage, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_2366_voltage, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -582,7 +582,7 @@ void ui_schome_screen_init(void)
     lv_obj_set_width(ui_2366_current, LV_SIZE_CONTENT); /// 1
     lv_obj_set_height(ui_2366_current, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_2366_current, LV_ALIGN_CENTER);
-    lv_label_set_text_fmt(ui_2366_current, "%d",get2366Current());
+    lv_label_set_text_fmt(ui_2366_current, "%d",get_2366_current());
     lv_obj_set_style_text_color(ui_2366_current, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_2366_current, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui_2366_current, 10, LV_PART_MAIN | LV_STATE_DEFAULT);

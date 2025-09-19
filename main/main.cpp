@@ -255,9 +255,9 @@ void loop()
     if (ip2366.canCommunicate()) {
         // 读取所有数据并打印
         ip2366.readAllData();
-        lv_label_set_text_float(ui_2366_current, "%sA", get2366Current(), 2);
-        lv_label_set_text_float(ui_2366_voltage, "%sV", get2366Voltage(), 2);
-        lv_label_set_text_float(ui_2366_power, "%sW", get2366Power(), 2);
+        lv_label_set_text_float(ui_2366_current, "%sA", get_2366_current(), 2);
+        lv_label_set_text_float(ui_2366_voltage, "%sV", get_2366_voltage(), 2);
+        lv_label_set_text_float(ui_2366_power, "%sW", get_2366_power(), 2);
 
     } else {
         Serial.println("INT pin low, waiting for communication...");
