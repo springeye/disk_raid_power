@@ -6,6 +6,8 @@ SET(SOURCES ui_schome.c
     ui_img_mainboard_png.c
     ui_img_ic_bat_png.c
     fonts/ui_font_mibol40.c
-    fonts/ui_font_mibol16.c)
+    fonts/ui_font_mibol16.c
+    fonts/ui_font_mibol12.c
+    fonts/ui_font_mibol10.c)
 
 add_library(ui ${SOURCES})

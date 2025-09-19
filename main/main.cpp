@@ -8,6 +8,7 @@
 #include <log.h>
 #include <Arduino.h>
 #include <bq40z80.h>
+#include <cell_helper.h>
 #include <monitor_api.h>
 #include <i2c_utils.h>
 #include <ip2366.h>
@@ -134,6 +135,8 @@ void setup()
         // lv_init();
         mylog.println("3333");
         ui_init();
+        init_cells();
+
         //
         // if (digitalRead(BUTTON_PIN) == LOW)
         // {
@@ -184,6 +187,8 @@ void setup()
             mylog.println("Failed to unlock SW6306V!");
         }
         ip2366.begin();
+
+
     }
     catch (...)
     {
@@ -212,7 +217,7 @@ void loop()
     //     lv_label_set_text(ui_bat_temp, g_ip); // 显示IP到页面
     // }
     updateUI();
-
+    update_cells();
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }

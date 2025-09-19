@@ -6,6 +6,7 @@
 #include <lvgl.h>
 #include "ui_schome.h"
 #include <bq40z80.h>
+#include <cell_helper.h>
 #include <IP2366.h>
 #include <log.h>
 // C API 实现
@@ -58,13 +59,7 @@ extern "C" {
         return ip2366.isDischarging();
     }
 }
-void lv_label_set_text_float(lv_obj_t* label, const char* fmt, float val, int decimals) {
-    char buf[32];
-    dtostrf(val, 0, decimals, buf);   // Arduino 自带函数
-    char out[64];
-    snprintf(out, sizeof(out), fmt, buf);
-    lv_label_set_text(label, out);
-}
+
 
 extern "C" {
 void updateUI()
@@ -88,6 +83,7 @@ void updateUI()
         cell[i] = static_cast<float>(bq.read_cell_voltage(i + 1)/1000);
     }
 
+
     mylog.printf("BQ当前电压:%.3fV\n",bq_voltage);
     mylog.printf("BQ当前电流:%.3FA\n",bq_current);
     mylog.printf("BQ当前功率:%.3FW\n",bq_power);
@@ -110,16 +106,34 @@ void updateUI()
     float ip2366_voltage = get2366Voltage();
     float ip2366_current = get2366Current();
     float ip2366_power = get2366Power();
+
+    float total_out_power=0;
+    float total_in_power=0;
+    if (is2366DisCharging())
+    {
+        total_out_power+=ip2366_power;
+    }else if (is2366Charging())
+    {
+        total_in_power+=ip2366_power;
+    }
+
+
+    //TODO再加上6306的
+
+
     mylog.printf("2366电压:%.2f\n",ip2366_voltage);
     mylog.printf("2366电流:%.2f\n",ip2366_current);
     mylog.printf("2366功率:%.2f\n",ip2366_power);
 
     lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
     lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
-    lv_label_set_text_float(ui_bat_temp, "%s°", bq_temp, 2);
-    lv_label_set_text_float(ui_2366_current, "%sA", ip2366_current, 2);
-    lv_label_set_text_float(ui_2366_voltage, "%sV", ip2366_voltage, 2);
-    lv_label_set_text_float(ui_2366_power, "%sW", ip2366_power, 2);
-
+    lv_label_set_text_float(ui_battemp, "%s°", bq_temp, 2);
+    lv_label_set_text_float(ui_voltage, "%sW", bq_voltage, 1);
+    lv_label_set_text_float(ui_ip2366current, "%sA", ip2366_current, 2);
+    lv_label_set_text_float(ui_ip2366voltage, "%sV", ip2366_voltage, 2);
+    lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
+    lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 2);
+    lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 2);
+    update_cells();
 }
 }

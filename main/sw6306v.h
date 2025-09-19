@@ -51,7 +51,7 @@ public:
      * @param address SW6306V的I2C地址 (默认0x50)
      */
     explicit SW6306V_PowerMonitor(uint8_t address = SW6306V_ADDR);
-
+    
     /**
      * @brief 初始化I2C连接
      * @param sda SDA引脚 (默认为Arduino的SDA引脚)
@@ -87,7 +87,7 @@ private:
      * @return 寄存器值 (0xFF表示读取失败)
      */
     uint8_t readRegister(uint8_t reg) const;
-
+    
     /**
      * @brief 写入单个寄存器
      * @param reg 寄存器地址

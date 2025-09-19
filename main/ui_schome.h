@@ -18,14 +18,14 @@ extern lv_obj_t * ui_top;
 extern lv_obj_t * ui_percent;
 extern lv_obj_t * ui_Container4;
 extern lv_obj_t * ui_Label6;
-extern lv_obj_t * ui_Label8;
+extern lv_obj_t * ui_inpower;
 extern lv_obj_t * ui_Container6;
 extern lv_obj_t * ui_Label9;
-extern lv_obj_t * ui_Label7;
+extern lv_obj_t * ui_outpower;
 extern lv_obj_t * ui_Container3;
 extern lv_obj_t * ui_Container5;
 extern lv_obj_t * ui_Label5;
-extern lv_obj_t * ui_Label1;
+extern lv_obj_t * ui_voltage;
 extern lv_obj_t * ui_div;
 extern lv_obj_t * ui_Container8;
 extern lv_obj_t * ui_Label4;
@@ -37,7 +37,7 @@ extern lv_obj_t * ui_Image2;
 extern lv_obj_t * ui_Label2;
 extern lv_obj_t * ui_Container2;
 extern lv_obj_t * ui_Image3;
-extern lv_obj_t * ui_bat_temp;
+extern lv_obj_t * ui_battemp;
 extern lv_obj_t * ui_cellcontainer;
 extern lv_obj_t * ui_bottom;
 extern lv_obj_t * ui_Container9;
@@ -50,15 +50,16 @@ extern lv_obj_t * ui_Label14;
 extern lv_obj_t * ui_div1;
 extern lv_obj_t * ui_Container12;
 extern lv_obj_t * ui_Container13;
-extern lv_obj_t * ui_2366_direct;
-extern lv_obj_t * ui_2366_power;
+extern lv_obj_t * ui_Label15;
+extern lv_obj_t * ui_ip2366power;
 extern lv_obj_t * ui_Container14;
-extern lv_obj_t * ui_2366_voltage;
-extern lv_obj_t * ui_2366_current;
+extern lv_obj_t * ui_ip2366voltage;
+extern lv_obj_t * ui_ip2366current;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_schome;
 extern lv_obj_t * uic_div;
 extern lv_obj_t * uic_cellcontainer;
+extern lv_obj_t * uic_ui2366current;
 
 #ifdef __cplusplus
 } /*extern "C"*/
