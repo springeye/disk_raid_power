@@ -88,13 +88,6 @@ void checkPendingAndValidate()
 unsigned long previousMillis = 0;
 const long interval = 30*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
-void lv_label_set_text_float(lv_obj_t* label, const char* fmt, float val, int decimals) {
-    char buf[32];
-    dtostrf(val, 0, decimals, buf);   // Arduino 自带函数
-    char out[64];
-    snprintf(out, sizeof(out), fmt, buf);
-    lv_label_set_text(label, out);
-}
 
 void setup()
 {
@@ -212,57 +205,18 @@ void loop()
     hal_loop();
     btn.tick();
     ota_loop();
-    if (wifi_ready)
-    {
-        wifi_ready = false;
-        lv_label_set_text(ui_Label3, g_ip); // 显示IP到页面
-    }
-    mylog.printf("当前电压:%.3fV\n",bq.read_voltage()/1000.0f);
-    mylog.printf("当前电流:%.3FA\n",bq.read_current()/1000.0f);
-    mylog.printf("当前温度:%.2f°\n",bq.read_temp()/10.0f);
-    mylog.printf("当前电量:%d%%\n",bq.read_capacity());
-    mylog.printf("当前容量:%.2fWh\n",bq.read_remaining_energy_wh(6,3.0f));
-    if (bq.is_charging())
-    {
-        mylog.println("剩余放电时间:未放电");
-    }else
-    {
-        mylog.printf("剩余放电时间:%d分钟\n",bq.read_AverageTimeToEmpty()/60);
-    }
-    if (bq.is_discharging())
-    {
-        mylog.println("剩余充电时间:未充电");
-    }else
-    {
-        mylog.printf("剩余充电时间:%d分钟\n",bq.read_AverageTimeToFull()/60);
-    }
+    //TODO OTA
+    // if (wifi_ready)
+    // {
+    //     wifi_ready = false;
+    //     lv_label_set_text(ui_bat_temp, g_ip); // 显示IP到页面
+    // }
+    updateUI();
 
-    mylog.printf("电芯1:%d\n",bq.read_cell_voltage(1));
-    mylog.printf("电芯2:%d\n",bq.read_cell_voltage(2));
-    mylog.printf("电芯3:%d\n",bq.read_cell_voltage(3));
-    mylog.printf("电芯4:%d\n",bq.read_cell_voltage(4));
-    mylog.printf("电芯5:%d\n",bq.read_cell_voltage(5));
-    mylog.printf("电芯6:%d\n",bq.read_cell_voltage(6));
-    mylog.println("");
-    mylog.println("");
-    lv_label_set_text_fmt(ui_percent,"%d%%", bq.read_capacity());
-    lv_label_set_text_float(ui_power, "%sWh", bq.read_remaining_energy_wh(6,3.0f), 2);
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }
-    // powerManager.printChargingStatus();
-
-    if (ip2366.canCommunicate()) {
-        // 读取所有数据并打印
-        ip2366.readAllData();
-        lv_label_set_text_float(ui_2366_current, "%sA", get2366Current(), 2);
-        lv_label_set_text_float(ui_2366_voltage, "%sV", get2366Voltage(), 2);
-        lv_label_set_text_float(ui_2366_power, "%sW", get2366Power(), 2);
-
-    } else {
-        Serial.println("INT pin low, waiting for communication...");
-    }
-    delay(100);;
+    delay(200);;
 }
 #endif /* ARDUINO */
 

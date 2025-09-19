@@ -34,7 +34,7 @@ lv_obj_t* ui_Image2 = NULL;
 lv_obj_t* ui_Label2 = NULL;
 lv_obj_t* ui_Container2 = NULL;
 lv_obj_t* ui_Image3 = NULL;
-lv_obj_t* ui_Label3 = NULL;
+lv_obj_t* ui_bat_temp = NULL;
 lv_obj_t* ui_cellcontainer = NULL;
 lv_obj_t* ui_bottom = NULL;
 lv_obj_t* ui_Container9 = NULL;
@@ -278,7 +278,7 @@ void ui_schome_screen_init(void)
 
     ui_Container7 = lv_obj_create(ui_center);
     lv_obj_remove_style_all(ui_Container7);
-    lv_obj_set_width(ui_Container7, lv_pct(30));
+    lv_obj_set_width(ui_Container7, lv_pct(35));
     lv_obj_set_height(ui_Container7, lv_pct(100));
     lv_obj_set_align(ui_Container7, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_Container7, LV_FLEX_FLOW_COLUMN);
@@ -343,21 +343,21 @@ void ui_schome_screen_init(void)
     lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_CLICKABLE); /// Flags
     lv_obj_remove_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
-    ui_Label3 = lv_label_create(ui_Container2);
-    lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_height(ui_Label3, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label3, "30°");
-    lv_obj_set_style_text_color(ui_Label3, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Label3, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Label3, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Label3, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Label3, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_bat_temp = lv_label_create(ui_Container2);
+    lv_obj_set_width(ui_bat_temp, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_height(ui_bat_temp, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_align(ui_bat_temp, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_bat_temp, "30°");
+    lv_obj_set_style_text_color(ui_bat_temp, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_bat_temp, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_bat_temp, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_bat_temp, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_bat_temp, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_bat_temp, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_cellcontainer = lv_obj_create(ui_center);
     lv_obj_remove_style_all(ui_cellcontainer);
-    lv_obj_set_width(ui_cellcontainer, lv_pct(58));
+    lv_obj_set_width(ui_cellcontainer, lv_pct(53));
     lv_obj_set_height(ui_cellcontainer, lv_pct(100));
     lv_obj_set_align(ui_cellcontainer, LV_ALIGN_CENTER);
     lv_obj_remove_flag(ui_cellcontainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE); /// Flags
@@ -383,14 +383,20 @@ void ui_schome_screen_init(void)
     /* 创建 6 个子对象，自动填充格子 */
     for (int r = 0; r < 2; ++r) {
         for (int c = 0; c < 3; ++c) {
-            lv_obj_t *item = lv_label_create(ui_cellcontainer);
+            lv_obj_t *cell = lv_obj_create(ui_cellcontainer);
+            lv_obj_remove_style_all(cell);
+            lv_obj_set_grid_cell(cell,
+                                 LV_GRID_ALIGN_STRETCH, c, 1,
+                                 LV_GRID_ALIGN_STRETCH, r, 1);
 
-            /* 关键：不设置大小，交给 grid 控制 */
-            lv_obj_set_grid_cell(item,
-                                 LV_GRID_ALIGN_STRETCH, /* 列对齐 */
-                                 c, 1,                  /* 列位置 + 跨度 */
-                                 LV_GRID_ALIGN_STRETCH, /* 行对齐 */
-                                 r, 1);                 /* 行位置 + 跨度 */
+            lv_obj_set_flex_flow(cell, LV_FLEX_FLOW_ROW);
+            lv_obj_set_flex_align(cell,
+                                  LV_FLEX_ALIGN_CENTER,  // 主轴居中
+                                  LV_FLEX_ALIGN_CENTER,  // 交叉轴居中
+                                  LV_FLEX_ALIGN_CENTER); // 内容整体居中
+
+
+            lv_obj_t *item = lv_label_create(cell);
             /* 设置文字居中对齐 */
             lv_obj_set_style_text_align(item, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_set_style_text_color(item,lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -403,8 +409,6 @@ void ui_schome_screen_init(void)
             snprintf(buf, sizeof(buf), "%.2f", value);  // 使用 Arduino 的 snprintf
             lv_label_set_text(item,buf);
             i++;
-
-
 
         }
     }
@@ -627,7 +631,7 @@ void ui_schome_screen_destroy(void)
     ui_Label2 = NULL;
     ui_Container2 = NULL;
     ui_Image3 = NULL;
-    ui_Label3 = NULL;
+    ui_bat_temp = NULL;
     uic_cellcontainer = NULL;
     ui_cellcontainer = NULL;
     ui_bottom = NULL;

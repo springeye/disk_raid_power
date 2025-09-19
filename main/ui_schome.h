@@ -37,7 +37,7 @@ extern lv_obj_t * ui_Image2;
 extern lv_obj_t * ui_Label2;
 extern lv_obj_t * ui_Container2;
 extern lv_obj_t * ui_Image3;
-extern lv_obj_t * ui_Label3;
+extern lv_obj_t * ui_bat_temp;
 extern lv_obj_t * ui_cellcontainer;
 extern lv_obj_t * ui_bottom;
 extern lv_obj_t * ui_Container9;
