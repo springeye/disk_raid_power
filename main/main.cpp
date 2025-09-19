@@ -88,7 +88,7 @@ void checkPendingAndValidate()
     }
 }
 unsigned long previousMillis = 0;
-const long interval = 10*1000; // 间隔时间(毫秒)
+const long interval = 120*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
 void setup()
 {
