@@ -216,7 +216,7 @@ void loop()
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }
-    delay(200);;
+    delay(300);;
 }
 #endif /* ARDUINO */
 
