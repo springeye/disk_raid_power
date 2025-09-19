@@ -31,6 +31,13 @@ extern "C" {
     {
         return bq.read_current();
     }
+    float bq_get_power()
+    {
+        float bq_voltage = bq_get_voltage()/1000.0f;
+        float bq_current = bq_get_current()/1000.0f;
+        float bq_power = bq_voltage*bq_current;
+        return bq_power;
+    }
     int16_t bg_get_temp()
     {
         return bq.read_temp();
@@ -135,7 +142,16 @@ void updateUI()
     lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
     lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
     lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
-    lv_label_set_text_float(ui_boardtmp, "%s", read_temp(), 2);
+    lv_label_set_text_float(ui_boardtmp, "%s°", read_temp(), 2);
+    if (is2366DisCharging())
+    {
+        lv_label_set_text(ui_ip2366,"OUT");
+        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }else if (is2366Charging())
+    {
+        lv_label_set_text(ui_ip2366,"IN");
+        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
     update_cells();
 }
 }

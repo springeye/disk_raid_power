@@ -88,7 +88,7 @@ void checkPendingAndValidate()
     }
 }
 unsigned long previousMillis = 0;
-const long interval = 30*1000; // 间隔时间(毫秒)
+const long interval = 10*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
 void setup()
 {
@@ -202,11 +202,17 @@ void loop()
 {
     // bleManager.loop();
     unsigned long currentMillis = millis();
-
-    if (currentMillis - previousMillis >= interval) {
+    if (bq_get_power()>0.2)
+    {
         previousMillis = currentMillis;
-        digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
-        Serial.println("断电");
+    } // 电流大于200mW
+    else{
+
+        if (currentMillis - previousMillis >= interval) {
+            previousMillis = currentMillis;
+            digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
+            Serial.println("断电");
+        }
     }
     hal_loop();
     btn.tick();

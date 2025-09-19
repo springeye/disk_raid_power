@@ -16,6 +16,8 @@ extern "C" {
     float bg_get_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v);
     float bq_get_voltage();
     float bq_get_current();
+    //瓦
+    float bq_get_power();
     int16_t bg_get_temp();
     float get2366Voltage();
     float get2366Current();
