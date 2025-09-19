@@ -9,6 +9,7 @@
 #include <cell_helper.h>
 #include <IP2366.h>
 #include <log.h>
+#include <temp.h>
 // C API 实现
 
 extern "C" {
@@ -134,6 +135,7 @@ void updateUI()
     lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
     lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
     lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
+    lv_label_set_text_float(ui_boardtmp, "%s", read_temp(), 2);
     update_cells();
 }
 }
