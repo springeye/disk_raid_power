@@ -8,7 +8,7 @@
 #include <log.h>
 #include <Arduino.h>
 #include <bq40z80.h>
-#include <bq40z80_c_api.h>
+#include <monitor_api.h>
 #include <i2c_utils.h>
 #include <ip2366.h>
 #include <OneButton.h>

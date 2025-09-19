@@ -351,25 +351,6 @@ float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutof
 }
 
 
-// C API 实现
-#include "bq40z80_c_api.h"
-
-extern "C" {
-    uint8_t bq_get_percent(void) {
-        return bq.read_RelativeStateOfCharge();
-    }
-    uint16_t bq_get_cell_voltage(uint8_t cell_index) {
-        return bq.read_cell_voltage(cell_index);
-    }
-    float read_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v)
-    {
-        return bq.read_remaining_energy_wh(cell_count, cell_cutoff_v);
-    }
-    float read_voltage()
-    {
-        return bq.read_voltage();
-    }
-}
 
 BQ40Z80 bq40z80;
 

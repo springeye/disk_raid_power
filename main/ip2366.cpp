@@ -206,32 +206,3 @@ uint16_t IP2366::read16BitRegister(uint8_t lowReg, uint8_t highReg) {
   // 组合成16位值
   return (highByte << 8) | lowByte;
 }
-// C API 实现
-#include "bq40z80_c_api.h"
-
-extern "C" {
-  float get2366Voltage()
-  {
-    return ip2366.getTypeCVoltage();
-  }
-  float get2366Current()
-  {
-    return ip2366.getTypeCCurrent();
-  }
-  float get2366Power()
-  {
-
-    float power = ip2366.getSystemPower();
-    mylog.print("get2366Power:");
-    mylog.println(power);
-    return power;
-  }
-  bool is2366Charging()
-  {
-    return ip2366.isCharging();
-  }
-  bool is2366DisCharging()
-  {
-    return ip2366.isDischarging();
-  }
-}
