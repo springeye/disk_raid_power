@@ -3,11 +3,10 @@
 #include "ui.h"
 
 #include <WiFi.h>
-
+#include "BLEManager.h"
 #ifdef ARDUINO
 #include <log.h>
 #include <Arduino.h>
-#include <bq40z80.h>
 #include <bq40z80.h>
 #include <bq40z80_c_api.h>
 #include <i2c_utils.h>
@@ -16,7 +15,6 @@
 #include <ota.h>
 #include <LittleFS.h>
 #include <sw6306v.h>
-#include <soc/io_mux_reg.h>
 
 #include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
@@ -30,6 +28,7 @@ extern "C" {
 #define BUTTON_PIN KEY_01
 BQ40Z80 bq;
 IP2366 ip2366;
+BLEManager bleManager;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
     true, // Button is active LOW
@@ -111,6 +110,7 @@ void setup()
 #endif
         delay(1000);
         mylog.println("setup.....");
+        bleManager.begin();
         Wire.begin(26,25);
         list_i2c_devices(Wire,1);
 
@@ -201,6 +201,7 @@ void setup()
 
 void loop()
 {
+    bleManager.loop();
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= interval) {
