@@ -51,3 +51,26 @@ extern "C" {
     }
 }
 
+extern "C" {
+void updateUI()
+{
+    mylog.printf("BQ当前电压:%.3fV\n",bq.read_voltage()/1000.0f);
+    mylog.printf("BQ当前电流:%.3FA\n",bq.read_current()/1000.0f);
+    mylog.printf("BQ当前功率:%.3FW\n",bq.read_current()/1000.0f*bq.read_voltage()/1000.0f);
+    mylog.printf("BQ充电中:%s\n",bq.is_charging());
+    mylog.printf("BQ放电中:%s\n",bq.is_discharging());
+    mylog.printf("BQ当前电量:%d%%\n",bq.read_capacity());
+    mylog.printf("BQ当前容量:%.2fWh\n",bq.read_remaining_energy_wh(6,3.0f));
+    mylog.printf("BQ当前温度:%.2f°\n",bq.read_temp()/10.0f);
+    mylog.printf("BQ电芯1:%d\n",bq.read_cell_voltage(1));
+    mylog.printf("BQ电芯2:%d\n",bq.read_cell_voltage(2));
+    mylog.printf("BQ电芯3:%d\n",bq.read_cell_voltage(3));
+    mylog.printf("BQ电芯4:%d\n",bq.read_cell_voltage(4));
+    mylog.printf("BQ电芯5:%d\n",bq.read_cell_voltage(5));
+    mylog.printf("BQ电芯6:%d\n",bq.read_cell_voltage(6));
+
+    mylog.printf("2366电压:%.2f\n",ip2366.getTypeCVoltage());
+    mylog.printf("2366电流:%.2f\n",ip2366.getTypeCCurrent());
+    mylog.printf("2366功率:%.2f\n",ip2366.getSystemPower());
+}
+}

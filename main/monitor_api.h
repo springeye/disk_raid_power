@@ -20,7 +20,7 @@ extern "C" {
     float get2366Power();
     bool is2366Charging();
     bool is2366DisCharging();
-
+    void updateUI();
 #ifdef __cplusplus
 }
 #endif
