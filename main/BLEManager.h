@@ -7,7 +7,7 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <Preferences.h>
-
+//TODO 暂时不使用，flash装不下
 class BLEManager {
 private:
     // BLE 组件

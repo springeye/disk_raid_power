@@ -28,7 +28,7 @@ extern "C" {
 #define BUTTON_PIN KEY_01
 BQ40Z80 bq;
 IP2366 ip2366;
-BLEManager bleManager;
+// BLEManager bleManager;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
     true, // Button is active LOW
@@ -110,7 +110,7 @@ void setup()
 #endif
         delay(1000);
         mylog.println("setup.....");
-        bleManager.begin();
+        // bleManager.begin();
         Wire.begin(26,25);
         list_i2c_devices(Wire,1);
 
@@ -201,7 +201,7 @@ void setup()
 
 void loop()
 {
-    bleManager.loop();
+    // bleManager.loop();
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= interval) {
