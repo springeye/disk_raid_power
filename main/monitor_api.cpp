@@ -132,8 +132,8 @@ void updateUI()
     lv_label_set_text_float(ui_ip2366current, "%sA", ip2366_current, 2);
     lv_label_set_text_float(ui_ip2366voltage, "%sV", ip2366_voltage, 2);
     lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
-    lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 2);
-    lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 2);
+    lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
+    lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
     update_cells();
 }
 }

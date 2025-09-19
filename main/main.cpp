@@ -16,6 +16,7 @@
 #include <ota.h>
 #include <LittleFS.h>
 #include <sw6306v.h>
+#include <temp.h>
 
 #include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
@@ -89,7 +90,6 @@ void checkPendingAndValidate()
 unsigned long previousMillis = 0;
 const long interval = 30*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
-
 void setup()
 {
     try
@@ -134,6 +134,7 @@ void setup()
         mylog.println("2222");
         // lv_init();
         mylog.println("3333");
+        init_temp();
         ui_init();
         init_cells();
 
@@ -218,9 +219,11 @@ void loop()
     // }
     updateUI();
     update_cells();
+    read_temp();
     if (!powerManager.unlock()) {
         mylog.println("Failed to unlock SW6306V!");
     }
+
     delay(300);;
 }
 #endif /* ARDUINO */
