@@ -91,7 +91,7 @@ void updateUI()
         cell[i] = static_cast<float>(bq.read_cell_voltage(i + 1)/1000);
     }
 
-
+    if (false){
     mylog.printf("BQ当前电压:%.3fV\n",bq_voltage);
     mylog.printf("BQ当前电流:%.3FA\n",bq_current);
     mylog.printf("BQ当前功率:%.3FW\n",bq_power);
@@ -109,7 +109,7 @@ void updateUI()
     mylog.printf("BQ电芯4:%.3f\n",cell[3]);
     mylog.printf("BQ电芯5:%.3f\n",cell[4]);
     mylog.printf("BQ电芯6:%.3f\n",cell[5]);
-
+    }
 
     float ip2366_voltage = get2366Voltage();
     float ip2366_current = get2366Current();
