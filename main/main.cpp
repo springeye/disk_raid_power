@@ -88,7 +88,7 @@ void checkPendingAndValidate()
     }
 }
 unsigned long previousMillis = 0;
-const long interval = 120*1000; // 间隔时间(毫秒)
+const long interval = 30*1000; // 间隔时间(毫秒)
 SW6306V_PowerMonitor powerManager;
 void setup()
 {
@@ -135,9 +135,16 @@ void setup()
         // lv_init();
         mylog.println("3333");
         init_temp();
+        checkPendingAndValidate();
+        if (!powerManager.unlock()) {
+            mylog.println("Failed to unlock SW6306V!");
+        }
+        ip2366.begin();
+
         ui_init();
         init_cells();
-
+        updateUI();
+        update_cells();
         //
         // if (digitalRead(BUTTON_PIN) == LOW)
         // {
@@ -183,11 +190,6 @@ void setup()
         {
             mylog.println("Long Pressed stop!");
         });
-        checkPendingAndValidate();
-        if (!powerManager.unlock()) {
-            mylog.println("Failed to unlock SW6306V!");
-        }
-        ip2366.begin();
 
 
     }
@@ -202,7 +204,7 @@ void loop()
 {
     // bleManager.loop();
     unsigned long currentMillis = millis();
-    auto total_power = bq_get_power();
+    auto total_power = abs(bq_get_power());
 
     // 如果电流大于等于0.1，则不执行断电操作，重置计时器
     if (total_power >= 0.1f) {

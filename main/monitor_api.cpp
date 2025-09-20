@@ -143,6 +143,17 @@ void updateUI()
     lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
     lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
     lv_label_set_text_float(ui_boardtmp, "%s°", read_temp(), 2);
+    float bat_power = bq_get_power();
+    if (bat_power>0.0f)
+    {
+        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }else if (bat_power<0.0f){
+        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }else
+    {
+        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+    lv_label_set_text_float(ui_batpower, "%sW", bat_power, 2);
     if (is2366DisCharging())
     {
         lv_label_set_text(ui_ip2366,"OUT");

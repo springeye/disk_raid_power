@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <monitor_api.h>
 #include <stdlib_noniso.h>
+#include <ui.h>
 #include <ui_schome.h>
 
 extern "C" {
@@ -65,6 +66,7 @@ void init_cells()
             /* 设置 label 内部内容居中（上下左右）*/
             lv_obj_set_style_pad_all(item, 0, 0);   // 去掉 padding
             lv_obj_set_style_align(item, LV_ALIGN_CENTER, 0);
+            lv_obj_set_style_text_font(item, &ui_font_mibol12, LV_PART_MAIN | LV_STATE_DEFAULT);
             // float value = bq_get_cell_voltage(i)/1000.0f;
             //
             // char buf[32];
