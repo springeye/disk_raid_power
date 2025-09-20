@@ -128,8 +128,23 @@ void updateUI()
     float sw6306_power = sw6306_voltage*sw6306_current;
     float total_out_power=0;
     float total_in_power=0;
-    total_out_power+=ip2366_power;
-    total_in_power+=sw6306_power;
+    if (is6306Charging)
+    {
+        total_in_power+=sw6306_power;
+    }
+    if (is2366Charging())
+    {
+        total_in_power+=ip2366_power;
+    }
+    if (is6306DisCharging)
+    {
+        total_out_power+=sw6306_power;
+    }
+    if (is2366DisCharging())
+    {
+        total_out_power+=ip2366_power;
+    }
+
 
     //TODO再加上6306的
 
@@ -176,6 +191,7 @@ void updateUI()
         lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
     }else
     {
+        lv_label_set_text(ui_ip2366,"--");
         lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x262525), LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
@@ -192,6 +208,7 @@ void updateUI()
         lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
     }else
     {
+        lv_label_set_text(ui_sw6306,"--");
         lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0x262525), LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
 

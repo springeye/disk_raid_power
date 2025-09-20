@@ -235,8 +235,8 @@ void loop()
 
     if (sw.isC1Source()) Serial.println("Type-C输出 (Source)");
     if (sw.isC1Sink())   Serial.println("Type-C输入 (Sink)");
-
-    delay(300);
+    sw.update(); // 必须周期调用
+    delay(50);
 }
 #endif /* ARDUINO */
 
