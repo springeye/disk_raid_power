@@ -12,10 +12,10 @@
 #include <monitor_api.h>
 #include <i2c_utils.h>
 #include <ip2366.h>
+#include <SW6306.h>
 #include <OneButton.h>
 #include <ota.h>
 #include <LittleFS.h>
-#include <sw6306v.h>
 #include <temp.h>
 #include <math.h>
 #include "lv_conf.h"
@@ -30,6 +30,7 @@ extern "C" {
 #define BUTTON_PIN KEY_01
 BQ40Z80 bq;
 IP2366 ip2366;
+SW6306 sw;  // 默认地址 0x3C
 // BLEManager bleManager;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
@@ -89,7 +90,6 @@ void checkPendingAndValidate()
 }
 unsigned long previousMillis = 0;
 const long interval = 30*1000; // 间隔时间(毫秒)
-SW6306V_PowerMonitor powerManager;
 void setup()
 {
     try
@@ -136,9 +136,7 @@ void setup()
         mylog.println("3333");
         init_temp();
         checkPendingAndValidate();
-        if (!powerManager.unlock()) {
-            mylog.println("Failed to unlock SW6306V!");
-        }
+        sw.begin();
         ip2366.begin();
 
         ui_init();
@@ -227,11 +225,16 @@ void loop()
     // }
     updateUI();
     update_cells();
-    auto temp=read_temp();
-    mylog.printf("Temperature: %.2f C\n", temp);
-    if (!powerManager.unlock()) {
-        mylog.println("Failed to unlock SW6306V!");
-    }
+    // auto temp=read_temp();
+    // mylog.printf("Temperature: %.2f C\n", temp);
+    uint16_t vbus = sw.readVBUS();
+    uint16_t ibus = sw.readIBUS();
+
+    Serial.print("6306 Type-C 电压: "); Serial.print(vbus/1000.0f); Serial.print(" V\n");
+    Serial.print("6306 Type-C 电流: "); Serial.print(ibus/1000.0f); Serial.println(" A");
+
+    if (sw.isC1Source()) Serial.println("Type-C输出 (Source)");
+    if (sw.isC1Sink())   Serial.println("Type-C输入 (Sink)");
 
     delay(300);
 }

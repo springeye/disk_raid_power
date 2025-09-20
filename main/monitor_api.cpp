@@ -8,6 +8,7 @@
 #include <bq40z80.h>
 #include <cell_helper.h>
 #include <IP2366.h>
+#include <SW6306.h>
 #include <log.h>
 #include <temp.h>
 // C API 实现
@@ -114,24 +115,24 @@ void updateUI()
     float ip2366_voltage = get2366Voltage();
     float ip2366_current = get2366Current();
     float ip2366_power = get2366Power();
-
+    float sw6306_voltage = sw.readVBUS()/1000.0f;
+    float sw6306_current = sw.readIBUS()/1000.0f;
+    float sw6306_power = sw6306_voltage*sw6306_current;
+    bool is6306DisCharging=sw.isC1Source();
+    bool is6306Charging=sw.isC1Sink();
     float total_out_power=0;
     float total_in_power=0;
-    if (is2366DisCharging())
-    {
-        total_out_power+=ip2366_power;
-    }else if (is2366Charging())
-    {
-        total_in_power+=ip2366_power;
-    }
-
+    total_out_power+=ip2366_power;
+    total_in_power+=sw6306_power;
 
     //TODO再加上6306的
 
-
-    mylog.printf("2366电压:%.2f\n",ip2366_voltage);
-    mylog.printf("2366电流:%.2f\n",ip2366_current);
-    mylog.printf("2366功率:%.2f\n",ip2366_power);
+    if (false)
+    {
+        mylog.printf("2366电压:%.2f\n",ip2366_voltage);
+        mylog.printf("2366电流:%.2f\n",ip2366_current);
+        mylog.printf("2366功率:%.2f\n",ip2366_power);
+    }
 
     lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
     lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
@@ -140,6 +141,9 @@ void updateUI()
     lv_label_set_text_float(ui_ip2366current, "%sA", ip2366_current, 2);
     lv_label_set_text_float(ui_ip2366voltage, "%sV", ip2366_voltage, 2);
     lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
+    lv_label_set_text_float(ui_sw6306current, "%sA", sw6306_current, 2);
+    lv_label_set_text_float(ui_sw6306voltage, "%sV", sw6306_voltage, 2);
+    lv_label_set_text_float(ui_sw6306power, "%sW", sw6306_power, 1);
     lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
     lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
     lv_label_set_text_float(ui_boardtmp, "%s°", read_temp(), 2);
@@ -165,6 +169,19 @@ void updateUI()
         lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
+
+    if (is6306DisCharging)
+    {
+        lv_label_set_text(ui_sw6306,"OUT");
+        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }else if (is6306Charging)
+    {
+        lv_label_set_text(ui_sw6306,"IN");
+        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+
     update_cells();
 }
 }
