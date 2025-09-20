@@ -17,7 +17,7 @@
 #include <LittleFS.h>
 #include <sw6306v.h>
 #include <temp.h>
-
+#include <math.h>
 #include "lv_conf.h"
 #define SPIFFS LittleFS  // 兼容旧代码
 #ifdef ESP32
@@ -204,10 +204,11 @@ void loop()
 {
     // bleManager.loop();
     unsigned long currentMillis = millis();
-    auto total_power = abs(bq_get_power());
-
-    // 如果电流大于等于0.1，则不执行断电操作，重置计时器
-    if (total_power >= 0.1f) {
+    float total_power = fabs(bq_get_power());
+    mylog.printf("total_power:%.2f\n",total_power);
+    //待机需要0.6
+    // 如果电流大于等于0.65，则不执行断电操作，重置计时器
+    if (total_power >= 0.7f) {
         previousMillis = currentMillis;
     } else if (currentMillis - previousMillis >= interval) {
         //断电关机
