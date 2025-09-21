@@ -7,7 +7,7 @@
 class IP2366 {
 public:
   // 构造函数
-  IP2366(uint8_t intPin = 10);
+  IP2366(uint8_t intPin = 14);
 
   // 初始化函数
   void begin();
