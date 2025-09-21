@@ -22,16 +22,15 @@ IP2366::IP2366(uint8_t intPin) : _intPin(intPin) {
 // 初始化函数
 void IP2366::begin() {
   pinMode(_intPin, INPUT);
-
-  // 等待系统稳定
+  Wire.setClock(100000); // 建议I2C频率100kHz，符合IP2366官方建议
   delay(100);
-  Serial.println("IP2366 Monitor Initialized");
+  mylog.println("IP2366 Monitor Initialized");
 }
 
 // 读取所有数据
 void IP2366::readAllData() {
   if (!canCommunicate()) {
-    Serial.println("Cannot communicate - INT pin is low");
+    mylog.println("Cannot communicate - INT pin is low");
     return;
   }
 
@@ -45,7 +44,9 @@ void IP2366::readAllData() {
 
 // 检查是否可以通信
 bool IP2366::canCommunicate() {
-  return digitalRead(_intPin) == HIGH;
+  int read = digitalRead(_intPin);
+  mylog.printf("2366 INT pin state: %s\n", read == HIGH ? "HIGH" : "LOW");
+  return read == HIGH;
 }
 
 // 获取充电状态
@@ -105,8 +106,9 @@ uint16_t IP2366::getSystemPowerRaw() const {
 
 // 读取充电状态
 void IP2366::readChargeStatus() {
+  mylog.println("readChargeStatus1111");
   uint8_t status = readRegister(REG_CHARGE_STATUS);
-
+  mylog.println("readChargeStatus2222");
   _isCharging = (status >> 5) & 0x01;    // BIT5: CHG_En
   _chargeComplete = (status >> 4) & 0x01; // BIT4: CHG_End
   _isDischarging = (status >> 3) & 0x01;  // BIT3: Output_En
@@ -144,65 +146,93 @@ void IP2366::readTypeCStatus() {
 
 // 打印状态信息
 void IP2366::printStatus() {
-  Serial.println("===== IP2366 Status =====");
-  Serial.print("Charging: ");
-  Serial.println(_isCharging ? "Yes" : "No");
-  Serial.print("Charge Complete: ");
-  Serial.println(_chargeComplete ? "Yes" : "No");
-  Serial.print("Discharging: ");
-  Serial.println(_isDischarging ? "Yes" : "No");
-  Serial.print("Type-C Connected: ");
-  Serial.println(_typeCConnected ? "Yes" : "No");
-  Serial.print("PD Fast Charging: ");
-  Serial.println(_pdCharging ? "Yes" : "No");
-  Serial.print("Type-C Voltage: ");
-  Serial.print(_typeCVoltage, 3);
-  Serial.println(" V");
-  Serial.print("Type-C Current: ");
-  Serial.print(_typeCCurrent, 3);
-  Serial.println(" A");
-  Serial.print("System Power: ");
-  Serial.print(_systemPower, 3);
-  Serial.println(" W");
+  mylog.println("===== IP2366 Status =====");
+  mylog.print("Charging: ");
+  mylog.println(_isCharging ? "Yes" : "No");
+  mylog.print("Charge Complete: ");
+  mylog.println(_chargeComplete ? "Yes" : "No");
+  mylog.print("Discharging: ");
+  mylog.println(_isDischarging ? "Yes" : "No");
+  mylog.print("Type-C Connected: ");
+  mylog.println(_typeCConnected ? "Yes" : "No");
+  mylog.print("PD Fast Charging: ");
+  mylog.println(_pdCharging ? "Yes" : "No");
+  mylog.print("Type-C Voltage: ");
+  mylog.print(_typeCVoltage, 3);
+  mylog.println(" V");
+  mylog.print("Type-C Current: ");
+  mylog.print(_typeCCurrent, 3);
+  mylog.println(" A");
+  mylog.print("System Power: ");
+  mylog.print(_systemPower, 3);
+  mylog.println(" W");
 
   // 判断是输入还是输出
   if (_isCharging) {
-    Serial.println("Mode: Type-C Input (Charging)");
+    mylog.println("Mode: Type-C Input (Charging)");
   } else if (_isDischarging) {
-    Serial.println("Mode: Type-C Output (Discharging)");
+    mylog.println("Mode: Type-C Output (Discharging)");
   } else {
-    Serial.println("Mode: Standby");
+    mylog.println("Mode: Standby");
   }
-  Serial.println("==========================");
+  mylog.println("==========================");
 }
 
 // 读取单个寄存器
 uint8_t IP2366::readRegister(uint8_t regAddr) {
   Wire.beginTransmission(WRITE_ADDR);
   Wire.write(regAddr);
-  Wire.endTransmission(false);
-
-  delayMicroseconds(50); // 文档建议的延时
-
-  Wire.requestFrom(READ_ADDR, 1);
-  delay(1); // 文档建议的字节间延时
-  
-  if (Wire.available()) {
-    return Wire.read();
+  uint8_t txResult = Wire.endTransmission(false);
+  if (txResult != 0) {
+    mylog.print("I2C NACK or error on address phase: ");
+    mylog.println(txResult);
+    return 0;
   }
-  
-  return 0; // 读取失败
+
+  delayMicroseconds(50);
+
+  int bytesRequested = Wire.requestFrom((int)READ_ADDR, 1, true);
+  if (bytesRequested != 1) {
+    mylog.print("I2C requestFrom failed, bytesRequested: ");
+    mylog.println(bytesRequested);
+    return 0;
+  }
+  delay(1);
+  if (Wire.available()) {
+    uint8_t val = Wire.read();
+    delay(1);
+    return val;
+  }
+  mylog.println("I2C read failed: no data available");
+  return 0;
 }
+
 
 // 读取16位寄存器
 uint16_t IP2366::read16BitRegister(uint8_t lowReg, uint8_t highReg) {
   // 先读取低8位寄存器
   uint8_t lowByte = readRegister(lowReg);
-  delay(1); // 文档建议的字节间延时
-  
+  delay(1); // 每个字节间延时1ms
   // 再读取高8位寄存器
   uint8_t highByte = readRegister(highReg);
-  
+  delay(1); // 每个字节间延时1ms
   // 组合成16位值
   return (highByte << 8) | lowByte;
+}
+
+// 写寄存器（读-改-写，带掩码，安全）
+void IP2366::writeRegisterWithMask(uint8_t regAddr, uint8_t value, uint8_t mask) {
+  // 先读原值
+  uint8_t oldVal = readRegister(regAddr);
+  // 按位修改
+  uint8_t newVal = (oldVal & ~mask) | (value & mask);
+  Wire.beginTransmission(WRITE_ADDR); // 0xEA
+  Wire.write(regAddr);
+  Wire.write(newVal);
+  uint8_t txResult = Wire.endTransmission();
+  if (txResult != 0) {
+    mylog.print("I2C write error: ");
+    mylog.println(txResult);
+  }
+  delay(1); // 写后延时，符合官方建议
 }

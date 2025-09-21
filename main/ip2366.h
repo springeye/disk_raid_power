@@ -103,6 +103,7 @@ private:
 
   // 读取16位寄存器
   uint16_t read16BitRegister(uint8_t lowReg, uint8_t highReg);
+  void writeRegisterWithMask(uint8_t regAddr, uint8_t value, uint8_t mask);
 };
 extern IP2366 ip2366;
 #endif // IP2366_H

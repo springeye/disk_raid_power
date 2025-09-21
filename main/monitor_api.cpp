@@ -73,12 +73,11 @@ extern "C" {
 extern "C" {
 void updateUI()
 {
-    if (ip2366.canCommunicate()) {
-        // 读取所有数据并打印
-        ip2366.readAllData();
-    } else {
-        Serial.println("INT pin low, waiting for communication...");
-    }
+    mylog.println("");
+    mylog.println("");
+    mylog.println("");
+    mylog.println("begin updateUI");
+
     float bq_voltage = bq_get_voltage()/1000.0f;
     float bq_current = bq_get_current()/1000.0f;
     float bq_power = bq_voltage*bq_current;
@@ -111,13 +110,20 @@ void updateUI()
     mylog.printf("BQ电芯5:%.3f\n",cell[4]);
     mylog.printf("BQ电芯6:%.3f\n",cell[5]);
     }
-
-    float ip2366_voltage = get2366Voltage();
-    float ip2366_current = get2366Current();
-    float ip2366_power = get2366Power();
+    float ip2366_voltage =0.0f;
+    float ip2366_current =0.0f;
+    float ip2366_power =0.0f;
+    if (ip2366.canCommunicate()) {
+        // 读取所有数据并打印
+        ip2366.readAllData();
+        ip2366_voltage = get2366Voltage();
+        ip2366_current = get2366Current();
+        ip2366_power = get2366Power();
+    } else {
+        Serial.println("INT pin low, waiting for communication...");
+    }
     float sw6306_voltage = sw.readVBUS()/1000.0f;
     float sw6306_current = sw.readIBUS()/1000.0f;
-
     bool is6306DisCharging=sw.isC1Source();
     bool is6306Charging=sw.isC1Sink();
     if (!is6306Charging && !is6306DisCharging)
@@ -146,15 +152,10 @@ void updateUI()
     }
 
 
-    //TODO再加上6306的
 
-    if (false)
-    {
-        mylog.printf("2366电压:%.2f\n",ip2366_voltage);
-        mylog.printf("2366电流:%.2f\n",ip2366_current);
-        mylog.printf("2366功率:%.2f\n",ip2366_power);
-    }
-
+    mylog.printf("sw6306电压:%.2f\n",sw6306_voltage);
+    mylog.printf("sw6306电流:%.2f\n",sw6306_current);
+    mylog.printf("sw6306功率:%.2f\n",sw6306_power);
     lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
     lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
     lv_label_set_text_float(ui_battemp, "%s°", bq_temp, 2);

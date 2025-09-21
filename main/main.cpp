@@ -224,19 +224,17 @@ void loop()
     //     lv_label_set_text(ui_bat_temp, g_ip); // 显示IP到页面
     // }
     updateUI();
-    update_cells();
-    // auto temp=read_temp();
-    // mylog.printf("Temperature: %.2f C\n", temp);
-    uint16_t vbus = sw.readVBUS();
-    uint16_t ibus = sw.readIBUS();
 
-    Serial.print("6306 Type-C 电压: "); Serial.print(vbus/1000.0f); Serial.print(" V\n");
-    Serial.print("6306 Type-C 电流: "); Serial.print(ibus/1000.0f); Serial.println(" A");
-
-    if (sw.isC1Source()) Serial.println("Type-C输出 (Source)");
-    if (sw.isC1Sink())   Serial.println("Type-C输入 (Sink)");
     sw.update(); // 必须周期调用
-    delay(50);
+    mylog.printf("RunTimeToEmpty:%d\n",bq.read_RunTimeToEmpty());
+    mylog.printf("read_AverageTimeToEmpty:%d\n",bq.read_AverageTimeToEmpty());
+    mylog.printf("read_AverageTimeToFull:%d\n",bq.read_AverageTimeToFull());
+    static unsigned long last = 0;
+    if (millis() - last > 1000) {
+        sw.debugDump();
+        last = millis();
+    }
+    delay(1000);
 }
 #endif /* ARDUINO */
 
