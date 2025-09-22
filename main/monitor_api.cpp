@@ -120,7 +120,7 @@ void updateUI()
         ip2366_current = get2366Current();
         ip2366_power = get2366Power();
     } else {
-        Serial.println("INT pin low, waiting for communication...");
+        // Serial.println("INT pin low, waiting for communication...");
     }
     float sw6306_voltage = sw.readVBUS()/1000.0f;
     float sw6306_current = sw.readIBUS()/1000.0f;

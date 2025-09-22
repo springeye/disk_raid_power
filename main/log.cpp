@@ -45,15 +45,6 @@ void MyLog::println(const char* msg) {
 #endif
 }
 
-void MyLog::println(const String& msg) {
-#ifdef USE_HWCDC
-    USBSerial.println(msg);
-    Serial.println(msg);
-#else
-    Serial.println(msg);
-#endif
-}
-
 void MyLog::println(int val) {
 #ifdef USE_HWCDC
     USBSerial.println(val);
@@ -129,20 +120,23 @@ void MyLog::printf(const char* fmt, ...) {
 void MyLog::println(int val, int base) {
     char buf[32];
     switch (base) {
-        case 2:
-            sprintf(buf, "0b%s", String(val, BIN).c_str());
+        case 2: {
+            char binbuf[24];
+            itoa(val, binbuf, 2);
+            snprintf(buf, sizeof(buf), "0b%s", binbuf);
             break;
+        }
         case 8:
-            sprintf(buf, "0%o", val);
+            snprintf(buf, sizeof(buf), "0%o", val);
             break;
         case 10:
-            sprintf(buf, "%d", val);
+            snprintf(buf, sizeof(buf), "%d", val);
             break;
         case 16:
-            sprintf(buf, "%X", val);
+            snprintf(buf, sizeof(buf), "%X", val);
             break;
         default:
-            sprintf(buf, "%d", val);
+            snprintf(buf, sizeof(buf), "%d", val);
             break;
     }
 #ifdef USE_HWCDC
@@ -156,20 +150,23 @@ void MyLog::println(int val, int base) {
 void MyLog::println(unsigned int val, int base) {
     char buf[32];
     switch (base) {
-        case 2:
-            sprintf(buf, "0b%s", String(val, BIN).c_str());
+        case 2: {
+            char binbuf[24];
+            itoa(val, binbuf, 2);
+            snprintf(buf, sizeof(buf), "0b%s", binbuf);
             break;
+        }
         case 8:
-            sprintf(buf, "0%o", val);
+            snprintf(buf, sizeof(buf), "0%o", val);
             break;
         case 10:
-            sprintf(buf, "%u", val);
+            snprintf(buf, sizeof(buf), "%u", val);
             break;
         case 16:
-            sprintf(buf, "0x%X", val);
+            snprintf(buf, sizeof(buf), "0x%X", val);
             break;
         default:
-            sprintf(buf, "%u", val);
+            snprintf(buf, sizeof(buf), "%u", val);
             break;
     }
 #ifdef USE_HWCDC

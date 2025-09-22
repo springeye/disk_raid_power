@@ -6,7 +6,7 @@ BLECharacteristic* ESP32Control::pCharacteristic = nullptr;
 bool ESP32Control::deviceConnected = false;
 bool ESP32Control::oldDeviceConnected = false;
 int ESP32Control::deviceParameter = 0;
-String ESP32Control::deviceStatus = "Ready";
+char ESP32Control::deviceStatus[32] = "Ready";
 
 void ESP32Control::begin(const char* deviceName) {
     Serial.begin(115200);
@@ -41,10 +41,15 @@ void ESP32Control::begin(const char* deviceName) {
     pAdvertising->setMinPreferred(0x06);
     pAdvertising->setMinPreferred(0x12);
     BLEDevice::startAdvertising();
-    
     Serial.println("蓝牙服务已启动，等待客户端连接...");
     Serial.print("设备名称: ");
     Serial.println(deviceName);
+#if defined(ESP_PLATFORM)
+    // 释放未用的 Classic BT 内存
+    esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT);
+#endif
+    Serial.print("Free heap before WiFi: ");
+    Serial.println(esp_get_free_heap_size());
 }
 
 void ESP32Control::loop() {
@@ -68,11 +73,8 @@ void ESP32Control::loop() {
     static unsigned long lastUpdate = 0;
     if (deviceConnected && millis() - lastUpdate > 5000) {
         lastUpdate = millis();
-        
-        // 定期发送设备状态
-        String status = "STATUS:Param=" + String(deviceParameter) + 
-                       ",WiFi=" + String(isWiFiConnected() ? "Connected" : "Disconnected") +
-                       ",RSSI=" + String(WiFi.RSSI());
+        char status[128];
+        snprintf(status, sizeof(status), "STATUS:Param=%d,WiFi=%s,RSSI=%d", deviceParameter, isWiFiConnected() ? "Connected" : "Disconnected", WiFi.RSSI());
         sendResponse(status);
     }
 }
@@ -81,24 +83,21 @@ bool ESP32Control::isWiFiConnected() {
     return WiFi.status() == WL_CONNECTED;
 }
 
-String ESP32Control::getDeviceData() {
-    return "Device Parameter: " + String(deviceParameter) + 
-           ", WiFi: " + String(isWiFiConnected() ? "Connected" : "Disconnected") +
-           ", Free Memory: " + String(esp_get_free_heap_size()) + " bytes";
+void ESP32Control::getDeviceData(char* out, size_t out_size) {
+    snprintf(out, out_size, "Device Parameter: %d, WiFi: %s, Free Memory: %u bytes", deviceParameter, isWiFiConnected() ? "Connected" : "Disconnected", (unsigned int)esp_get_free_heap_size());
 }
 
 void ESP32Control::setDeviceParameter(int value) {
     deviceParameter = value;
     Serial.print("设备参数已更新: ");
     Serial.println(value);
-    
-    // 通知客户端参数变化
     if (deviceConnected) {
-        sendResponse("PARAM_UPDATED:" + String(value));
+        char buf[32];
+        snprintf(buf, sizeof(buf), "PARAM_UPDATED:%d", value);
+        sendResponse(buf);
     }
 }
 
-// 蓝牙服务器回调
 void ESP32Control::MyServerCallbacks::onConnect(BLEServer* pServer) {
     ESP32Control::deviceConnected = true;
     Serial.println("客户端已连接");
@@ -109,89 +108,73 @@ void ESP32Control::MyServerCallbacks::onDisconnect(BLEServer* pServer) {
     Serial.println("客户端已断开连接");
 }
 
-// 特征回调
 void ESP32Control::MyCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     String value = pCharacteristic->getValue();
-
     if (value.length() > 0) {
         Serial.print("收到数据: ");
         Serial.println(value.c_str());
-        handleBluetoothData(value);
+        handleBluetoothData(value.c_str());
     }
 }
 
-void ESP32Control::handleBluetoothData(String data) {
-    String receivedData = String(data.c_str());
-
-    // 处理WiFi配置
-    if (receivedData.startsWith("WIFI:")) {
-        int separatorIndex = receivedData.indexOf(';', 5);
-        if (separatorIndex != -1) {
-            String ssid = receivedData.substring(5, separatorIndex);
-            String password = receivedData.substring(separatorIndex + 1);
+void ESP32Control::handleBluetoothData(const char* data) {
+    if (strncmp(data, "WIFI:", 5) == 0) {
+        const char* sep = strchr(data + 5, ';');
+        if (sep) {
+            char ssid[64] = {0};
+            char password[64] = {0};
+            size_t ssid_len = sep - (data + 5);
+            strncpy(ssid, data + 5, ssid_len > 63 ? 63 : ssid_len);
+            strncpy(password, sep + 1, 63);
             handleWiFiConfig(ssid, password);
         }
-    }
-    // 处理OTA更新
-    else if (receivedData.startsWith("OTA:")) {
+    } else if (strncmp(data, "OTA:", 4) == 0) {
         handleOTAUpdate(data);
-    }
-    // 处理控制命令
-    else if (receivedData.startsWith("CMD:")) {
+    } else if (strncmp(data, "CMD:", 4) == 0) {
         handleControlCommand(data);
-    }
-    // 处理读取请求
-    else if (receivedData == "READ_DATA") {
-        sendResponse("DATA:" + getDeviceData());
-    }
-    // 处理参数设置
-    else if (receivedData.startsWith("SET_PARAM:")) {
-        int value = receivedData.substring(10).toInt();
+    } else if (strcmp(data, "READ_DATA") == 0) {
+        char buf[128];
+        getDeviceData(buf, sizeof(buf));
+        char resp[160];
+        snprintf(resp, sizeof(resp), "DATA:%s", buf);
+        sendResponse(resp);
+    } else if (strncmp(data, "SET_PARAM:", 10) == 0) {
+        int value = atoi(data + 10);
         setDeviceParameter(value);
-    }
-    else {
+    } else {
         Serial.print("未知命令: ");
-        Serial.println(receivedData.c_str());
+        Serial.println(data);
         sendResponse("ERROR:Unknown command");
     }
 }
 
-void ESP32Control::handleWiFiConfig(String ssid, String password) {
+void ESP32Control::handleWiFiConfig(const char* ssid, const char* password) {
     Serial.print("配置WiFi: ");
     Serial.print(ssid);
     Serial.print("/");
     Serial.println(password);
-
     sendResponse("WIFI:Connecting...");
     setupWiFi(ssid, password);
 }
 
-void ESP32Control::handleOTAUpdate(String data) {
-    String otaCommand = String(data.c_str());
-
-    if (otaCommand.startsWith("OTA:START:")) {
-        // 开始OTA更新
-        size_t fileSize = otaCommand.substring(10).toInt();
+void ESP32Control::handleOTAUpdate(const char* data) {
+    if (strncmp(data, "OTA:START:", 10) == 0) {
+        size_t fileSize = atoi(data + 10);
         Serial.print("开始OTA更新，文件大小: ");
         Serial.println(fileSize);
-
         if (Update.begin(fileSize)) {
             sendResponse("OTA:READY");
         } else {
             sendResponse("OTA:FAIL:Begin failed");
         }
-    }
-    else if (otaCommand.startsWith("OTA:DATA")) {
-        // 处理OTA数据
-        String otaData = data.substring(8);
-        size_t written = Update.write((uint8_t*)otaData.c_str(), otaData.length());
-
-        if (written != otaData.length()) {
+    } else if (strncmp(data, "OTA:DATA", 8) == 0) {
+        const char* otaData = data + 8;
+        size_t len = strlen(otaData);
+        size_t written = Update.write((uint8_t*)otaData, len);
+        if (written != len) {
             sendResponse("OTA:FAIL:Write error");
         }
-    }
-    else if (otaCommand == "OTA:END") {
-        // 结束OTA
+    } else if (strcmp(data, "OTA:END") == 0) {
         if (Update.end(true)) {
             sendResponse("OTA:SUCCESS");
             Serial.println("OTA更新成功，准备重启...");
@@ -203,56 +186,67 @@ void ESP32Control::handleOTAUpdate(String data) {
     }
 }
 
-void ESP32Control::handleControlCommand(String command) {
-    String cmd = String(command.c_str());
-
-    if (cmd == "CMD:RESTART") {
+void ESP32Control::handleControlCommand(const char* command) {
+    if (strcmp(command, "CMD:RESTART") == 0) {
         sendResponse("RESTARTING...");
         delay(1000);
         ESP.restart();
-    }
-    else if (cmd == "CMD:GET_STATUS") {
-        sendResponse("STATUS:" + getDeviceData());
-    }
-    else if (cmd.startsWith("CMD:SET_GPIO:")) {
-        // 示例：GPIO控制
-        int gpioPin = cmd.substring(13).toInt();
-        // 这里可以添加实际的GPIO控制逻辑
-        sendResponse("GPIO_SET:" + String(gpioPin));
-    }
-    else {
+    } else if (strcmp(command, "CMD:GET_STATUS") == 0) {
+        char buf[128];
+        getDeviceData(buf, sizeof(buf));
+        char resp[160];
+        snprintf(resp, sizeof(resp), "STATUS:%s", buf);
+        sendResponse(resp);
+    } else if (strncmp(command, "CMD:SET_GPIO:", 13) == 0) {
+        int gpioPin = atoi(command + 13);
+        char buf[32];
+        snprintf(buf, sizeof(buf), "GPIO_SET:%d", gpioPin);
+        sendResponse(buf);
+    } else {
         sendResponse("ERROR:Unknown control command");
     }
 }
 
-void ESP32Control::sendResponse(String response) {
+void ESP32Control::sendResponse(const char* response) {
     if (pCharacteristic && deviceConnected) {
-        pCharacteristic->setValue(response.c_str());
+        pCharacteristic->setValue(response);
         pCharacteristic->notify();
         Serial.print("发送响应: ");
         Serial.println(response);
     }
 }
 
-void ESP32Control::setupWiFi(String ssid, String password) {
+void ESP32Control::setupWiFi(const char* ssid, const char* password) {
     Serial.println("正在连接WiFi...");
-    
-    WiFi.begin(ssid.c_str(), password.c_str());
-    
-    unsigned long startTime = millis();
-    while (WiFi.status() != WL_CONNECTED && millis() - startTime < 30000) {
-        delay(500);
-        Serial.print(".");
-    }
-    
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\nWiFi连接成功");
-        Serial.print("IP地址: ");
-        Serial.println(WiFi.localIP());
-        
-        sendResponse("WIFI:Connected;" + WiFi.localIP().toString());
+    Serial.print("Free heap before WiFi.begin: ");
+    Serial.println(esp_get_free_heap_size());
+    Serial.print("SSID: ");
+    Serial.println(ssid);
+    Serial.print("Password: ");
+    Serial.println(password);
+    Serial.println("调用 WiFi.begin 前");
+    WiFi.begin(ssid, password);
+    Serial.print("Free heap after WiFi.begin: ");
+    Serial.println(esp_get_free_heap_size());
+    if (WiFi.status() != WL_CONNECT_FAILED && WiFi.status() != WL_NO_SSID_AVAIL && WiFi.status() != WL_IDLE_STATUS) {
+        unsigned long startTime = millis();
+        while (WiFi.status() != WL_CONNECTED && millis() - startTime < 30000) {
+            delay(500);
+            Serial.print(".");
+        }
+        if (WiFi.status() == WL_CONNECTED) {
+            Serial.println("\nWiFi连接成功");
+            Serial.print("IP地址: ");
+            Serial.println(WiFi.localIP());
+            char buf[64];
+            snprintf(buf, sizeof(buf), "WIFI:Connected;%s", WiFi.localIP().toString().c_str());
+            sendResponse(buf);
+        } else {
+            Serial.println("\nWiFi连接失败");
+            sendResponse("WIFI:Failed to connect");
+        }
     } else {
-        Serial.println("\nWiFi连接失败");
-        sendResponse("WIFI:Failed to connect");
+        Serial.println("WiFi.begin failed: 内存或配置错误");
+        sendResponse("WIFI:Failed to start WiFi");
     }
 }

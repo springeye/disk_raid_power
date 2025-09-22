@@ -61,14 +61,13 @@ void setup_ota()
     //打印当前IP
     mylog.println("Connected to WiFi!");
     auto local_ip = WiFi.localIP();
-    mylog.printf("IP Address: %s", local_ip.toString().c_str());
+    char ipbuf[32];
+    snprintf(ipbuf, sizeof(ipbuf), "%u.%u.%u.%u", local_ip[0], local_ip[1], local_ip[2], local_ip[3]);
+    mylog.printf("IP Address: %s", ipbuf);
     //这里给ui_ipaddr这个lvgl的label设置文本为当前IP
     char buf[32];
-    snprintf(buf, sizeof(buf), "IP: %s", local_ip.toString().c_str());
+    snprintf(buf, sizeof(buf), "IP: %s", ipbuf);
     lv_label_set_text(uic_ipaddr, buf);
-
-
-
 
     // OTA进度接口
     server.on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -76,7 +75,8 @@ void setup_ota()
         if (ota_total_size > 0) {
             percent = (int)((ota_written_size * 100) / ota_total_size);
         }
-        String json = String("{\"percent\":") + percent + "}";
+        char json[32];
+        snprintf(json, sizeof(json), "{\"percent\":%d}", percent);
         request->send(200, "application/json", json);
     });
 
@@ -84,8 +84,10 @@ void setup_ota()
     server.serveStatic("/update", LittleFS, "/web/").setDefaultFile("ota.html");
     server.serveStatic("/", LittleFS, "/web/");
     server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
-        String message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
-        request->send(200, "text/html", "<span style='font-size: 24px;'>" + message + "</span>");
+        const char* message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
+        char html[128];
+        snprintf(html, sizeof(html), "<span style='font-size: 24px;'>%s</span>", message);
+        request->send(200, "text/html", html);
         delay(500);
         esp_restart();
     },

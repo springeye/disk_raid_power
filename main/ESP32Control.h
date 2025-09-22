@@ -24,8 +24,8 @@ public:
     static bool isWiFiConnected();
     
     // 获取设备数据（示例）
-    static String getDeviceData();
-    
+    static void getDeviceData(char* out, size_t out_size);
+
     // 设置设备参数（示例）
     static void setDeviceParameter(int value);
 
@@ -38,8 +38,8 @@ private:
     
     // 设备状态变量
     static int deviceParameter;
-    static String deviceStatus;
-    
+    static char deviceStatus[32];
+
     // 蓝牙回调类
     class MyServerCallbacks : public BLEServerCallbacks {
         void onConnect(BLEServer* pServer);
@@ -52,22 +52,22 @@ private:
     };
     
     // 处理蓝牙接收的数据
-    static void handleBluetoothData(String data);
+    static void handleBluetoothData(const char* data);
 
     // 处理WiFi配置
-    static void handleWiFiConfig(String ssid, String password);
-    
+    static void handleWiFiConfig(const char* ssid, const char* password);
+
     // 处理OTA更新
-    static void handleOTAUpdate(String data);
+    static void handleOTAUpdate(const char* data);
 
     // 处理控制命令
-    static void handleControlCommand(String command);
+    static void handleControlCommand(const char* command);
 
     // 发送蓝牙响应
-    static void sendResponse(String response);
-    
+    static void sendResponse(const char* response);
+
     // 设置WiFi连接
-    static void setupWiFi(String ssid, String password);
+    static void setupWiFi(const char* ssid, const char* password);
 };
 
 #endif
