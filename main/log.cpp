@@ -104,7 +104,7 @@ void MyLog::println(double val) {
 
 
 void MyLog::printf(const char* fmt, ...) {
-    char buf[256];
+    char buf[128]; // 缓冲区缩小为128字节
     va_list args;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);

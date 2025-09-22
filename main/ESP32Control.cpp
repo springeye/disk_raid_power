@@ -1,5 +1,8 @@
 #include "ESP32Control.h"
 
+#include <log.h>
+
+#include "esp_coexist.h"   // 共存相关API（Arduino下也可直接用）
 // 静态成员变量初始化
 BLEServer* ESP32Control::pServer = nullptr;
 BLECharacteristic* ESP32Control::pCharacteristic = nullptr;
@@ -14,6 +17,7 @@ void ESP32Control::begin(const char* deviceName) {
     
     // 初始化蓝牙
     BLEDevice::init(deviceName);
+
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new MyServerCallbacks());
     
@@ -73,7 +77,7 @@ void ESP32Control::loop() {
     static unsigned long lastUpdate = 0;
     if (deviceConnected && millis() - lastUpdate > 5000) {
         lastUpdate = millis();
-        char status[128];
+        char status[96];
         snprintf(status, sizeof(status), "STATUS:Param=%d,WiFi=%s,RSSI=%d", deviceParameter, isWiFiConnected() ? "Connected" : "Disconnected", WiFi.RSSI());
         sendResponse(status);
     }
@@ -133,9 +137,9 @@ void ESP32Control::handleBluetoothData(const char* data) {
     } else if (strncmp(data, "CMD:", 4) == 0) {
         handleControlCommand(data);
     } else if (strcmp(data, "READ_DATA") == 0) {
-        char buf[128];
+        char buf[64];
         getDeviceData(buf, sizeof(buf));
-        char resp[160];
+        char resp[96];
         snprintf(resp, sizeof(resp), "DATA:%s", buf);
         sendResponse(resp);
     } else if (strncmp(data, "SET_PARAM:", 10) == 0) {
@@ -154,7 +158,16 @@ void ESP32Control::handleWiFiConfig(const char* ssid, const char* password) {
     Serial.print("/");
     Serial.println(password);
     sendResponse("WIFI:Connecting...");
-    setupWiFi(ssid, password);
+    // WiFi.mode(WIFI_STA);
+    // esp_err_t err = esp_coex_preference_set(ESP_COEX_PREFER_WIFI);
+    // if (err == ESP_OK) {
+    //     mylog.println("✅ WiFi/BT 共存模式设置成功");
+    // } else {
+    //     mylog.printf("❌ 设置失败, 错误码: %d\n", err);
+    // }
+    // delay(1000);
+    // setupWiFi(ssid, password);
+    sendResponse("WIFI:Not Support");
 }
 
 void ESP32Control::handleOTAUpdate(const char* data) {
@@ -192,9 +205,9 @@ void ESP32Control::handleControlCommand(const char* command) {
         delay(1000);
         ESP.restart();
     } else if (strcmp(command, "CMD:GET_STATUS") == 0) {
-        char buf[128];
+        char buf[64];
         getDeviceData(buf, sizeof(buf));
-        char resp[160];
+        char resp[96];
         snprintf(resp, sizeof(resp), "STATUS:%s", buf);
         sendResponse(resp);
     } else if (strncmp(command, "CMD:SET_GPIO:", 13) == 0) {

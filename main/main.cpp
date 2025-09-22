@@ -103,6 +103,7 @@ void setup()
 #endif
         delay(1000);
         ESP32Control::begin("disk_raid_power");
+
         mylog.println("setup.....");
         // bleManager.begin();
         Wire.begin(26,25);
@@ -120,14 +121,13 @@ void setup()
             mylog.println("SPIFFS 挂载失败！");
         }else{
             mylog.println("SPIFFS 挂载成功");
+            // 获取文件系统信息（可选）
+            size_t total = SPIFFS.totalBytes();
+            size_t used = SPIFFS.usedBytes();
+            mylog.printf("总空间: %u 字节, 已用: %u 字节\n", total, used);
+            // 用完后立即释放 SPIFFS 占用的 heap
+            SPIFFS.end();
         }
-
-        // 获取文件系统信息（可选）
-        size_t total = SPIFFS.totalBytes();
-        size_t used = SPIFFS.usedBytes();
-        mylog.printf("总空间: %u 字节, 已用: %u 字节\n", total, used);
-
-
 
         // mylog.println("1111");
         hal_setup();
@@ -235,7 +235,7 @@ void loop()
     //     sw.debugDump();
     //     last = millis();
     // }
-    delay(200);
+    delay(100);
 }
 #endif /* ARDUINO */
 

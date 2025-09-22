@@ -16,7 +16,7 @@ const char* password = "miaogou501";
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
-AsyncWebServer server(80);
+AsyncWebServer* server = nullptr;
 
 volatile size_t ota_total_size = 0;
 volatile size_t ota_written_size = 0;
@@ -52,25 +52,22 @@ void lv_example_qrcode_1(void)
 void setup_ota()
 {
     WiFi.begin(ssid, password);
-
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(1000);
         mylog.println("Connecting to WiFi...");
     }
-    //打印当前IP
     mylog.println("Connected to WiFi!");
     auto local_ip = WiFi.localIP();
     char ipbuf[32];
     snprintf(ipbuf, sizeof(ipbuf), "%u.%u.%u.%u", local_ip[0], local_ip[1], local_ip[2], local_ip[3]);
     mylog.printf("IP Address: %s", ipbuf);
-    //这里给ui_ipaddr这个lvgl的label设置文本为当前IP
     char buf[32];
     snprintf(buf, sizeof(buf), "IP: %s", ipbuf);
     lv_label_set_text(uic_ipaddr, buf);
 
-    // OTA进度接口
-    server.on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
+    server = new AsyncWebServer(80);
+    server->on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
         int percent = 0;
         if (ota_total_size > 0) {
             percent = (int)((ota_written_size * 100) / ota_total_size);
@@ -79,16 +76,16 @@ void setup_ota()
         snprintf(json, sizeof(json), "{\"percent\":%d}", percent);
         request->send(200, "application/json", json);
     });
-
-    server.on("/", HTTP_GET, handleRoot);
-    server.serveStatic("/update", LittleFS, "/web/").setDefaultFile("ota.html");
-    server.serveStatic("/", LittleFS, "/web/");
-    server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
+    server->on("/", HTTP_GET, handleRoot);
+    server->serveStatic("/update", LittleFS, "/web/").setDefaultFile("ota.html");
+    server->serveStatic("/", LittleFS, "/web/");
+    server->on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
         const char* message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
         char html[128];
         snprintf(html, sizeof(html), "<span style='font-size: 24px;'>%s</span>", message);
         request->send(200, "text/html", html);
         delay(500);
+        if (server) { server->end(); delete server; server = nullptr; }
         esp_restart();
     },
     [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
@@ -137,7 +134,7 @@ void setup_ota()
             }
         }
     });
-    server.begin();
+    server->begin();
 }
 
 void ota_loop() {
