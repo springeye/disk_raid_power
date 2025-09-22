@@ -10,7 +10,7 @@ void SW6306::begin() {
     Wire.begin();
     disableLowPower();// 关闭低功耗
     unlockI2CWrite(true);//解锁寄存器写入
-    // enableForceControlOutputPower();//启用强制设置输出输出功率
+    enableForceControlOutputPower();//启用强制设置输出输出功率
     // 配置最大输入输出功率
     writeReg(SW6306_CTRG_PISET, 20);
     writeReg(SW6306_CTRG_POSET, 20);
