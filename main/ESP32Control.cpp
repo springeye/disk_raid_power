@@ -1,6 +1,12 @@
 #include "ESP32Control.h"
 
 #include <log.h>
+#include <ArduinoJson.h>
+#include <bq40z80.h>
+#include <ip2366.h>
+#include <monitor_api.h>
+#include <SW6306.h>
+#include <temp.h>
 
 #include "esp_coexist.h"   // 共存相关API（Arduino下也可直接用）
 // 静态成员变量初始化
@@ -55,7 +61,76 @@ void ESP32Control::begin(const char* deviceName) {
     Serial.print("Free heap before WiFi: ");
     Serial.println(esp_get_free_heap_size());
 }
+void ESP32Control::sendData()
+{
+    float ip2366_voltage =0.0f;
+    float ip2366_current =0.0f;
+    float ip2366_power =0.0f;
+    if (ip2366.canCommunicate()) {
+        // 读取所有数据并打印
+        ip2366.readAllData();
+        ip2366_voltage = get2366Voltage();
+        ip2366_current = get2366Current();
+        ip2366_power = get2366Power();
+    }
+    float total_out_power=0;
+    float total_in_power=0;
+    bool is6306Charging=sw.isC1Sink();
+    bool is6306DisCharging=sw.isC1Source();
+    float sw6306_voltage = sw.readVBUS()/1000.0f;
+    float sw6306_current = sw.readIBUS()/1000.0f;
+    float sw6306_power = sw6306_voltage*sw6306_current;
+    if (is6306Charging)
+    {
+        total_in_power+=sw6306_power;
+    }
+    if (is2366Charging())
+    {
+        total_in_power+=ip2366_power;
+    }
+    if (is6306DisCharging)
+    {
+        total_out_power+=sw6306_power;
+    }
+    if (is2366DisCharging())
+    {
+        total_out_power+=ip2366_power;
+    }
+    float bq_temp=static_cast<float>(bg_get_temp())/10.0f;
+    JsonDocument doc;
+    doc["system"]["free_mem"]=(unsigned int)esp_get_free_heap_size();
+    doc["monitor"]["left_c"]["voltage"]=sw6306_voltage;
+    doc["monitor"]["left_c"]["current"]= sw6306_current;
+    doc["monitor"]["left_c"]["power"]= sw6306_power;
+    doc["monitor"]["left_c"]["state"]=sw.isC1Sink()?"sink":sw.isC1Source()?"source":"none";
+    doc["monitor"]["right_c"]["voltage"]=ip2366_voltage;
+    doc["monitor"]["right_c"]["current"]=ip2366_current;
+    doc["monitor"]["right_c"]["power"]=ip2366_power;
+    doc["monitor"]["right_c"]["state"]=is2366Charging()?"sink":is2366DisCharging()?"source":"none";
+    doc["monitor"]["total"]["in_power"]=total_in_power;
+    doc["monitor"]["total"]["out_power"]=total_out_power;
+    doc["monitor"]["total"]["percent"]=bq_get_percent();
 
+    doc["monitor"]["total"]["temp_bat"]=bq_temp;
+    doc["monitor"]["total"]["temp_board"]=read_temp();
+    doc["monitor"]["total"]["percent"]=bq_get_percent();
+    doc["monitor"]["total"]["wh"]=bg_get_remaining_energy_wh(6,3.0);
+    doc["monitor"]["total"]["cell1"]=bq_get_cell_voltage(1);
+    doc["monitor"]["total"]["cell2"]=bq_get_cell_voltage(2);
+    doc["monitor"]["total"]["cell3"]=bq_get_cell_voltage(3);
+    doc["monitor"]["total"]["cell4"]=bq_get_cell_voltage(4);
+    doc["monitor"]["total"]["cell5"]=bq_get_cell_voltage(5);
+    doc["monitor"]["total"]["cell6"]=bq_get_cell_voltage(6);
+    String output;
+    serializeJson(doc, output);
+    const char* data = output.c_str();
+
+    size_t resp_len = strlen("DATA:") + strlen(data) + 1; // +1 结尾\0
+    char* resp = new char[resp_len];
+    snprintf(resp, resp_len, "DATA:%s", data);
+    sendResponse(resp);
+    delete[] resp;
+}
 void ESP32Control::loop() {
     // 处理蓝牙连接状态变化
     if (!deviceConnected && oldDeviceConnected) {
@@ -75,11 +150,9 @@ void ESP32Control::loop() {
     
     // 可以在这里添加定期状态更新
     static unsigned long lastUpdate = 0;
-    if (deviceConnected && millis() - lastUpdate > 5000) {
+    if (deviceConnected && millis() - lastUpdate > 500) {
         lastUpdate = millis();
-        char status[96];
-        snprintf(status, sizeof(status), "STATUS:Param=%d,WiFi=%s,RSSI=%d", deviceParameter, isWiFiConnected() ? "Connected" : "Disconnected", WiFi.RSSI());
-        sendResponse(status);
+        sendData();
     }
 }
 
@@ -137,11 +210,12 @@ void ESP32Control::handleBluetoothData(const char* data) {
     } else if (strncmp(data, "CMD:", 4) == 0) {
         handleControlCommand(data);
     } else if (strcmp(data, "READ_DATA") == 0) {
-        char buf[64];
-        getDeviceData(buf, sizeof(buf));
-        char resp[96];
-        snprintf(resp, sizeof(resp), "DATA:%s", buf);
-        sendResponse(resp);
+        // char buf[64];
+        // getDeviceData(buf, sizeof(buf));
+        // char resp[96];
+        // snprintf(resp, sizeof(resp), "DATA:%s", buf);
+        // sendResponse(resp);
+        sendData();
     } else if (strncmp(data, "SET_PARAM:", 10) == 0) {
         int value = atoi(data + 10);
         setDeviceParameter(value);
@@ -222,8 +296,23 @@ void ESP32Control::handleControlCommand(const char* command) {
 
 void ESP32Control::sendResponse(const char* response) {
     if (pCharacteristic && deviceConnected) {
-        pCharacteristic->setValue(response);
+        size_t len = strlen(response);
+        const size_t mtu = 20;
+
+        // 先发送长度包
+        char lenMsg[20];
+        snprintf(lenMsg, sizeof(lenMsg), "LEN:%u", (unsigned int)len);
+        pCharacteristic->setValue((uint8_t*)lenMsg, strlen(lenMsg));
         pCharacteristic->notify();
+        delay(10);
+
+        // 再分包发送数据
+        for (size_t i = 0; i < len; i += mtu) {
+            size_t chunkLen = (i + mtu < len) ? mtu : (len - i);
+            pCharacteristic->setValue((uint8_t*)(response + i), chunkLen);
+            pCharacteristic->notify();
+            delay(10);
+        }
         Serial.print("发送响应: ");
         Serial.println(response);
     }
