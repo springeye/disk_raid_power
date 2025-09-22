@@ -8,17 +8,15 @@ SW6306::SW6306(uint8_t addr) {
 
 void SW6306::begin() {
     Wire.begin();
-    disableLowPower();
-    unlockI2CWrite(true);
-    enableForceControlOutputPower();
-    // // 配置最大输入输出功率
+    disableLowPower();// 关闭低功耗
+    unlockI2CWrite(true);//解锁寄存器写入
+    enableForceControlOutputPower();//启用强制设置输出输出功率
+    // 配置最大输入输出功率
     writeReg(SW6306_CTRG_PISET, 100);
     writeReg(SW6306_CTRG_POSET, 100);
-
-    // 确保允许放电
+    // 允许放电
     enableDischarge();
-
-    // 第一次喂狗
+    // 喂狗(防止关闭输出)
     feedWatchdog();
     _lastFeed = millis();
 }
