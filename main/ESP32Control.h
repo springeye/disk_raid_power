@@ -22,6 +22,8 @@ public:
     
     // 获取WiFi连接状态
     static bool isWiFiConnected();
+    //是否有设备连接
+    static bool isClintConnected();
     
     // 获取设备数据（示例）
     static void getDeviceData(char* out, size_t out_size);

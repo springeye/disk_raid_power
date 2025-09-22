@@ -207,7 +207,7 @@ void loop()
     // mylog.printf("total_power:%.2f\n",total_power);
     //待机需要0.6
     // 如果电流大于等于0.65，则不执行断电操作，重置计时器
-    if (total_power >= 0.7f) {
+    if (total_power >= 0.7f || ESP32Control::isClintConnected()) {
         previousMillis = currentMillis;
     } else if (currentMillis - previousMillis >= interval) {
         //断电关机

@@ -263,3 +263,7 @@ void ESP32Control::setupWiFi(const char* ssid, const char* password) {
         sendResponse("WIFI:Failed to start WiFi");
     }
 }
+bool ESP32Control::isClintConnected()
+{
+    return deviceConnected;
+}
