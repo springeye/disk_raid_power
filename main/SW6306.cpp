@@ -7,9 +7,9 @@ SW6306::SW6306(uint8_t addr) {
 void SW6306::begin() {
     Wire.begin();
 
-    // 配置最大输入输出功率
-    writeReg(SW6306_CTRG_PISET, 100);
-    writeReg(SW6306_CTRG_POSET, 100);
+    // // 配置最大输入输出功率
+    // writeReg(SW6306_CTRG_PISET, 100);
+    // writeReg(SW6306_CTRG_POSET, 100);
 
     // 确保允许放电
     enableDischarge();

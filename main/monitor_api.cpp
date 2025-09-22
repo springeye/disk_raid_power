@@ -152,7 +152,7 @@ void updateUI()
     }
 
 
-
+    // sw.debugDump();
     mylog.printf("sw6306电压:%.2f\n",sw6306_voltage);
     mylog.printf("sw6306电流:%.2f\n",sw6306_current);
     mylog.printf("sw6306功率:%.2f\n",sw6306_power);

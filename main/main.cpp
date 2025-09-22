@@ -224,17 +224,17 @@ void loop()
     //     lv_label_set_text(ui_bat_temp, g_ip); // 显示IP到页面
     // }
     updateUI();
-
-    sw.update(); // 必须周期调用
     mylog.printf("RunTimeToEmpty:%d\n",bq.read_RunTimeToEmpty());
     mylog.printf("read_AverageTimeToEmpty:%d\n",bq.read_AverageTimeToEmpty());
     mylog.printf("read_AverageTimeToFull:%d\n",bq.read_AverageTimeToFull());
-    static unsigned long last = 0;
-    if (millis() - last > 1000) {
-        sw.debugDump();
-        last = millis();
-    }
-    delay(1000);
+
+    sw.update(); // 必须周期调用
+    // static unsigned long last = 0;
+    // if (millis() - last > 1000) {
+    //     sw.debugDump();
+    //     last = millis();
+    // }
+    delay(200);
 }
 #endif /* ARDUINO */
 
