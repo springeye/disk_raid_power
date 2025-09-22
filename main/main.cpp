@@ -1,9 +1,8 @@
 #include "lvgl.h"
 #include "app_hal.h"
 #include "ui.h"
-
+#include "ESP32Control.h"
 #include <WiFi.h>
-#include "BLEManager.h"
 #ifdef ARDUINO
 #include <log.h>
 #include <Arduino.h>
@@ -103,6 +102,7 @@ void setup()
         Serial.begin(115200);
 #endif
         delay(1000);
+        ESP32Control::begin("disk_raid_power");
         mylog.println("setup.....");
         // bleManager.begin();
         Wire.begin(26,25);
@@ -200,6 +200,7 @@ void setup()
 
 void loop()
 {
+    ESP32Control::loop();
     // bleManager.loop();
     unsigned long currentMillis = millis();
     float total_power = fabs(bq_get_power());
