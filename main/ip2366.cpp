@@ -45,7 +45,7 @@ void IP2366::readAllData() {
 // 检查是否可以通信
 bool IP2366::canCommunicate() {
   int read = digitalRead(_intPin);
-  mylog.printf("2366 INT pin state: %s\n", read == HIGH ? "HIGH" : "LOW");
+  // mylog.printf("2366 INT pin state: %s\n", read == HIGH ? "HIGH" : "LOW");
   return read == HIGH;
 }
 
@@ -106,9 +106,7 @@ uint16_t IP2366::getSystemPowerRaw() const {
 
 // 读取充电状态
 void IP2366::readChargeStatus() {
-  mylog.println("readChargeStatus1111");
   uint8_t status = readRegister(REG_CHARGE_STATUS);
-  mylog.println("readChargeStatus2222");
   _isCharging = (status >> 5) & 0x01;    // BIT5: CHG_En
   _chargeComplete = (status >> 4) & 0x01; // BIT4: CHG_End
   _isDischarging = (status >> 3) & 0x01;  // BIT3: Output_En

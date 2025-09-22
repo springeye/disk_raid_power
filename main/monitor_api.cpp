@@ -73,10 +73,10 @@ extern "C" {
 extern "C" {
 void updateUI()
 {
-    mylog.println("");
-    mylog.println("");
-    mylog.println("");
-    mylog.println("begin updateUI");
+    // mylog.println("");
+    // mylog.println("");
+    // mylog.println("");
+    // mylog.println("begin updateUI");
 
     float bq_voltage = bq_get_voltage()/1000.0f;
     float bq_current = bq_get_current()/1000.0f;
@@ -153,9 +153,9 @@ void updateUI()
 
 
     // sw.debugDump();
-    mylog.printf("sw6306电压:%.2f\n",sw6306_voltage);
-    mylog.printf("sw6306电流:%.2f\n",sw6306_current);
-    mylog.printf("sw6306功率:%.2f\n",sw6306_power);
+    // mylog.printf("sw6306电压:%.2f\n",sw6306_voltage);
+    // mylog.printf("sw6306电流:%.2f\n",sw6306_current);
+    // mylog.printf("sw6306功率:%.2f\n",sw6306_power);
     lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
     lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
     lv_label_set_text_float(ui_battemp, "%s°", bq_temp, 2);

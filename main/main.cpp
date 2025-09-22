@@ -129,11 +129,11 @@ void setup()
 
 
 
-        mylog.println("1111");
+        // mylog.println("1111");
         hal_setup();
-        mylog.println("2222");
+        // mylog.println("2222");
         // lv_init();
-        mylog.println("3333");
+        // mylog.println("3333");
         init_temp();
         checkPendingAndValidate();
         sw.begin();
@@ -204,7 +204,7 @@ void loop()
     // bleManager.loop();
     unsigned long currentMillis = millis();
     float total_power = fabs(bq_get_power());
-    mylog.printf("total_power:%.2f\n",total_power);
+    // mylog.printf("total_power:%.2f\n",total_power);
     //待机需要0.6
     // 如果电流大于等于0.65，则不执行断电操作，重置计时器
     if (total_power >= 0.7f) {
@@ -225,9 +225,9 @@ void loop()
     //     lv_label_set_text(ui_bat_temp, g_ip); // 显示IP到页面
     // }
     updateUI();
-    mylog.printf("RunTimeToEmpty:%d\n",bq.read_RunTimeToEmpty());
-    mylog.printf("read_AverageTimeToEmpty:%d\n",bq.read_AverageTimeToEmpty());
-    mylog.printf("read_AverageTimeToFull:%d\n",bq.read_AverageTimeToFull());
+    // mylog.printf("RunTimeToEmpty:%d\n",bq.read_RunTimeToEmpty());
+    // mylog.printf("read_AverageTimeToEmpty:%d\n",bq.read_AverageTimeToEmpty());
+    // mylog.printf("read_AverageTimeToFull:%d\n",bq.read_AverageTimeToFull());
 
     sw.update(); // 必须周期调用
     // static unsigned long last = 0;
