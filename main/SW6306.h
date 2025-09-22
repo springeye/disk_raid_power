@@ -34,7 +34,10 @@ public:
 
     void begin();       // 初始化
     void update();      // 周期调用，维持状态
-
+    // ===== I2C 解锁相关 =====
+    void disableLowPower();        // REG0x23=0x01，关闭低功耗，允许写入其它寄存器
+    void unlockI2CWrite(bool access100to156 = false);
+    void enableForceControlOutputPower();  // REG0x40 bit7 控制强制输出功率
     uint16_t readVBUS();   // C1 电压 (mV)
     uint16_t readIBUS();   // C1 电流 (mA)
 

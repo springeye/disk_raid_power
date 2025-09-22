@@ -1,12 +1,16 @@
 #include "SW6306.h"
-
+#define REG_0x23 0x23
+#define REG_0x24 0x24
+#define REG_0x40 0x40
 SW6306::SW6306(uint8_t addr) {
     _addr = addr;
 }
 
 void SW6306::begin() {
     Wire.begin();
-
+    disableLowPower();
+    unlockI2CWrite(true);
+    enableForceControlOutputPower();
     // // 配置最大输入输出功率
     writeReg(SW6306_CTRG_PISET, 100);
     writeReg(SW6306_CTRG_POSET, 100);
@@ -17,6 +21,28 @@ void SW6306::begin() {
     // 第一次喂狗
     feedWatchdog();
     _lastFeed = millis();
+}
+// ===== 关闭低功耗（手册要求先执行）=====
+void SW6306::disableLowPower(){
+    writeReg(REG_0x23, 0x01);
+}
+
+// ===== 解锁写操作 =====
+void SW6306::unlockI2CWrite(bool access100to156){
+    writeReg(REG_0x24, 0x20);
+    delay(5);
+    writeReg(REG_0x24, 0x40);
+    delay(5);
+    writeReg(REG_0x24, 0x80);
+    delay(5);
+    if(access100to156){
+        writeReg(REG_0x24, 0x81);
+    }
+}
+void SW6306::enableForceControlOutputPower(){
+    uint8_t v=readReg8(REG_0x40);
+    v |= (1 << 7) | (1 << 2);
+    return writeReg(REG_0x40, v);
 }
 
 void SW6306::update() {
