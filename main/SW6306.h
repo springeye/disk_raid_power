@@ -43,18 +43,18 @@ public:
 
     bool isC1Source();     // C1 是否作为输出
     bool isC1Sink();       // C1 是否作为输入
-
+    void feedWatchdog();
+    void enableDischarge();
 private:
     uint8_t _addr;
-    unsigned long _lastFeed = 0;
 
     void writeReg(uint8_t reg, uint8_t val);
     uint8_t readReg8(uint8_t reg);
     uint16_t readReg16(uint8_t reg);
     uint16_t readADC(uint8_t channel);
 
-    void feedWatchdog();
-    void enableDischarge();
+
+
 };
 extern SW6306 sw;  // 默认地址 0x3C
 #endif

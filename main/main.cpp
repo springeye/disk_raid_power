@@ -3,6 +3,7 @@
 #include "ui.h"
 #include "ESP32Control.h"
 #include <WiFi.h>
+#include "TaskScheduler.h"
 #ifdef ARDUINO
 #include <log.h>
 #include <Arduino.h>
@@ -88,7 +89,19 @@ void checkPendingAndValidate()
     }
 }
 unsigned long previousMillis = 0;
-const long interval = 30*1000; // 间隔时间(毫秒)
+TaskScheduler scheduler;
+
+void ble() {
+    ESP32Control::loop();
+}
+void auto_power_off() {
+    float total_power = fabs(bq_get_power());
+    if (total_power < 0.7f && !ESP32Control::isClintConnected()) {
+        digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
+        Serial.println("断电");
+    }
+}
+
 void setup()
 {
     try
@@ -188,6 +201,26 @@ void setup()
         {
             mylog.println("Long Pressed stop!");
         });
+        btn.setLongPressIntervalMs(400);
+        scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
+        scheduler.addTask([]() {
+            ota_loop();
+        }, 5); // 每10ms检查一次按钮状态
+        scheduler.addTask([]
+        {
+            sw.feedWatchdog();
+            sw.update();
+        },5000);
+        scheduler.addTask([]
+        {
+            updateUI();
+        },100);
+        scheduler.addTask([]
+        {
+            ble();
+            hal_loop();
+            btn.tick();
+        },1);
 
 
     }
@@ -200,42 +233,9 @@ void setup()
 
 void loop()
 {
-    ESP32Control::loop();
-    // bleManager.loop();
-    unsigned long currentMillis = millis();
-    float total_power = fabs(bq_get_power());
-    // mylog.printf("total_power:%.2f\n",total_power);
-    //待机需要0.6
-    // 如果电流大于等于0.65，则不执行断电操作，重置计时器
-    if (total_power >= 0.7f || ESP32Control::isClintConnected()) {
-        previousMillis = currentMillis;
-    } else if (currentMillis - previousMillis >= interval) {
-        //断电关机
-        previousMillis = currentMillis;
-        digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
-        Serial.println("断电");
-    }
-    hal_loop();
-    btn.tick();
-    ota_loop();
-    //TODO OTA
-    // if (wifi_ready)
-    // {
-    //     wifi_ready = false;
-    //     lv_label_set_text(ui_bat_temp, g_ip); // 显示IP到页面
-    // }
-    updateUI();
-    // mylog.printf("RunTimeToEmpty:%d\n",bq.read_RunTimeToEmpty());
-    // mylog.printf("read_AverageTimeToEmpty:%d\n",bq.read_AverageTimeToEmpty());
-    // mylog.printf("read_AverageTimeToFull:%d\n",bq.read_AverageTimeToFull());
 
-    sw.update(); // 必须周期调用
-    // static unsigned long last = 0;
-    // if (millis() - last > 1000) {
-    //     sw.debugDump();
-    //     last = millis();
-    // }
-    delay(100);
+    scheduler.tick(); // 非阻塞调度所有任务
+
 }
 #endif /* ARDUINO */
 

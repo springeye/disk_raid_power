@@ -46,7 +46,6 @@ void SW6306::begin() {
     enableDischarge();
     // 喂狗(防止关闭输出)
     feedWatchdog();
-    _lastFeed = millis();
 }
 // ===== 关闭低功耗（手册要求先执行）=====
 void SW6306::disableLowPower(){
@@ -84,12 +83,6 @@ void SW6306::enableForceControlOutputPower(){
 }
 
 void SW6306::update() {
-    // 周期喂狗（建议 500ms ~ 1s 一次）
-    if (millis() - _lastFeed > 800) {
-        feedWatchdog();
-        _lastFeed = millis();
-    }
-
     // 如果掉电，则重新打开放电
     uint8_t sys = readReg8(SW6306_STRG_SYS_STAT);
     if (!(sys & SW6306_SYS_STAT_DISCHGING)) {
