@@ -15,21 +15,24 @@ void init_temp() {
 }
 
 float read_temp() {
-    // 直接获取毫伏数，更准确
-    int mv = analogReadMilliVolts(TEMP_PIN);
-    float voltage = mv / 1000.0; // 转换成伏特
+    return read_temp_avg();
+}
 
-    // 计算 NTC 阻值
+float read_temp_avg(int samples) {
+    long sum_mv = 0;
+    for (int i = 0; i < samples; ++i) {
+        sum_mv += analogReadMilliVolts(TEMP_PIN);
+        delay(2); // 可选，防止连续采样过快
+    }
+    float avg_mv = sum_mv / (float)samples;
+    float voltage = avg_mv / 1000.0;
     float resistance = SERIES_RESISTOR * voltage / (3.3 - voltage);
-
-    // B 参数公式
     float steinhart;
-    steinhart = resistance / NOMINAL_RES;          // (R/R25)
-    steinhart = log(steinhart);                    // ln(R/R25)
-    steinhart /= B_COEFFICIENT;                    // 1/B * ln(R/R25)
-    steinhart += 1.0 / (NOMINAL_TEMP + 273.15);    // + (1/T25)
-    steinhart = 1.0 / steinhart;                   // 开尔文温度
-    steinhart -= 273.15;                           // 转换为摄氏度
-
+    steinhart = resistance / NOMINAL_RES;
+    steinhart = log(steinhart);
+    steinhart /= B_COEFFICIENT;
+    steinhart += 1.0 / (NOMINAL_TEMP + 273.15);
+    steinhart = 1.0 / steinhart;
+    steinhart -= 273.15;
     return steinhart;
 }
