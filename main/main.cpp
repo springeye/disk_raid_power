@@ -95,25 +95,26 @@ void checkPendingAndValidate()
 unsigned long previousMillis = 0;
 TaskScheduler scheduler;
 
-void ble()
-{
+void ble() {
+#ifdef BLE_ENABLED
     ESP32Control::loop();
-}
+#endif
 
-void auto_power_off()
-{
+}
+void auto_power_off() {
     float total_power = fabs(bq_get_power());
-    if (total_power < 0.7f && !ESP32Control::isClintConnected())
-    {
+#ifdef BLE_ENABLED
+    if (total_power < 0.7f && !ESP32Control::isClintConnected()) {
+#endif
+#ifndef BLE_ENABLED
+        if (total_power < 0.7f) {
+#endif
+
+
         digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
         Serial.println("断电");
     }
 }
-
-// 定义亮度变化步长，值越大变化越快
-int fadeAmount = 5;
-// 存储当前亮度值，初始为0
-int brightness = 0;
 
 void setup()
 {
@@ -228,26 +229,27 @@ void setup()
             mylog.println("Long Pressed stop!");
         });
         btn.setLongPressIntervalMs(400);
-        scheduler.addTask(auto_power_off, 30 * 1000); // 每2秒执行一次
-        scheduler.addTask([]()
-        {
+        scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
+        scheduler.addTask([]() {
             ota_loop();
         }, 5); // 每10ms检查一次按钮状态
         scheduler.addTask([]
         {
             sw.feedWatchdog();
             sw.update();
-        }, 5000);
+        },5000);
         scheduler.addTask([]
         {
             updateUI();
-        }, 100);
+        },100);
         scheduler.addTask([]
         {
             ble();
             hal_loop();
             btn.tick();
-        }, 1);
+        },1);
+
+
     }
     catch (...)
     {
@@ -258,7 +260,9 @@ void setup()
 
 void loop()
 {
+
     scheduler.tick(); // 非阻塞调度所有任务
+
 }
 #endif /* ARDUINO */
 

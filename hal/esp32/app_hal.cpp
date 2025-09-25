@@ -78,5 +78,4 @@ void hal_loop(void)
 {
   /* NO while loop in this function! (handled by framework) */
   lv_timer_handler(); // Update the UI-
-  delay(5);
 }
