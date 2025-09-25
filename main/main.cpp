@@ -30,7 +30,7 @@ extern "C" {
 #define BUTTON_PIN KEY_01
 BQ40Z80 bq;
 IP2366 ip2366;
-SW6306 sw;  // 默认地址 0x3C
+SW6306 sw; // 默认地址 0x3C
 // BLEManager bleManager;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
@@ -44,7 +44,8 @@ volatile bool wifi_ready = false;
 void setup_ota_task(void* param)
 {
     setup_ota(); // WiFi初始化
-    snprintf(g_ip, sizeof(g_ip), "%u.%u.%u.%u", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
+    snprintf(g_ip, sizeof(g_ip), "%u.%u.%u.%u", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2],
+             WiFi.localIP()[3]);
     wifi_ready = true;
     vTaskDelete(NULL);
 }
@@ -88,19 +89,29 @@ void checkPendingAndValidate()
         mylog.println("esp_ota_get_state_partition FAILED");
     }
 }
+
 unsigned long previousMillis = 0;
 TaskScheduler scheduler;
 
-void ble() {
+void ble()
+{
     ESP32Control::loop();
 }
-void auto_power_off() {
+
+void auto_power_off()
+{
     float total_power = fabs(bq_get_power());
-    if (total_power < 0.7f && !ESP32Control::isClintConnected()) {
+    if (total_power < 0.7f && !ESP32Control::isClintConnected())
+    {
         digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
         Serial.println("断电");
     }
 }
+
+// 定义亮度变化步长，值越大变化越快
+int fadeAmount = 5;
+// 存储当前亮度值，初始为0
+int brightness = 0;
 
 void setup()
 {
@@ -119,8 +130,8 @@ void setup()
 
         mylog.println("setup.....");
         // bleManager.begin();
-        Wire.begin(26,25);
-        list_i2c_devices(Wire,1);
+        Wire.begin(26, 25);
+        list_i2c_devices(Wire, 1);
 
 
         pinMode(12, OUTPUT);
@@ -132,7 +143,9 @@ void setup()
         if (!SPIFFS.begin(true))
         {
             mylog.println("SPIFFS 挂载失败！");
-        }else{
+        }
+        else
+        {
             mylog.println("SPIFFS 挂载成功");
             // 获取文件系统信息（可选）
             size_t total = SPIFFS.totalBytes();
@@ -142,11 +155,12 @@ void setup()
             SPIFFS.end();
         }
 
-        // mylog.println("1111");
         hal_setup();
-        // mylog.println("2222");
-        // lv_init();
-        // mylog.println("3333");
+#ifdef TFT_BLK
+        pinMode(TFT_BLK, OUTPUT);
+        analogWrite(TFT_BLK, 255);
+#endif
+
         init_temp();
         checkPendingAndValidate();
         sw.begin();
@@ -202,27 +216,26 @@ void setup()
             mylog.println("Long Pressed stop!");
         });
         btn.setLongPressIntervalMs(400);
-        scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
-        scheduler.addTask([]() {
+        scheduler.addTask(auto_power_off, 30 * 1000); // 每2秒执行一次
+        scheduler.addTask([]()
+        {
             ota_loop();
         }, 5); // 每10ms检查一次按钮状态
         scheduler.addTask([]
         {
             sw.feedWatchdog();
             sw.update();
-        },5000);
+        }, 5000);
         scheduler.addTask([]
         {
             updateUI();
-        },100);
+        }, 100);
         scheduler.addTask([]
         {
             ble();
             hal_loop();
             btn.tick();
-        },1);
-
-
+        }, 1);
     }
     catch (...)
     {
@@ -233,9 +246,7 @@ void setup()
 
 void loop()
 {
-
     scheduler.tick(); // 非阻塞调度所有任务
-
 }
 #endif /* ARDUINO */
 

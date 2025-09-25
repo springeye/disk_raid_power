@@ -53,10 +53,6 @@ void hal_setup(void)
   mylog.println("bbbbb");
   // tft.setRotation(1); // 根据你的屏幕调整方向
   gfx->fillScreen(RGB565_BLACK);
-#ifdef TFT_BLK
-  pinMode(TFT_BLK, OUTPUT);
-  digitalWrite(TFT_BLK, HIGH);
-#endif
 
   mylog.println("ccc");
   lv_init();
