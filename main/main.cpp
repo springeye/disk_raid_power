@@ -1,7 +1,10 @@
 #include "lvgl.h"
 #include "app_hal.h"
 #include "ui.h"
+#ifdef  BLE_ENABLED
 #include "ESP32Control.h"
+#endif
+
 #include <WiFi.h>
 #ifdef ARDUINO
 #include <log.h>
@@ -102,7 +105,10 @@ void setup()
         Serial.begin(115200);
 #endif
         delay(1000);
+#ifdef  BLE_ENABLED
         ESP32Control::begin("disk_raid_power");
+#endif
+
 
         mylog.println("setup.....");
         // bleManager.begin();
@@ -200,14 +206,22 @@ void setup()
 
 void loop()
 {
+#ifdef  BLE_ENABLED
     ESP32Control::loop();
+#endif
+
     // bleManager.loop();
     unsigned long currentMillis = millis();
     float total_power = fabs(bq_get_power());
     // mylog.printf("total_power:%.2f\n",total_power);
     //待机需要0.6
     // 如果电流大于等于0.65，则不执行断电操作，重置计时器
+#ifdef  BLE_ENABLED
     if (total_power >= 0.7f || ESP32Control::isClintConnected()) {
+#else
+    if (total_power >= 0.7f) {
+#endif
+
         previousMillis = currentMillis;
     } else if (currentMillis - previousMillis >= interval) {
         //断电关机
