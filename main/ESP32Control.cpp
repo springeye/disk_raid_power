@@ -147,13 +147,7 @@ void ESP32Control::loop() {
         // 发送连接成功消息
         sendResponse("CONNECTED:ESP32_Ready");
     }
-    
-    // 可以在这里添加定期状态更新
-    static unsigned long lastUpdate = 0;
-    if (deviceConnected && millis() - lastUpdate > 500) {
-        lastUpdate = millis();
-        sendData();
-    }
+
 }
 
 bool ESP32Control::isWiFiConnected() {
