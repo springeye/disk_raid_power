@@ -239,7 +239,7 @@ void setup()
         scheduler.addTask([]
         {
             updateUI();
-        },1000);
+        },300);
         scheduler.addTask([]
         {
             ble();
