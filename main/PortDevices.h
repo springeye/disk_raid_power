@@ -42,7 +42,7 @@ public:
     virtual float getTotalCurrent()=0;
     virtual float getTotalIn() = 0;
     virtual float getTotalOut() = 0;
-    virtual float getBatTemp() = 0;
+    virtual float getBatTemp() = 0;//电池温度，单位°
     virtual float getBoardTemp() = 0;
     virtual float getCellVoltage(uint8_t index) = 0;
     virtual void loop()=0;
