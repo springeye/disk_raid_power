@@ -134,22 +134,17 @@ void setup()
 
         mylog.println("setup.....");
         // bleManager.begin();
+        device->init();
 #ifdef ESP32_S3_169
         //SDA 11
         //SDC 10
         //BQSDA 17
         //BQSDC 16
 #elifdef ESP32_169
-        device->init();
-#endif
-        // list_i2c_devices(Wire,1);
-
-
         pinMode(12, OUTPUT);
         digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
-        //IP2366
-        // pinMode(10, OUTPUT);
-        // digitalWrite(10, HIGH);
+#endif
+
         // 初始化 SPIFFS，如果挂载失败则自动格式化
         if (!SPIFFS.begin(true))
         {
@@ -170,8 +165,10 @@ void setup()
         pinMode(TFT_BLK, OUTPUT);
         analogWrite(TFT_BLK, 255);
 #endif
-
+        #ifdef ESP32_169
         init_temp();
+        #endif
+
         checkPendingAndValidate();
         // sw.begin();
         // ip2366.begin();
@@ -226,7 +223,10 @@ void setup()
             mylog.println("Long Pressed stop!");
         });
         btn.setLongPressIntervalMs(400);
+#ifdef ESP32_169
         scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
+#endif
+
         scheduler.addTask([]() {
             ota_loop();
         }, 5); // 每10ms检查一次按钮状态

@@ -14,7 +14,7 @@ enum PortType {
 enum PortType {
     C1,
     C2,
-    A1,
+    TYPE_A1,
 };
 #endif
 

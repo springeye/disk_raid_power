@@ -1,5 +1,6 @@
 #include "temp.h"
 #include <Arduino.h>
+#include <log.h>
 #include <math.h>
 
 // ---------------- 配置区域 ----------------
@@ -10,11 +11,13 @@
 // -----------------------------------------
 
 void init_temp() {
+    mylog.println("init_temp");
     analogReadResolution(12); // 0~4095
     analogSetAttenuation(ADC_11db); // 建议 0~3.3V 输入
 }
 
 float read_temp() {
+    mylog.println("read_temp");
     // 直接获取毫伏数，更准确
     int mv = analogReadMilliVolts(TEMP_PIN);
     float voltage = mv / 1000.0; // 转换成伏特

@@ -6,12 +6,14 @@
 #include <lvgl.h>
 #include "ui_schome.h"
 #include <cell_helper.h>
+#include <log.h>
 #include <temp.h>
 #ifdef ESP32_169
 #include <KKPortDevice.h>
 IPortDevice* device = new KKPortDevice();
 #elif ESP32_S3_169
-IPortDevice* device = new KKPortDevice();
+#include <ESMPortDevice.h>
+IPortDevice* device = new ESMPortDevice();
 #endif
 
 extern "C" {
@@ -72,6 +74,8 @@ extern "C" {
 void updateUI()
 {
     device->loop();
+    mylog.printf("updateUi:percent=%d\n",device->getPercent());
+    mylog.printf("updateUi:power=%d\n",device->getPower());
     float bq_voltage = bq_get_voltage()/1000.0f;
     float bq_current = bq_get_current()/1000.0f;
     float bq_power = bq_voltage*bq_current;
@@ -118,10 +122,6 @@ void updateUI()
     }
 
 
-    // sw.debugDump();
-    // mylog.printf("sw6306电压:%.2f\n",sw6306_voltage);
-    // mylog.printf("sw6306电流:%.2f\n",sw6306_current);
-    // mylog.printf("sw6306功率:%.2f\n",sw6306_power);
     lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
     lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
     lv_label_set_text_float(ui_battemp, "%s°", bq_temp, 2);
@@ -134,7 +134,7 @@ void updateUI()
     lv_label_set_text_float(ui_sw6306power, "%sW", sw6306_power, 1);
     lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
     lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
-    lv_label_set_text_float(ui_boardtmp, "%s°", read_temp(), 2);
+    lv_label_set_text_float(ui_boardtmp, "%s°", device->getBoardTemp(), 2);
     float bat_power = bq_get_power();
     if (bat_power>0.0f)
     {
