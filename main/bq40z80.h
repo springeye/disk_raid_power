@@ -47,6 +47,5 @@ private:
     void read_word(uint8_t memory_addr);
 };
 
-extern BQ40Z80 bq;
 
 #endif

@@ -142,7 +142,7 @@ void setup()
         //BQSDA 17
         //BQSDC 16
         Wire.begin(11, 10);
-#elif SP32_169
+#elifdef ESP32_169
         Wire.begin(26, 25);
 #endif
         list_i2c_devices(Wire,1);
