@@ -76,13 +76,17 @@ void updateUI()
     device->loop();
     float bq_voltage = bq_get_voltage()/1000.0f;
     float bq_current = bq_get_current()/1000.0f;
-    float bq_power = bq_get_power();
-    mylog.printf("updateUi:percent=%d\n",device->getPercent());
-    mylog.printf("updateUi:power=%.2f\n",bq_power);
-
     float bq_wh=bg_get_remaining_energy_wh(6,3.0f);
     uint8_t bq_percent=bq_get_percent();
+    float bq_power = bq_get_power();
+
     float bq_temp=bg_get_temp();
+    mylog.printf("updateUi:percent=%d%%\n",bq_percent);
+    mylog.printf("updateUi:power=%.2fW\n",bq_power);
+    mylog.printf("updateUi:voltage=%.2fV\n",bq_voltage);
+    mylog.printf("updateUi:current=%.2fA\n",bq_current);
+    mylog.printf("updateUi:wh=%.2fWh\n",bq_wh);
+    mylog.printf("updateUi:temp=%.2f°\n",bq_temp);
     float cell[6] = {0.0f};
     for (int i = 0; i < 6; ++i) {
         cell[i] = device->getCellVoltage(i + 1)/1000;
