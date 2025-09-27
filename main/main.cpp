@@ -31,7 +31,7 @@ extern "C" {
 #include "esp_efuse.h"
 #endif
 #define BUTTON_PIN KEY_01
-BQ40Z80 bq;
+BQ40Z80 bq(&Wire); // 修改为传入Wire对象
 IP2366 ip2366;
 SW6306 sw; // 默认地址 0x3C
 // BLEManager bleManager;

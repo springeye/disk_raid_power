@@ -3,8 +3,9 @@
 #include <log.h>
 
 
-BQ40Z80::BQ40Z80()
+BQ40Z80::BQ40Z80(TwoWire* wire)
 {
+    this->wire = wire;
     state_flag = 0;
     memset(word_buf, 0, sizeof(word_buf));
 }
@@ -41,25 +42,25 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     word_buf[5] = 0;
 
     // 1. 发送命令字
-    Wire.beginTransmission(BQ40Z80_ADDR);
-    Wire.write(memory_addr);
-    if (Wire.endTransmission(false) != 0)
+    wire->beginTransmission(BQ40Z80_ADDR);
+    wire->write(memory_addr);
+    if (wire->endTransmission(false) != 0)
     {
         state_flag = 1; // 通讯连接错误
         return;
     }
 
     // 2. 请求 3 字节：LSB, MSB, CRC
-    uint8_t count = Wire.requestFrom(BQ40Z80_ADDR, (uint8_t)3);
+    uint8_t count = wire->requestFrom(BQ40Z80_ADDR, (uint8_t)3);
     if (count != 3)
     {
         state_flag = 1; // 通讯错误
         return;
     }
 
-    word_buf[3] = Wire.read(); // LSB
-    word_buf[4] = Wire.read(); // MSB
-    word_buf[5] = Wire.read(); // CRC
+    word_buf[3] = wire->read(); // LSB
+    word_buf[4] = wire->read(); // MSB
+    word_buf[5] = wire->read(); // CRC
 
     // 3. 构造 CRC 校验数组：SLA+W, CMD, SLA+R, LSB, MSB
     uint8_t crc_buf[5];
@@ -256,27 +257,27 @@ uint8_t BQ40Z80::read_RelativeStateOfCharge()
 //ManufacturerAccess方式读取更底层的寄存器
 uint8_t BQ40Z80::read_block(uint8_t command, uint8_t *buf, uint8_t len)
 {
-    Wire.beginTransmission(BQ40Z80_ADDR);
-    Wire.write(command);
-    if (Wire.endTransmission(false) != 0)
+    wire->beginTransmission(BQ40Z80_ADDR);
+    wire->write(command);
+    if (wire->endTransmission(false) != 0)
     {
         state_flag = 1;
         return 0;
     }
 
     // Block Read: 第一个字节是长度
-    uint8_t count = Wire.requestFrom(BQ40Z80_ADDR, len + 1);
+    uint8_t count = wire->requestFrom(BQ40Z80_ADDR, len + 1);
     if (count < 1) {
         state_flag = 2;
         return 0;
     }
 
-    uint8_t blockLen = Wire.read(); // 第一个字节是数据长度
+    uint8_t blockLen = wire->read(); // 第一个字节是数据长度
     if (blockLen > len) blockLen = len;
 
     for (uint8_t i = 0; i < blockLen; i++) {
-        if (Wire.available())
-            buf[i] = Wire.read();
+        if (wire->available())
+            buf[i] = wire->read();
     }
 
     state_flag = 0;
@@ -349,8 +350,4 @@ float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutof
 
     return energy_Wh;
 }
-
-
-
-BQ40Z80 bq40z80;
 

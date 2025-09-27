@@ -8,8 +8,9 @@ class BQ40Z80 {
 public:
     uint8_t state_flag; // 状态标志位
     uint8_t word_buf[6];
+    TwoWire* wire; // 新增成员变量，保存I2C对象
 
-    BQ40Z80();
+    BQ40Z80(TwoWire* wire); // 构造函数传入I2C对象
 
     int16_t read_temp(); // 读取电池温度 单位0.1℃
     uint16_t read_voltage(); // 读取电池组电压 单位：mv
