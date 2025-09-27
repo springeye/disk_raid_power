@@ -2,12 +2,10 @@
 #define REG_0x23 0x23
 #define REG_0x24 0x24
 #define REG_0x40 0x40
-SW6306::SW6306(uint8_t addr) {
-    _addr = addr;
-}
+SW6306::SW6306(uint8_t addr, TwoWire* wire) : _addr(addr), _wire(wire) {}
 
 void SW6306::begin() {
-    Wire.begin();
+    _wire->begin();
     disableLowPower();// 关闭低功耗
     unlockI2CWrite(true);//解锁寄存器写入
     enableForceControlOutputPower();//启用强制设置输出输出功率
@@ -92,27 +90,27 @@ void SW6306::update() {
 
 // ---- 私有方法 ----
 void SW6306::writeReg(uint8_t reg, uint8_t val) {
-    Wire.beginTransmission(_addr);
-    Wire.write(reg);
-    Wire.write(val);
-    Wire.endTransmission();
+    _wire->beginTransmission(_addr);
+    _wire->write(reg);
+    _wire->write(val);
+    _wire->endTransmission();
 }
 
 uint8_t SW6306::readReg8(uint8_t reg) {
-    Wire.beginTransmission(_addr);
-    Wire.write(reg);
-    Wire.endTransmission(false);
-    Wire.requestFrom(_addr, (uint8_t)1);
-    return Wire.available() ? Wire.read() : 0xFF;
+    _wire->beginTransmission(_addr);
+    _wire->write(reg);
+    _wire->endTransmission(false);
+    _wire->requestFrom(_addr, (uint8_t)1);
+    return _wire->available() ? _wire->read() : 0xFF;
 }
 
 uint16_t SW6306::readReg16(uint8_t reg) {
-    Wire.beginTransmission(_addr);
-    Wire.write(reg);
-    Wire.endTransmission(false);
-    Wire.requestFrom(_addr, (uint8_t)2);
-    uint8_t lo = Wire.available() ? Wire.read() : 0;
-    uint8_t hi = Wire.available() ? Wire.read() : 0;
+    _wire->beginTransmission(_addr);
+    _wire->write(reg);
+    _wire->endTransmission(false);
+    _wire->requestFrom(_addr, (uint8_t)2);
+    uint8_t lo = _wire->available() ? _wire->read() : 0;
+    uint8_t hi = _wire->available() ? _wire->read() : 0;
     return (uint16_t)(lo | (hi << 8));
 }
 

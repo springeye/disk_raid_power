@@ -4,7 +4,7 @@
 #include <Wire.h>
 
 // 构造函数
-IP2366::IP2366(uint8_t intPin) : _intPin(intPin) {
+IP2366::IP2366(uint8_t intPin, TwoWire* wire) : _intPin(intPin), _wire(wire) {
   // 初始化成员变量
   _isCharging = false;
   _chargeComplete = false;
@@ -22,7 +22,7 @@ IP2366::IP2366(uint8_t intPin) : _intPin(intPin) {
 // 初始化函数
 void IP2366::begin() {
   pinMode(_intPin, INPUT);
-  Wire.setClock(100000); // 建议I2C频率100kHz，符合IP2366官方建议
+  _wire->setClock(100000); // 建议I2C频率100kHz，符合IP2366官方建议
   delay(100);
   mylog.println("IP2366 Monitor Initialized");
 }
@@ -178,9 +178,9 @@ void IP2366::printStatus() {
 
 // 读取单个寄存器
 uint8_t IP2366::readRegister(uint8_t regAddr) {
-  Wire.beginTransmission(WRITE_ADDR);
-  Wire.write(regAddr);
-  uint8_t txResult = Wire.endTransmission(false);
+  _wire->beginTransmission(WRITE_ADDR);
+  _wire->write(regAddr);
+  uint8_t txResult = _wire->endTransmission(false);
   if (txResult != 0) {
     mylog.print("I2C NACK or error on address phase: ");
     mylog.println(txResult);
@@ -189,15 +189,15 @@ uint8_t IP2366::readRegister(uint8_t regAddr) {
 
   delayMicroseconds(50);
 
-  int bytesRequested = Wire.requestFrom((int)READ_ADDR, 1, true);
+  int bytesRequested = _wire->requestFrom((int)READ_ADDR, 1, true);
   if (bytesRequested != 1) {
     mylog.print("I2C requestFrom failed, bytesRequested: ");
     mylog.println(bytesRequested);
     return 0;
   }
   delay(1);
-  if (Wire.available()) {
-    uint8_t val = Wire.read();
+  if (_wire->available()) {
+    uint8_t val = _wire->read();
     delay(1);
     return val;
   }
@@ -224,10 +224,10 @@ void IP2366::writeRegisterWithMask(uint8_t regAddr, uint8_t value, uint8_t mask)
   uint8_t oldVal = readRegister(regAddr);
   // 按位修改
   uint8_t newVal = (oldVal & ~mask) | (value & mask);
-  Wire.beginTransmission(WRITE_ADDR); // 0xEA
-  Wire.write(regAddr);
-  Wire.write(newVal);
-  uint8_t txResult = Wire.endTransmission();
+  _wire->beginTransmission(WRITE_ADDR); // 0xEA
+  _wire->write(regAddr);
+  _wire->write(newVal);
+  uint8_t txResult = _wire->endTransmission();
   if (txResult != 0) {
     mylog.print("I2C write error: ");
     mylog.println(txResult);

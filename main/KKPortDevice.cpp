@@ -9,14 +9,14 @@
 #include <SW6306.h>
 #include <temp.h>
 // 声明独立的 TwoWire 实例
-TwoWire bqWire(1); // 1为I2C总线编号，ESP32等平台支持多个I2C实例
+TwoWire wire1(1); // 1为I2C总线编号，ESP32等平台支持多个I2C实例
 BQ40Z80* bq = nullptr;
 SW6306 sw;
 IP2366 ip2366;
 void KKPortDevice::init()
 {
-    bqWire.begin(26, 25);
-    bq = new BQ40Z80(&bqWire);
+    wire1.begin(26, 25);
+    bq = new BQ40Z80(&wire1);
 }
 int16_t KKPortDevice::getBatTemp()
 {

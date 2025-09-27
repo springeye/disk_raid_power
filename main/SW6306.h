@@ -30,7 +30,7 @@
 
 class SW6306 {
 public:
-    SW6306(uint8_t addr = SW6306_ADDR);
+    SW6306(uint8_t addr = SW6306_ADDR, TwoWire* wire = &Wire);
 
     void begin();       // 初始化
     void update();      // 周期调用，维持状态
@@ -47,6 +47,7 @@ public:
     void enableDischarge();
 private:
     uint8_t _addr;
+    TwoWire* _wire;
 
     void writeReg(uint8_t reg, uint8_t val);
     uint8_t readReg8(uint8_t reg);

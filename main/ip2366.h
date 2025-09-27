@@ -7,7 +7,7 @@
 class IP2366 {
 public:
   // 构造函数
-  IP2366(uint8_t intPin = 14);
+  IP2366(uint8_t intPin = 14, TwoWire* wire = &Wire);
 
   // 初始化函数
   void begin();
@@ -67,6 +67,7 @@ private:
   static const uint8_t REG_TYPEC_STATUS = 0x34;
   static const uint8_t REG_VBUS_STATUS = 0x33;
 
+  TwoWire* _wire;          // Wire对象指针
   uint8_t _intPin;          // INT引脚
   bool _isCharging;         // 充电状态
   bool _chargeComplete;     // 充电完成状态
@@ -105,5 +106,4 @@ private:
   uint16_t read16BitRegister(uint8_t lowReg, uint8_t highReg);
   void writeRegisterWithMask(uint8_t regAddr, uint8_t value, uint8_t mask);
 };
-extern IP2366 ip2366;
 #endif // IP2366_H
