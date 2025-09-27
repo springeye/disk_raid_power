@@ -151,3 +151,4 @@ void ESMPortDevice::loop()
 
 ESMPortDevice::~ESMPortDevice()
 = default;
+

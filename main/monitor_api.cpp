@@ -8,10 +8,10 @@
 #include <cell_helper.h>
 #include <log.h>
 #include <temp.h>
-#ifdef ESP32_169
+#if defined(ESP32_169)
 #include <KKPortDevice.h>
 IPortDevice* device = new KKPortDevice();
-#elif ESP32_S3_169
+#elif defined(ESP32_S3_169)
 #include <ESMPortDevice.h>
 IPortDevice* device = new ESMPortDevice();
 #endif
@@ -74,11 +74,12 @@ extern "C" {
 void updateUI()
 {
     device->loop();
-    mylog.printf("updateUi:percent=%d\n",device->getPercent());
-    mylog.printf("updateUi:power=%d\n",device->getPower());
     float bq_voltage = bq_get_voltage()/1000.0f;
     float bq_current = bq_get_current()/1000.0f;
-    float bq_power = bq_voltage*bq_current;
+    float bq_power = bq_get_power();
+    mylog.printf("updateUi:percent=%d\n",device->getPercent());
+    mylog.printf("updateUi:power=%.2f\n",bq_power);
+
     float bq_wh=bg_get_remaining_energy_wh(6,3.0f);
     uint8_t bq_percent=bq_get_percent();
     float bq_temp=bg_get_temp();
@@ -125,7 +126,7 @@ void updateUI()
     lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
     lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
     lv_label_set_text_float(ui_battemp, "%s°", bq_temp, 2);
-    lv_label_set_text_float(ui_voltage, "%sW", bq_voltage, 1);
+    lv_label_set_text_float(ui_voltage, "%sV", bq_voltage, 1);
     lv_label_set_text_float(ui_ip2366current, "%sA", ip2366_current, 2);
     lv_label_set_text_float(ui_ip2366voltage, "%sV", ip2366_voltage, 2);
     lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
