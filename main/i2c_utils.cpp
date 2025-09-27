@@ -17,7 +17,7 @@ void list_i2c_devices(TwoWire &wire,int num=1) {
         error = wire.endTransmission();
 
         if (error == 0) {
-            mylog.printf("I2C%d device found at 0x",num);
+            mylog.printf("I2C_%d device found at 0x",num);
             mylog.println(address, HEX);
             nDevices++;
         }

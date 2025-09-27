@@ -8,21 +8,21 @@
 #include <i2c_utils.h>
 #include <INA226_WE.h>
 #include <log.h>
-#define INA226_XT_ADDR 0x88
-#define INA226_AC_ADDR 0x80
-#define INA226_140_ADDR 0x82
+#define INA226_XT_ADDR 0x44
+#define INA226_AC_ADDR 0x40
+#define INA226_140_ADDR 0x41
 // 声明独立的 TwoWire 实例
 TwoWire wire226(1); // 1为I2C总线编号，ESP32等平台支持多个I2C实例
-TwoWire wirebq(2); // 1为I2C总线编号，ESP32等平台支持多个I2C实例
+TwoWire wirebq(2); // 2为I2C总线编号，ESP32等平台支持多个I2C实例
 INA226_WE* inaXT= nullptr;
 INA226_WE* inaAC= nullptr;
 INA226_WE* ina140= nullptr;
 BQ40Z80* bq40z80;
 void ESMPortDevice::init()
 {
-    wire226.begin(10, 11);
+    wire226.begin(3, 2);
     wirebq.begin(17,16);
-    list_i2c_devices(wirebq, 2);
+    list_i2c_devices(wire226, 1);
     bq40z80=new BQ40Z80(&wirebq);
     inaXT = new INA226_WE(&wire226, INA226_XT_ADDR);
     inaAC = new INA226_WE(&wire226, INA226_AC_ADDR);
@@ -55,7 +55,59 @@ float ESMPortDevice::getBatTemp()
 
 PortStatus ESMPortDevice::getPortState(PortType port)
 {
+    if (port==C1A1)
+    {
+        float current = inaAC->getCurrent_mA();
+        float voltage=inaAC->getBusVoltage_V();
+        bool is6306DisCharging=current<0 && voltage>0;
+        bool is6306Charging=current>0 && voltage>0;
+        PortStatus status{};
+        if (is6306Charging)
+        {
+            status.voltage=voltage;
+            status.current=current/1000.0f;
+            status.state=PortState::Input;
+        }else if (is6306DisCharging)
+        {
+            status.voltage=voltage;
+            status.current=current/1000.0f;
+            status.state=PortState::Output;
+        }else
+        {
+            status.voltage=0;
+            status.current=0;
+            status.state=PortState::NONE;
+        }
 
+        return status;
+
+    }else if (port==C2)
+    {
+
+        float current = ina140->getCurrent_mA();
+        float voltage=ina140->getBusVoltage_V();
+        bool isDisCharging=current<0 && voltage>0;
+        bool isCharging=current>0 && voltage>0;
+        PortStatus status{};
+        if (isCharging)
+        {
+            status.voltage=voltage;
+            status.current=current/1000.0f;
+            status.state=PortState::Input;
+        }else if (isDisCharging)
+        {
+            status.voltage=voltage;
+            status.current=current/1000.0f;
+            status.state=PortState::Output;
+        }else
+        {
+            status.voltage=0;
+            status.current=0;
+            status.state=PortState::NONE;
+        }
+
+        return status;
+    }
     return PortStatus{};
 }
 
@@ -66,7 +118,7 @@ uint8_t ESMPortDevice::getPercent()
 
 float ESMPortDevice::getTotalIn()
 {
-    PortStatus c1 = getPortState(PortType::C1);
+    PortStatus c1 = getPortState(PortType::C1A1);
     PortStatus c2 = getPortState(PortType::C2);
     float total_in=0.0f;
     if (c1.state==PortState::Input)
@@ -82,7 +134,7 @@ float ESMPortDevice::getTotalIn()
 
 float ESMPortDevice::getTotalOut()
 {
-    PortStatus c1 = getPortState(PortType::C1);
+    PortStatus c1 = getPortState(PortType::C1A1);
     PortStatus c2 = getPortState(PortType::C2);
     float total_out=0.0f;
     if (c1.state==PortState::Output)
@@ -123,30 +175,32 @@ float ESMPortDevice::getTotalCurrent()
 
 void ESMPortDevice::loop()
 {
-    // float shuntVoltage_mV = 0.0;
-    // float loadVoltage_V = 0.0;
-    // float busVoltage_V = 0.0;
-    // float current_mA = 0.0;
-    // float power_mW = 0.0;
-    //
-    // inaAC->readAndClearFlags();
-    // shuntVoltage_mV = inaAC->getShuntVoltage_mV();
-    // busVoltage_V = inaAC->getBusVoltage_V();
-    // current_mA = inaAC->getCurrent_mA();
-    // power_mW = inaAC->getBusPower();
-    // loadVoltage_V  = busVoltage_V + (shuntVoltage_mV/1000);
-    //
-    // mylog.print("Shunt Voltage [mV]: "); mylog.println(shuntVoltage_mV);
-    // mylog.print("Bus Voltage [V]: "); mylog.println(busVoltage_V);
-    // mylog.print("Load Voltage [V]: "); mylog.println(loadVoltage_V);
-    // mylog.print("Current[mA]: "); mylog.println(current_mA);
-    // mylog.print("Bus Power [mW]: "); mylog.println(power_mW);
-    // if(!inaAC->overflow){
-    //     mylog.println("Values OK - no overflow");
-    // }
-    // else{
-    //     mylog.println("Overflow! Choose higher current range");
-    // }
+    float shuntVoltage_mV = 0.0;
+    float loadVoltage_V = 0.0;
+    float busVoltage_V = 0.0;
+    float current_mA = 0.0;
+    float power_mW = 0.0;
+
+    inaAC->readAndClearFlags();
+    shuntVoltage_mV = inaAC->getShuntVoltage_mV();
+    busVoltage_V = inaAC->getBusVoltage_V();
+    current_mA = inaAC->getCurrent_mA();
+    power_mW = inaAC->getBusPower();
+    loadVoltage_V  = busVoltage_V + (shuntVoltage_mV/1000);
+
+    mylog.print("Shunt Voltage [mV]: "); mylog.println(shuntVoltage_mV);
+    mylog.print("Bus Voltage [V]: "); mylog.println(busVoltage_V);//当前电压
+    mylog.print("Load Voltage [V]: "); mylog.println(loadVoltage_V);
+    mylog.print("Current[mA]: "); mylog.println(current_mA);//当前电流，负数表示放电
+    mylog.print("Bus Power [mW]: "); mylog.println(power_mW);//功率
+    if(!inaAC->overflow){
+        mylog.println("Values OK - no overflow");
+    }
+    else{
+        mylog.println("Overflow! Choose higher current range");
+    }
+    mylog.println("");
+    mylog.println("");
 }
 
 ESMPortDevice::~ESMPortDevice()
