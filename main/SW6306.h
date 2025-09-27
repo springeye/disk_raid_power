@@ -57,5 +57,4 @@ private:
 
 
 };
-extern SW6306 sw;  // 默认地址 0x3C
 #endif

@@ -31,9 +31,7 @@ extern "C" {
 #include "esp_efuse.h"
 #endif
 #define BUTTON_PIN KEY_01
-BQ40Z80 bq(&Wire); // 修改为传入Wire对象
-IP2366 ip2366;
-SW6306 sw; // 默认地址 0x3C
+
 // BLEManager bleManager;
 OneButton btn = OneButton(
     BUTTON_PIN, // Input pin for the button
@@ -141,11 +139,10 @@ void setup()
         //SDC 10
         //BQSDA 17
         //BQSDC 16
-        Wire.begin(11, 10);
 #elifdef ESP32_169
-        Wire.begin(26, 25);
+        device->init();
 #endif
-        list_i2c_devices(Wire,1);
+        // list_i2c_devices(Wire,1);
 
 
         pinMode(12, OUTPUT);
@@ -235,12 +232,13 @@ void setup()
         }, 5); // 每10ms检查一次按钮状态
         scheduler.addTask([]
         {
+
             // sw.feedWatchdog();
             // sw.update();
         },5000);
         scheduler.addTask([]
         {
-            // updateUI();
+            updateUI();
         },100);
         scheduler.addTask([]
         {

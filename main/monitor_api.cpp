@@ -5,67 +5,65 @@
 #include "monitor_api.h"
 #include <lvgl.h>
 #include "ui_schome.h"
-#include <bq40z80.h>
 #include <cell_helper.h>
-#include <IP2366.h>
-#include <SW6306.h>
-#include <log.h>
 #include <temp.h>
-// C API 实现
+#ifdef ESP32_169
+#include <KKPortDevice.h>
+IPortDevice* device = new KKPortDevice();
+#elif ESP32_S3_169
+IPortDevice* device = new KKPortDevice();
+#endif
 
 extern "C" {
     uint8_t bq_get_percent(void) {
-        return bq.read_capacity();
+        return device->getPercent();
     }
     uint16_t bq_get_cell_voltage(uint8_t cell_index) {
-        return bq.read_cell_voltage(cell_index);
+        return device->getCellVoltage(cell_index);
     }
     float bg_get_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v)
     {
-        return bq.read_remaining_energy_wh(cell_count, cell_cutoff_v);
+        return device->getWh(cell_count, cell_cutoff_v);
     }
     float bq_get_voltage()
     {
-        return bq.read_voltage();
+        return device->getTotalVoltage();
     }
     float bq_get_current()
     {
-        return bq.read_current();
+        return device->getTotalCurrent();
     }
     float bq_get_power()
     {
-        float bq_voltage = bq_get_voltage()/1000.0f;
-        float bq_current = bq_get_current()/1000.0f;
-        float bq_power = bq_voltage*bq_current;
-        return bq_power;
+
+        return device->getPower();
     }
     int16_t bg_get_temp()
     {
-        return bq.read_temp();
+        return device->getBatTemp();
     }
 }
 extern "C" {
     float get2366Voltage()
     {
-        return ip2366.getTypeCVoltage();
+        return device->getPortState(PortType::C2).voltage;
     }
     float get2366Current()
     {
-        return ip2366.getTypeCCurrent();
+        return device->getPortState(PortType::C2).current;
     }
     float get2366Power()
     {
-
-        float power = ip2366.getSystemPower();
-        return power;
+        auto status = device->getPortState(PortType::C2);
+        return status.voltage*status.current;
     }
     bool is2366Charging()
     {
-        return ip2366.isCharging();
+        return device->getPortState(PortType::C2).state==PortState::Input;
     }
     bool is2366DisCharging()
     {
-        return ip2366.isDischarging();
+        return device->getPortState(PortType::C2).state==PortState::Output;
     }
 }
 
@@ -73,59 +71,27 @@ extern "C" {
 extern "C" {
 void updateUI()
 {
-    // mylog.println("");
-    // mylog.println("");
-    // mylog.println("");
-    // mylog.println("begin updateUI");
-
+    device->loop();
     float bq_voltage = bq_get_voltage()/1000.0f;
     float bq_current = bq_get_current()/1000.0f;
     float bq_power = bq_voltage*bq_current;
     float bq_wh=bg_get_remaining_energy_wh(6,3.0f);
     uint8_t bq_percent=bq_get_percent();
     float bq_temp=static_cast<float>(bg_get_temp())/10.0f;
-    bool bq_is_charging = bq.is_charging();
-    bool bq_is_discharging = bq.is_discharging();
     float cell[6] = {0.0f};
     for (int i = 0; i < 6; ++i) {
-        cell[i] = static_cast<float>(bq.read_cell_voltage(i + 1)/1000);
+        cell[i] = device->getCellVoltage(i + 1)/1000;
     }
 
-    if (false){
-    mylog.printf("BQ当前电压:%.3fV\n",bq_voltage);
-    mylog.printf("BQ当前电流:%.3FA\n",bq_current);
-    mylog.printf("BQ当前功率:%.3FW\n",bq_power);
-    mylog.printf("BQ当前温度:%.2f°\n",bq_temp);
-    mylog.printf("BQ充电中:%d\n",bq_is_charging);
-    mylog.printf("BQ放电中:%d\n",bq_is_discharging);
-    mylog.printf("BQ当前电量:%d%%\n",bq_percent);
-    mylog.printf("BQ当前容量:%.2fWh\n",bq_wh);
 
+    float ip2366_voltage = get2366Voltage();
+    float ip2366_current =get2366Current();
+    float ip2366_power =get2366Power();
 
-
-    mylog.printf("BQ电芯1:%.3f\n",cell[0]);
-    mylog.printf("BQ电芯2:%.3f\n",cell[1]);
-    mylog.printf("BQ电芯3:%.3f\n",cell[2]);
-    mylog.printf("BQ电芯4:%.3f\n",cell[3]);
-    mylog.printf("BQ电芯5:%.3f\n",cell[4]);
-    mylog.printf("BQ电芯6:%.3f\n",cell[5]);
-    }
-    float ip2366_voltage =0.0f;
-    float ip2366_current =0.0f;
-    float ip2366_power =0.0f;
-    if (ip2366.canCommunicate()) {
-        // 读取所有数据并打印
-        ip2366.readAllData();
-        ip2366_voltage = get2366Voltage();
-        ip2366_current = get2366Current();
-        ip2366_power = get2366Power();
-    } else {
-        // Serial.println("INT pin low, waiting for communication...");
-    }
-    float sw6306_voltage = sw.readVBUS()/1000.0f;
-    float sw6306_current = sw.readIBUS()/1000.0f;
-    bool is6306DisCharging=sw.isC1Source();
-    bool is6306Charging=sw.isC1Sink();
+    float sw6306_voltage = device->getPortState(PortType::C1).voltage;
+    float sw6306_current = device->getPortState(PortType::C1).current;
+    bool is6306DisCharging=device->getPortState(PortType::C1).state==PortState::Output;
+    bool is6306Charging=device->getPortState(PortType::C1).state==PortState::Input;
     if (!is6306Charging && !is6306DisCharging)
     {
         sw6306_voltage=0.0f;

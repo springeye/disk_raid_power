@@ -5,7 +5,6 @@
 SW6306::SW6306(uint8_t addr, TwoWire* wire) : _addr(addr), _wire(wire) {}
 
 void SW6306::begin() {
-    _wire->begin();
     disableLowPower();// 关闭低功耗
     unlockI2CWrite(true);//解锁寄存器写入
     enableForceControlOutputPower();//启用强制设置输出输出功率

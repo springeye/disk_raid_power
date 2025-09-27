@@ -2,11 +2,8 @@
 
 #include <log.h>
 #include <ArduinoJson.h>
-#include <bq40z80.h>
-#include <ip2366.h>
 #include <monitor_api.h>
-#include <SW6306.h>
-#include <temp.h>
+#include "monitor_api.h"
 
 #include "esp_coexist.h"   // 共存相关API（Arduino下也可直接用）
 // 静态成员变量初始化
@@ -63,46 +60,25 @@ void ESP32Control::begin(const char* deviceName) {
 }
 void ESP32Control::sendData()
 {
-    float ip2366_voltage =0.0f;
-    float ip2366_current =0.0f;
-    float ip2366_power =0.0f;
-    if (ip2366.canCommunicate()) {
-        // 读取所有数据并打印
-        ip2366.readAllData();
-        ip2366_voltage = get2366Voltage();
-        ip2366_current = get2366Current();
-        ip2366_power = get2366Power();
-    }
-    float total_out_power=0;
-    float total_in_power=0;
-    bool is6306Charging=sw.isC1Sink();
-    bool is6306DisCharging=sw.isC1Source();
-    float sw6306_voltage = sw.readVBUS()/1000.0f;
-    float sw6306_current = sw.readIBUS()/1000.0f;
+    device->loop();
+    auto c1 = device->getPortState(PortType::C1);
+    auto c2 = device->getPortState(PortType::C2);
+    float ip2366_voltage = c2.voltage;
+    float ip2366_current = c2.current;
+    float ip2366_power = ip2366_voltage*ip2366_current;
+    float total_out_power=device->getTotalOut();
+    float total_in_power=device->getTotalIn();
+    float sw6306_voltage = c1.voltage;
+    float sw6306_current = c1.current;
     float sw6306_power = sw6306_voltage*sw6306_current;
-    if (is6306Charging)
-    {
-        total_in_power+=sw6306_power;
-    }
-    if (is2366Charging())
-    {
-        total_in_power+=ip2366_power;
-    }
-    if (is6306DisCharging)
-    {
-        total_out_power+=sw6306_power;
-    }
-    if (is2366DisCharging())
-    {
-        total_out_power+=ip2366_power;
-    }
+
     float bq_temp=static_cast<float>(bg_get_temp())/10.0f;
     JsonDocument doc;
     doc["system"]["free_mem"]=(unsigned int)esp_get_free_heap_size();
     doc["monitor"]["left_c"]["voltage"]=sw6306_voltage;
     doc["monitor"]["left_c"]["current"]= sw6306_current;
     doc["monitor"]["left_c"]["power"]= sw6306_power;
-    doc["monitor"]["left_c"]["state"]=sw.isC1Sink()?"sink":sw.isC1Source()?"source":"none";
+    doc["monitor"]["left_c"]["state"]=c1.state==Input?"input":c1.state==Output?"out":"none";
     doc["monitor"]["right_c"]["voltage"]=ip2366_voltage;
     doc["monitor"]["right_c"]["current"]=ip2366_current;
     doc["monitor"]["right_c"]["power"]=ip2366_power;
@@ -112,7 +88,7 @@ void ESP32Control::sendData()
     doc["monitor"]["total"]["percent"]=bq_get_percent();
 
     doc["monitor"]["total"]["temp_bat"]=bq_temp;
-    doc["monitor"]["total"]["temp_board"]=read_temp();
+    doc["monitor"]["total"]["temp_board"]=device->getBoardTemp();
     doc["monitor"]["total"]["percent"]=bq_get_percent();
     doc["monitor"]["total"]["wh"]=bg_get_remaining_energy_wh(6,3.0);
     doc["monitor"]["total"]["cell1"]=bq_get_cell_voltage(1);

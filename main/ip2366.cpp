@@ -24,7 +24,7 @@ void IP2366::begin() {
   pinMode(_intPin, INPUT);
   _wire->setClock(100000); // 建议I2C频率100kHz，符合IP2366官方建议
   delay(100);
-  mylog.println("IP2366 Monitor Initialized");
+  mylog.printf("IP2366 Monitor Initialized,PIN_INIT is %d\n",_intPin);
 }
 
 // 读取所有数据

@@ -11,11 +11,17 @@ public:
     void init() override;
     PortStatus getPortState(PortType port) override;
     uint8_t getPercent() override;
+    float getPower() override;
     float getTotalIn() override;
     float getTotalOut() override;
-    int16_t getBatTemp() override;
-    int16_t getBoardTemp() override;
+    float getBatTemp() override;
+    float getBoardTemp() override;
     float getCellVoltage(uint8_t index) override;
+    float getWh(uint8_t cell_count, float cell_cutoff_v) override;
+    float getTotalVoltage() override;
+    float getTotalCurrent() override;
+    void loop() override;
+
     ~KKPortDevice() override;
 };
 #endif //DISK_RAID_POWER_KKPORTDEVICE_H

@@ -4,6 +4,7 @@
 
 #ifndef DISK_RAID_POWER_MONITOR_API_H
 #define DISK_RAID_POWER_MONITOR_API_H
+#include "PortDevices.h"
 #include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
@@ -28,5 +29,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+// monitor_api.h
+extern IPortDevice* device;
 
 #endif //DISK_RAID_POWER_MONITOR_API_H
