@@ -176,8 +176,8 @@ void setup()
 
         init_temp();
         checkPendingAndValidate();
-        sw.begin();
-        ip2366.begin();
+        // sw.begin();
+        // ip2366.begin();
 
         ui_init();
         init_cells();
@@ -235,12 +235,12 @@ void setup()
         }, 5); // 每10ms检查一次按钮状态
         scheduler.addTask([]
         {
-            sw.feedWatchdog();
-            sw.update();
+            // sw.feedWatchdog();
+            // sw.update();
         },5000);
         scheduler.addTask([]
         {
-            updateUI();
+            // updateUI();
         },100);
         scheduler.addTask([]
         {
