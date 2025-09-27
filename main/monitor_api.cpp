@@ -77,7 +77,7 @@ void updateUI()
     float bq_power = bq_voltage*bq_current;
     float bq_wh=bg_get_remaining_energy_wh(6,3.0f);
     uint8_t bq_percent=bq_get_percent();
-    float bq_temp=static_cast<float>(bg_get_temp())/10.0f;
+    float bq_temp=bg_get_temp();
     float cell[6] = {0.0f};
     for (int i = 0; i < 6; ++i) {
         cell[i] = device->getCellVoltage(i + 1)/1000;
