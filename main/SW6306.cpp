@@ -11,7 +11,7 @@ void SW6306::begin() {
     // 配置最大输入输出功率
     writeReg(SW6306_CTRG_PISET, 20);
     writeReg(SW6306_CTRG_POSET, 20);
-    delay(100);
+    delay(10);
     writeReg(SW6306_CTRG_PISET, 100);
     writeReg(SW6306_CTRG_POSET, 100);
 

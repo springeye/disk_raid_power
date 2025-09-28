@@ -126,7 +126,7 @@ void setup()
 #else
         Serial.begin(115200);
 #endif
-        delay(1000);
+        delay(10);
 #ifdef  BLE_ENABLED
         ESP32Control::begin("disk_raid_power");
 #endif
@@ -134,7 +134,7 @@ void setup()
 
         mylog.println("setup.....");
         // bleManager.begin();
-        device->init();
+
 #ifdef ESP32_S3_169
         //SDA 11
         //SDC 10
@@ -175,6 +175,7 @@ void setup()
 
         ui_init();
         init_cells();
+        device->init();
         updateUI();
         update_cells();
         //
@@ -222,7 +223,6 @@ void setup()
         {
             mylog.println("Long Pressed stop!");
         });
-        btn.setLongPressIntervalMs(400);
 #ifdef ESP32_169
         scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
 #endif
