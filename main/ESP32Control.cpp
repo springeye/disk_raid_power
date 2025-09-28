@@ -61,7 +61,7 @@ void ESP32Control::begin(const char* deviceName) {
 void ESP32Control::sendData()
 {
     device->loop();
-    auto c1 = device->getPortState(PortType::C1A1);
+    auto c1 = device->getPortState(PortType::C1);
     auto c2 = device->getPortState(PortType::C2);
     float ip2366_voltage = c2.voltage;
     float ip2366_current = c2.current;

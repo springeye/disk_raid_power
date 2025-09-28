@@ -55,7 +55,7 @@ float ESMPortDevice::getBatTemp()
 
 PortStatus ESMPortDevice::getPortState(PortType port)
 {
-    if (port==C1A1)
+    if (port==C1)
     {
         float current = inaAC->getCurrent_mA();
         float voltage=inaAC->getBusVoltage_V();
@@ -118,7 +118,7 @@ uint8_t ESMPortDevice::getPercent()
 
 float ESMPortDevice::getTotalIn()
 {
-    PortStatus c1 = getPortState(PortType::C1A1);
+    PortStatus c1 = getPortState(PortType::C1);
     PortStatus c2 = getPortState(PortType::C2);
     float total_in=0.0f;
     if (c1.state==PortState::Input)
@@ -134,7 +134,7 @@ float ESMPortDevice::getTotalIn()
 
 float ESMPortDevice::getTotalOut()
 {
-    PortStatus c1 = getPortState(PortType::C1A1);
+    PortStatus c1 = getPortState(PortType::C1);
     PortStatus c2 = getPortState(PortType::C2);
     float total_out=0.0f;
     if (c1.state==PortState::Output)

@@ -97,10 +97,10 @@ void updateUI()
     float ip2366_current =fabs(get2366Current());
     float ip2366_power =get2366Power();
 
-    float sw6306_voltage = device->getPortState(PortType::C1A1).voltage;
-    float sw6306_current = fabs(device->getPortState(PortType::C1A1).current);
-    bool is6306DisCharging=device->getPortState(PortType::C1A1).state==PortState::Output;
-    bool is6306Charging=device->getPortState(PortType::C1A1).state==PortState::Input;
+    float sw6306_voltage = device->getPortState(PortType::C1).voltage;
+    float sw6306_current = fabs(device->getPortState(PortType::C1).current);
+    bool is6306DisCharging=device->getPortState(PortType::C1).state==PortState::Output;
+    bool is6306Charging=device->getPortState(PortType::C1).state==PortState::Input;
     if (!is6306Charging && !is6306DisCharging)
     {
         sw6306_voltage=0.0f;

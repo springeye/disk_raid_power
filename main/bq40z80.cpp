@@ -334,19 +334,10 @@ float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutof
 {
     uint16_t remaining_mAh = read_Remaining_Capacity(); // mAh
     uint16_t pack_mV = read_voltage();                 // mV
-
-    // 转换单位
-    float remaining_Ah = remaining_mAh / 1000.0f;
-    float pack_V = pack_mV / 1000.0f;
-
-    // 放电截止电压总和
-    float cutoff_V = cell_cutoff_v * cell_count;
-
-    // 近似平均电压（线性估算）
-    float avg_V = cutoff_V + (pack_V - cutoff_V) / 2.0f;
-
-    // 剩余能量
-    float energy_Wh = remaining_Ah * avg_V;
+    float remaining_Ah = remaining_mAh / 1000.0f;  // mAh → Ah
+    float pack_V = pack_mV / 1000.0f;              // mV → V
+    // 瞬时能量估算
+    float energy_Wh = remaining_Ah * pack_V;
 
     return energy_Wh;
 }

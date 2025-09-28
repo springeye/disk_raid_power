@@ -12,7 +12,7 @@ enum PortType {
 };
 #elif ESP32_S3_169
 enum PortType {
-    C1A1,
+    C1,
     C2,
 };
 #endif
