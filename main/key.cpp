@@ -25,12 +25,15 @@ uint8_t btn_get_state(struct lwbtn* lw, struct lwbtn_btn* btn)
 {
     return (digitalRead(btn->arg) == LOW);
 }
-
+long lasttime=0;
 void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
 {
+
+
     switch (evt)
     {
     case LWBTN_EVT_ONPRESS:         {
+            lasttime=millis();
             mylog.println("key press!");
             mylog.printf("last_state:%d\n",btn->last_state);
             mylog.printf("time_change:%d\n",btn->time_change);
@@ -44,6 +47,7 @@ void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
     }
     case LWBTN_EVT_ONCLICK:
         {
+
             // mylog.println("Single click!");
             break;
         }
@@ -51,6 +55,10 @@ void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
             mylog.println("key keepalive");
             mylog.printf("keepalive.cnt:%d\n",btn->keepalive.cnt);
             mylog.printf("keepalive.last_time:%d\n",btn->keepalive.last_time);
+            if (millis()-lasttime>3000)
+            {
+
+            }
             break;
     }
     default: break;

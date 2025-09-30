@@ -33,17 +33,6 @@ extern "C" {
 #include "esp_efuse.h"
 #endif
 
-bool need_setup_ota = false;
-char g_ip[32] = {0};
-volatile bool wifi_ready = false;
-
-void setup_ota_task(void* param)
-{
-    setup_ota(); // WiFi初始化
-    snprintf(g_ip, sizeof(g_ip), "%u.%u.%u.%u", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
-    wifi_ready = true;
-    vTaskDelete(NULL);
-}
 
 bool runSelfTest()
 {
