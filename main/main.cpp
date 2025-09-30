@@ -22,6 +22,7 @@
 #include <temp.h>
 #include <math.h>
 #include "lv_conf.h"
+#include "drivers/lv_fs_arduino.h"
 #define SPIFFS LittleFS  // 兼容旧代码
 #ifdef ESP32
 extern "C" {
@@ -127,9 +128,6 @@ void setup()
         Serial.begin(115200);
 #endif
         delay(10);
-#ifdef  BLE_ENABLED
-        ESP32Control::begin("disk_raid_power");
-#endif
 
 
         mylog.println("setup.....");
@@ -164,6 +162,13 @@ void setup()
 #ifdef TFT_BLK
         pinMode(TFT_BLK, OUTPUT);
         analogWrite(TFT_BLK, 255);
+#endif
+        lv_fs_arduino_init();
+        lv_obj_t * img = lv_img_create(lv_scr_act());
+        lv_img_set_src(img, "S:/images/splash.bmp");
+        lv_obj_center(img);
+#ifdef  BLE_ENABLED
+        ESP32Control::begin("disk_raid_power");
 #endif
         #ifdef ESP32_169
         init_temp();

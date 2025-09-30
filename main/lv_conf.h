@@ -78,7 +78,7 @@
 
 /* 关闭所有图片格式支持 */
 #define LV_USE_PNG            0
-#define LV_USE_BMP            0
+#define LV_USE_BMP            1
 #define LV_USE_SJPG           0
 #define LV_USE_GIF            0
 
