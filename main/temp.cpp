@@ -17,7 +17,6 @@ void init_temp() {
 }
 
 float read_temp() {
-    mylog.println("read_temp");
     // 直接获取毫伏数，更准确
     int mv = analogReadMilliVolts(TEMP_PIN);
     float voltage = mv / 1000.0; // 转换成伏特

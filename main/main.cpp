@@ -1,4 +1,5 @@
 #include <base.h>
+#include <key.h>
 
 #include "lvgl.h"
 #include "app_hal.h"
@@ -18,7 +19,6 @@
 #include <i2c_utils.h>
 #include <ip2366.h>
 #include <SW6306.h>
-#include <OneButton.h>
 #include <ota.h>
 #include <LittleFS.h>
 #include <temp.h>
@@ -32,14 +32,7 @@ extern "C" {
 
 #include "esp_efuse.h"
 #endif
-#define BUTTON_PIN KEY_01
 
-// BLEManager bleManager;
-OneButton btn = OneButton(
-    BUTTON_PIN, // Input pin for the button
-    true, // Button is active LOW
-    false // Enable internal pull-up resistor
-);
 bool need_setup_ota = false;
 char g_ip[32] = {0};
 volatile bool wifi_ready = false;
@@ -126,7 +119,7 @@ void setup()
         pinMode(12, OUTPUT);
         digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
 #endif
-
+        init_btn();
         // 初始化 SPIFFS，如果挂载失败则自动格式化
         if (!SPIFFS.begin(true))
         {
@@ -160,35 +153,8 @@ void setup()
         device->init();
         updateUI();
         update_cells();
-        btn.attachClick([]()
-        {
-            mylog.println("Single click!");
-        });
-        btn.attachDoubleClick([]()
-        {
-            mylog.println("Double Pressed!");
-            if (lv_scr_act() == ui_schome)
-            {
-                ui_scota_screen_init();
-                lv_scr_load_anim(ui_scota, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, true);
-                xTaskCreate(setup_ota_task, "setup_ota", 4096, NULL, 1, NULL); // 启动异步任务
-            }
-            else if (lv_scr_act() == ui_scota)
-            {
-                ui_schome_screen_init();
-                lv_scr_load_anim(ui_schome, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 200, 0, true);
-                destory_ota();
-            }
-        });
-        btn.attachLongPressStart([]()
-        {
-            mylog.println("Long Pressed start!");
-            digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
-        });
-        btn.attachLongPressStop([]()
-        {
-            mylog.println("Long Pressed stop!");
-        });
+
+
 #ifdef ESP32_169
         scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
 #endif
@@ -210,8 +176,11 @@ void setup()
         {
             ble();
             hal_loop();
-            btn.tick();
         },1);
+        scheduler.addTask([]
+        {
+            tick_btn();
+        },0); // 立即执行一次;
 
 
     }
