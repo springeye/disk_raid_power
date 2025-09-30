@@ -6,6 +6,10 @@
 
 #include <cmath>
 #include <esp32-hal-gpio.h>
+#ifdef  BLE_ENABLED
+#include <ESP32Control.h>
+#endif
+
 #include <log.h>
 #include <monitor_api.h>
 
