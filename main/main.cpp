@@ -1,3 +1,5 @@
+#include <base.h>
+
 #include "lvgl.h"
 #include "app_hal.h"
 #include "ui.h"
@@ -93,26 +95,6 @@ void checkPendingAndValidate()
 unsigned long previousMillis = 0;
 TaskScheduler scheduler;
 
-void ble() {
-#ifdef BLE_ENABLED
-    ESP32Control::loop();
-#endif
-
-}
-void auto_power_off() {
-    float total_power = fabs(bq_get_power());
-#ifdef BLE_ENABLED
-    if (total_power < 0.7f && !ESP32Control::isClintConnected()) {
-#endif
-#ifndef BLE_ENABLED
-        if (total_power < 0.7f) {
-#endif
-
-
-        digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
-        Serial.println("断电");
-    }
-}
 
 void setup()
 {
@@ -178,22 +160,6 @@ void setup()
         device->init();
         updateUI();
         update_cells();
-        //
-        // if (digitalRead(BUTTON_PIN) == LOW)
-        // {
-        //     mylog.println("btn is pressed");
-        //     lv_disp_load_scr(ui_scota);
-        // }
-        // else
-        // {
-        //     mylog.println("btn not pressed");
-        //     lv_disp_load_scr(ui_schome);
-        // }
-
-        // btn.attachPress([]
-        // {
-        //     myprintln("Single Pressed!");
-        // });
         btn.attachClick([]()
         {
             mylog.println("Single click!");
