@@ -9,10 +9,16 @@
 // 静态成员变量初始化
 BLEServer* ESP32Control::pServer = nullptr;
 BLECharacteristic* ESP32Control::pCharacteristic = nullptr;
+BLECharacteristic* ESP32Control::pOtaDataCharacteristic = nullptr;
 bool ESP32Control::deviceConnected = false;
 bool ESP32Control::oldDeviceConnected = false;
+bool ESP32Control::otaReceiving = false;
+size_t ESP32Control::otaTotalSize = 0;
+size_t ESP32Control::otaReceivedSize = 0;
 int ESP32Control::deviceParameter = 0;
 char ESP32Control::deviceStatus[32] = "Ready";
+
+#define OTA_DATA_UUID "0000fff2-0000-1000-8000-00805f9b34fb"
 
 void ESP32Control::begin(const char* deviceName) {
     Serial.begin(115200);
@@ -38,6 +44,14 @@ void ESP32Control::begin(const char* deviceName) {
     pCharacteristic->setCallbacks(new MyCallbacks());
     pCharacteristic->addDescriptor(new BLE2902());
     
+    // OTA数据特征值
+    pOtaDataCharacteristic = pService->createCharacteristic(
+        OTA_DATA_UUID,
+        BLECharacteristic::PROPERTY_WRITE
+    );
+    pOtaDataCharacteristic->setCallbacks(new OtaDataCallbacks());
+    pOtaDataCharacteristic->addDescriptor(new BLE2902());
+
     // 启动服务
     pService->start();
     
@@ -164,7 +178,25 @@ void ESP32Control::MyCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     }
 }
 
+void ESP32Control::OtaDataCallbacks::onWrite(BLECharacteristic* pChar) {
+        if (!ESP32Control::otaReceiving) return;
+        String value = pChar->getValue();
+        if (value.length() > 0) {
+            size_t written = Update.write((uint8_t*)value.c_str(), value.length());
+            ESP32Control::otaReceivedSize += written;
+            Serial.printf("OTA数据包写入: %u 字节, 总进度: %u/%u\n", (unsigned int)written, (unsigned int)ESP32Control::otaReceivedSize, (unsigned int)ESP32Control::otaTotalSize);
+            if (written != value.length()) {
+                Serial.println("OTA写入失败，终止升级");
+                Update.abort();
+                ESP32Control::otaReceiving = false;
+            }
+        }
+};
+
 void ESP32Control::handleBluetoothData(const char* data) {
+    char ssid[4] = {0};
+    strncpy(ssid, data, 4);
+    mylog.println(ssid);
     if (strncmp(data, "WIFI:", 5) == 0) {
         const char* sep = strchr(data + 5, ';');
         if (sep) {
@@ -221,25 +253,24 @@ void ESP32Control::handleOTAUpdate(const char* data) {
         Serial.println(fileSize);
         if (Update.begin(fileSize)) {
             sendResponse("OTA:READY");
+            otaReceiving = true;
+            otaTotalSize = fileSize;
+            otaReceivedSize = 0;
         } else {
             sendResponse("OTA:FAIL:Begin failed");
-        }
-    } else if (strncmp(data, "OTA:DATA", 8) == 0) {
-        const char* otaData = data + 8;
-        size_t len = strlen(otaData);
-        size_t written = Update.write((uint8_t*)otaData, len);
-        if (written != len) {
-            sendResponse("OTA:FAIL:Write error");
+            otaReceiving = false;
         }
     } else if (strcmp(data, "OTA:END") == 0) {
-        if (Update.end(true)) {
+        if (otaReceiving && Update.end(true)) {
             sendResponse("OTA:SUCCESS");
             Serial.println("OTA更新成功，准备重启...");
             delay(1000);
             ESP.restart();
         } else {
             sendResponse("OTA:FAIL:End failed");
+            Update.abort();
         }
+        otaReceiving = false;
     }
 }
 

@@ -120,7 +120,7 @@ void setup()
             size_t used = SPIFFS.usedBytes();
             mylog.printf("总空间: %u 字节, 已用: %u 字节\n", total, used);
             // 用完后立即释放 SPIFFS 占用的 heap
-            SPIFFS.end();
+            // SPIFFS.end();
         }
 
         // mylog.println("1111");
@@ -148,9 +148,9 @@ void setup()
         scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
 #endif
 
-        scheduler.addTask([]() {
-            ota_loop();
-        }, 5); // 每10ms检查一次按钮状态
+        // scheduler.addTask([]() {
+        //     ota_loop();
+        // }, 5); // 每10ms检查一次按钮状态
         scheduler.addTask([]
         {
 
@@ -170,7 +170,10 @@ void setup()
         {
             tick_btn();
         },0); // 立即执行一次;
-
+        // scheduler.addTask([]
+        //   {
+        //       ota_loop();
+        //   },500); // 立即执行一次;
 
     }
     catch (...)

@@ -7,7 +7,9 @@
 #include <cstdint>
 #include <Arduino.h>
 #include <log.h>
+#include <ota.h>
 #include <lwbtn/lwbtn.h>
+#include "ui.h"
 static lwbtn_btn_t btns[] = {
         {.arg = (uint8_t)KEY_01}
 };
@@ -47,8 +49,9 @@ void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
     }
     case LWBTN_EVT_ONCLICK:
         {
-
-            // mylog.println("Single click!");
+            mylog.println("Single click!");
+            lv_disp_load_scr(ui_scota);
+            setup_ota();
             break;
         }
     case LWBTN_EVT_KEEPALIVE:        {

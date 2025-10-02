@@ -11,8 +11,8 @@
 #include "esp_system.h"
 #include "lvgl.h"
 #include "ui_scota.h"
-const char* ssid = "henjue";
-const char* password = "miaogou501";
+const char* ssid = "disk_raid_power";
+const char* password = "12345678";
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
@@ -48,23 +48,36 @@ void lv_example_qrcode_1(void)
     lv_obj_set_style_border_color(qr, bg_color, 0);
     lv_obj_set_style_border_width(qr, 5, 0);
 }
-
+// 设置固定IP地址
+IPAddress local_IP(192, 168, 44, 1);
+IPAddress gateway(192, 168, 44, 1);
+IPAddress subnet(255, 255, 255, 0);
 void setup_ota()
 {
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(1000);
-        mylog.println("Connecting to WiFi...");
+    // 配置ESP32为AP模式
+    WiFi.mode(WIFI_AP);
+    // 设置固定IP
+    if (!WiFi.softAPConfig(local_IP, gateway, subnet)) {
+        mylog.println("AP配置失败!");
+        return;
     }
-    mylog.println("Connected to WiFi!");
-    auto local_ip = WiFi.localIP();
-    char ipbuf[32];
-    snprintf(ipbuf, sizeof(ipbuf), "%u.%u.%u.%u", local_ip[0], local_ip[1], local_ip[2], local_ip[3]);
-    mylog.printf("IP Address: %s", ipbuf);
-    char buf[32];
-    snprintf(buf, sizeof(buf), "IP: %s", ipbuf);
-    lv_label_set_text(uic_ipaddr, buf);
+    // 启动热点
+    if (WiFi.softAP(ssid, password)) {
+        mylog.println("热点已启动");
+        mylog.print("SSID: ");
+        mylog.println(ssid);
+        auto ip=WiFi.softAPIP();
+        mylog.print("IP地址: ");
+        char ipStr3[16];
+        snprintf(ipStr3, sizeof(ipStr3), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+        mylog.println(ipStr3);
+        char buf[32];
+        snprintf(buf, sizeof(buf), "IP: %s", ipStr3);
+        lv_label_set_text(uic_ipaddr, buf);
+    } else {
+        mylog.println("热点启动失败!");
+        lv_label_set_text(uic_ipaddr, "热点启动失败!");
+    }
 
     server = new AsyncWebServer(80);
     server->on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -139,6 +152,23 @@ void setup_ota()
 
 void ota_loop() {
     // ESPAsyncWebServer无需轮询
+    // 显示连接到热点的设备数量
+    mylog.print("连接设备数: ");
+    mylog.println(WiFi.softAPgetStationNum());
 }
 
-void destory_ota() {}
+void destory_ota()
+{
+    // 断开所有连接的设备并关闭热点
+    bool result = WiFi.softAPdisconnect(true);
+
+    if(result) {
+        mylog.println("热点已成功关闭");
+    } else {
+        mylog.println("热点关闭失败");
+    }
+
+    // 可选：完全禁用WiFi以节省功耗
+    WiFi.mode(WIFI_OFF);
+    mylog.println("WiFi已完全禁用");
+}

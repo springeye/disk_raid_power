@@ -43,6 +43,12 @@ private:
     static int deviceParameter;
     static char deviceStatus[32];
 
+    // OTA相关成员
+    static BLECharacteristic* pOtaDataCharacteristic;
+    static bool otaReceiving;
+    static size_t otaTotalSize;
+    static size_t otaReceivedSize;
+
     // 蓝牙回调类
     class MyServerCallbacks : public BLEServerCallbacks {
         void onConnect(BLEServer* pServer);
@@ -53,7 +59,12 @@ private:
     class MyCallbacks : public BLECharacteristicCallbacks {
         void onWrite(BLECharacteristic *pCharacteristic);
     };
-    
+
+    // OTA数据特征值回调类
+    class OtaDataCallbacks : public BLECharacteristicCallbacks {
+        void onWrite(BLECharacteristic* pChar);
+    };
+
     // 处理蓝牙接收的数据
     static void handleBluetoothData(const char* data);
 
@@ -73,4 +84,4 @@ private:
     static void setupWiFi(const char* ssid, const char* password);
 };
 
-#endif
+#endif // ESP32_CONTROL_H
