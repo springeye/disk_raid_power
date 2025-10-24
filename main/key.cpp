@@ -11,7 +11,7 @@
 #include <lwbtn/lwbtn.h>
 #include "ui.h"
 static lwbtn_btn_t btns[] = {
-        {.arg = (uint8_t)KEY_01}
+    {.arg = (void*)(uintptr_t)KEY_01}
 };
 void init_btn()
 {
@@ -25,7 +25,8 @@ void tick_btn()
 
 uint8_t btn_get_state(struct lwbtn* lw, struct lwbtn_btn* btn)
 {
-    return (digitalRead(btn->arg) == LOW);
+    uint8_t pin = (uint8_t)(uintptr_t)(btn->arg);
+    return (digitalRead(pin) == LOW);
 }
 long lasttime=0;
 void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
