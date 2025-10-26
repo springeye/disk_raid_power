@@ -83,7 +83,7 @@ void update_cells()
 {
     for (int i = 0; i < 6; ++i) {
         float value = bq_get_cell_voltage(i+1) / 1000.0f;
-        lv_label_set_text_float(ui_cells[i], "%s", value, 2);
+        lv_label_set_text_float(ui_cells[i], "%s", value, 3);
     }
 }
 }
