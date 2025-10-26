@@ -181,8 +181,13 @@ void setup()
 
 void loop()
 {
-
-    scheduler.tick(); // 非阻塞调度所有任务
+    if (digitalRead(12) == LOW)
+    {
+        mylog.println("检测到关机信号，开始关机流程...");
+        esp_deep_sleep_start(); // 进入深度睡眠模式，模拟关机
+    }else{
+        scheduler.tick(); // 非阻塞调度所有任务
+    }
 
 }
 #endif /* ARDUINO */

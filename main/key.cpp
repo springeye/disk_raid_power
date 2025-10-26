@@ -57,9 +57,14 @@ void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
             mylog.println("key keepalive");
             mylog.printf("keepalive.cnt:%d\n",btn->keepalive.cnt);
             mylog.printf("keepalive.last_time:%d\n",btn->keepalive.last_time);
-            if (millis()-lasttime>3000)
+            unsigned long i = millis()-lasttime;
+            mylog.printf("keepalive.duration:%d\n",i);
+            if (i>3000)
             {
+                mylog.println("关机操作执行完成");
+                digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
 
+                break;
             }
             break;
     }

@@ -18,7 +18,6 @@ const float POWER_THRESHOLD = 0.7f;
 const unsigned long POWER_WINDOW_MS = 30000UL;
 void auto_power_off() {
     float bq_power = std::fabs(bq_get_power());
-    mylog.printf("bq_power:%.2f\n", bq_power);
     // 使用全局状态变量，而非 lambda 局部静态变量，避免每次执行被覆盖
     if (fabs(bq_power) < POWER_THRESHOLD) // 如果功率持续低于阈值
     {
