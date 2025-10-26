@@ -15,7 +15,7 @@ unsigned long g_powerCheckTimer = 0;
 bool g_lowPowerWindowActive = false;
 bool g_powerShutdownDone = false; // 若已触发关机，可用此标志避免重复触发
 const float POWER_THRESHOLD = 1.2f;
-const unsigned long POWER_WINDOW_MS = 30000UL;
+const unsigned long POWER_WINDOW_MS = 60000UL;
 void auto_power_off() {
     float bq_power = std::fabs(bq_get_power());
     // 使用全局状态变量，而非 lambda 局部静态变量，避免每次执行被覆盖
