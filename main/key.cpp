@@ -51,8 +51,6 @@ void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
     case LWBTN_EVT_ONCLICK:
         {
             mylog.println("Single click!");
-            lv_disp_load_scr(ui_scota);
-            setup_ota();
             break;
         }
     case LWBTN_EVT_KEEPALIVE:        {
