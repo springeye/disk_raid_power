@@ -4,9 +4,7 @@
 #include "lvgl.h"
 #include "app_hal.h"
 #include "ui.h"
-#ifdef  BLE_ENABLED
-#include "ESP32Control.h"
-#endif
+
 
 #include <WiFi.h>
 #include "TaskScheduler.h"
@@ -93,10 +91,6 @@ void setup()
         Serial.begin(115200);
 #endif
         delay(10);
-#ifdef  BLE_ENABLED
-        ESP32Control::begin("disk_raid_power");
-#endif
-
 
         mylog.println("setup.....");
         // bleManager.begin();
@@ -144,10 +138,11 @@ void setup()
         device->init();
         updateUI();
         update_cells();
+        setup_ota();
 
 
 #ifdef ESP32_169
-        scheduler.addTask(auto_power_off, 30*1000); // 每2秒执行一次
+        scheduler.addTask(auto_power_off, 1); // 每2秒执行一次
 #endif
 
         // scheduler.addTask([]() {
@@ -165,7 +160,6 @@ void setup()
         },300);
         scheduler.addTask([]
         {
-            ble();
             hal_loop();
         },1);
         scheduler.addTask([]
@@ -173,10 +167,9 @@ void setup()
             tick_btn();
         },0); // 立即执行一次;
         scheduler.addTask([]
-          {
-            auto_power_off();
-
-          },1); // 立即执行一次;
+        {
+            ota_loop();
+        },1000);
 
     }
     catch (...)

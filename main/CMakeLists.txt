@@ -1,6 +1,5 @@
 SET(SOURCES ui_schome.c
-    ui_scota.c
-    ui.c
+        ui.c
     ui_comp_hook.c
     ui_helpers.c
     ui_img_mainboard_png.c

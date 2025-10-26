@@ -10,7 +10,6 @@
 #include "esp_ota_ops.h"
 #include "esp_system.h"
 #include "lvgl.h"
-#include "ui_scota.h"
 const char* ssid = "disk_raid_power";
 const char* password = "12345678";
 
@@ -73,10 +72,10 @@ void setup_ota()
         mylog.println(ipStr3);
         char buf[32];
         snprintf(buf, sizeof(buf), "IP: %s", ipStr3);
-        lv_label_set_text(uic_ipaddr, buf);
+        // lv_label_set_text(uic_ipaddr, buf);
     } else {
         mylog.println("热点启动失败!");
-        lv_label_set_text(uic_ipaddr, "热点启动失败!");
+        // lv_label_set_text(uic_ipaddr, "热点启动失败!");
     }
 
     server = new AsyncWebServer(80);

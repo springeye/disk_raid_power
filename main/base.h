@@ -5,5 +5,4 @@
 #ifndef DISK_RAID_POWER_BASE_H
 #define DISK_RAID_POWER_BASE_H
 void auto_power_off();
-void ble();
 #endif //DISK_RAID_POWER_BASE_H
