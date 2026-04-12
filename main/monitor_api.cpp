@@ -8,13 +8,8 @@
 #include <cell_helper.h>
 #include <log.h>
 #include <temp.h>
-#if defined(ESP32_169)
 #include <KKPortDevice.h>
 IPortDevice* device = new KKPortDevice();
-#elif defined(ESP32_S3_169)
-#include <ESMPortDevice.h>
-IPortDevice* device = new ESMPortDevice();
-#endif
 
 extern "C" {
     uint8_t bq_get_percent(void) {
