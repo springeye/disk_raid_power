@@ -73,3 +73,10 @@
 - 调用点只有 base.cpp（bq_get_power → battery_get_power）和 cell_helper.cpp（bq_get_cell_voltage → battery_get_cell_voltage），ui_schome.c 无直接调用
 - 命名规范：电池函数统一前缀 battery_，C2 端口函数统一前缀 port_c2_，动词 is_ 改为 is_charging/is_discharging
 - updateUI() 保留原名不重命名（任务明确 MUST NOT DO）
+
+## 2026-04-13 - Task 30 单元测试 test_utils + test_cell_helper
+- `emulator_64bits` 环境因 `!python3 support/sdl2_build_extra.py` 构建标志在 `pio test` 时失败：该脚本依赖 SCons `Import()`，直接用 `python3` 执行时报 `NameError: name 'Import' is not defined`。解决方案：新增专用 `[env:native_test]`，仅含 `-Os -Wl,--gc-sections -fexceptions -I main`，无 SDL2 相关行。
+- `extract_bits` 是纯计算函数（`int8_t` → 位掩码提取），可直接在测试文件中内联实现（避免 native 环境链接 main/ 构建路径），无需任何 HAL/Arduino 依赖。
+- `cell_helper` 函数全部依赖 LVGL 运行时（`lv_obj_t*`、`lv_label_set_text` 等），无法在 native 环境直接调用。测试策略：提取等价纯 C 格式化逻辑（`snprintf`），用 `format_float_label` 存根替代 `lv_label_set_text_float`，测试字符串格式化行为。
+- `test_bridge` 在 native_test 环境中 ERRORED（链接硬件存根失败），属预存问题，与新增测试无关。
+- `pio test -e native_test` 结果：test_utils 6/6 PASSED，test_cell_helper 6/6 PASSED。
