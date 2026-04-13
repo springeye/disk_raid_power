@@ -501,7 +501,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 1)
 
-- [ ] 9. 创建 settings.h 配置头文件
+- [x] 9. 创建 settings.h 配置头文件
 
   **What to do**:
   - 创建 main/settings.h，集中定义所有硬编码常量
@@ -548,7 +548,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 2)
 
-- [ ] 10. 更新 ota.cpp 使用配置宏
+- [x] 10. 更新 ota.cpp 使用配置宏
 
   **What to do**:
   - `#include <settings.h>` 到 ota.cpp
@@ -585,7 +585,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 2)
 
-- [ ] 11. 更新 KKPortDevice.cpp 使用配置宏
+- [x] 11. 更新 KKPortDevice.cpp 使用配置宏
 
   **What to do**:
   - `#include <settings.h>` 到 KKPortDevice.cpp
@@ -621,7 +621,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 2)
 
-- [ ] 12. 更新 hal/app_hal.cpp 和 main.cpp 配置引用
+- [x] 12. 更新 hal/app_hal.cpp 和 main.cpp 配置引用
 
   **What to do**:
   - hal/esp32/app_hal.cpp: 替换 lvBufferSize magic 30 → LV_BUFFER_LINES
@@ -661,7 +661,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 2)
 
-- [ ] 13. 移动生成代码到 generated/ 并更新 build_src_filter
+- [x] 13. 移动生成代码到 generated/ 并更新 build_src_filter
 
   **What to do**:
   - 创建 main/generated/ 目录
@@ -703,7 +703,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 2)
 
-- [ ] 14. 清理重复文件和空目录
+- [x] 14. 清理重复文件和空目录
 
   **What to do**:
   - 删除 main/ui_comp_hook.c（保留 main/components/ui_comp_hook.c）
