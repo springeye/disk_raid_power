@@ -4,6 +4,7 @@
 #include "lvgl.h"
 #include "app_hal.h"
 #include "ui.h"
+#include "settings.h"
 
 
 #include <WiFi.h>
@@ -99,8 +100,8 @@ void setup()
         //BQSDA 17
         //BQSDC 16
 #elif defined(ESP32_169)
-        pinMode(12, OUTPUT);
-        digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
+        pinMode(PIN_POWER_CTRL, OUTPUT);
+        digitalWrite(PIN_POWER_CTRL, HIGH); // 默认拉高（符合大多数硬件需求）
 #endif
         init_btn();
         // 初始化 LittleFS，如果挂载失败则自动格式化

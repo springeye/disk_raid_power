@@ -3,6 +3,7 @@
 #include <log.h>
 #include <Arduino_GFX_Library.h>
 #include "lvgl.h"
+#include "settings.h"
 
 static const uint32_t screenWidth = TFT_WIDTH;
 static const uint32_t screenHeight = TFT_HEIGHT;
@@ -19,7 +20,7 @@ Arduino_GFX* gfx = new Arduino_ST7789(bus, TFT_RST, 0, true, 240, 280,
                                       0, 20);
 #endif
 
-const unsigned int lvBufferSize = screenWidth * 30;
+const unsigned int lvBufferSize = screenWidth * LV_BUFFER_LINES;
 uint8_t lvBuffer[2][lvBufferSize];
 
 static lv_display_t* lvDisplay;

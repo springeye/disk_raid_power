@@ -10,8 +10,9 @@
 #include "esp_ota_ops.h"
 #include "esp_system.h"
 #include "lvgl.h"
-const char* ssid = "disk_raid_power";
-const char* password = "12345678";
+#include "settings.h"
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
@@ -48,8 +49,8 @@ void lv_example_qrcode_1(void)
     lv_obj_set_style_border_width(qr, 5, 0);
 }
 // 设置固定IP地址
-IPAddress local_IP(192, 168, 44, 1);
-IPAddress gateway(192, 168, 44, 1);
+IPAddress local_IP(AP_IP_1, AP_IP_2, AP_IP_3, AP_IP_4);
+IPAddress gateway(AP_IP_1, AP_IP_2, AP_IP_3, AP_IP_4);
 IPAddress subnet(255, 255, 255, 0);
 void setup_ota()
 {

@@ -1,0 +1,27 @@
+{
+  "active_plan": "C:\\Users\\develop\\Desktop\\workspaces\\disk_raid_power\\.sisyphus\\plans\\project-engineering-refactor.md",
+  "started_at": "2026-04-13T06:02:31.059Z",
+  "session_ids": [
+    "ses_27a90cb47ffeeLsmB6GuLioM0z",
+    "ses_27a8d4459ffeByTbK8CtNBxK0R",
+    "ses_27a67175bffeW9QMTSTEnw4mcT"
+  ],
+  "session_origins": {
+    "ses_27a90cb47ffeeLsmB6GuLioM0z": "direct",
+    "ses_27a8d4459ffeByTbK8CtNBxK0R": "direct",
+    "ses_27a67175bffeW9QMTSTEnw4mcT": "direct"
+  },
+  "plan_name": "project-engineering-refactor",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "验证 Unity + emulator 兼容性",
+      "session_id": "ses_27a4e8d8cffeCB5VL60PMZSrtC",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-13T07:44:53.160Z"
+    }
+  }
+}

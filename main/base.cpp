@@ -10,12 +10,11 @@
 
 #include <log.h>
 #include <monitor_api.h>
+#include "settings.h"
 // 全局变量：用于低功率持续检测（避免在 lambda 内被覆盖）
 unsigned long g_powerCheckTimer = 0;
 bool g_lowPowerWindowActive = false;
 bool g_powerShutdownDone = false; // 若已触发关机，可用此标志避免重复触发
-const float POWER_THRESHOLD = 1.2f;
-const unsigned long POWER_WINDOW_MS = 60000UL;
 void auto_power_off() {
     float bq_power = std::fabs(bq_get_power());
     // 使用全局状态变量，而非 lambda 局部静态变量，避免每次执行被覆盖
@@ -32,7 +31,7 @@ void auto_power_off() {
         {
             // 持续低功率达到时间阈值，调用关机
             mylog.println("功率持续低于阈值达到设定时间，调用节能函数");
-            digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
+            digitalWrite(PIN_POWER_CTRL, LOW); // 默认拉高（符合大多数硬件需求）
             g_powerShutdownDone = true; // 避免重复调用
         }
     }

@@ -198,7 +198,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
 ## TODOs
 
-- [ ] 1. 验证 Unity + emulator 兼容性
+- [x] 1. 验证 Unity + emulator 兼容性
 
   **What to do**:
   - 在 emulator_64bits 环境运行 `pio test`，确认 Unity 测试框架可用
@@ -237,7 +237,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
   **Commit**: YES (groups with Phase 0)
   - Message: `test: add Unity framework config and placeholder test`
 
-- [ ] 2. 配置 Unity 测试框架
+- [x] 2. 配置 Unity 测试框架
 
   **What to do**:
   - 在 platformio.ini 中添加测试环境配置（如需要）
@@ -275,7 +275,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (groups with Phase 0)
 
-- [ ] 3. 创建 extern "C" 桥接特征测试
+- [x] 3. 创建 extern "C" 桥接特征测试
 
   **What to do**:
   - 创建 test/test_bridge/ 测试目录
@@ -314,7 +314,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (groups with Phase 0)
 
-- [ ] 4. 修复 runSelfTest() 返回值
+- [x] 4. 修复 runSelfTest() 返回值
 
   **What to do**:
   - 修改 main/main.cpp:40 将 `return false;` 改为 `return true;`
@@ -359,7 +359,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
   **Commit**: YES (Phase 1)
   - Message: `fix: runSelfTest() returns true to prevent OTA rollback`
 
-- [ ] 5. 修复 #elifdef 预处理器兼容性
+- [x] 5. 修复 #elifdef 预处理器兼容性
 
   **What to do**:
   - 检查 main.cpp 中 `#elifdef ESP32_169` 是否为 C++23 语法
@@ -395,7 +395,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 1)
 
-- [ ] 6. 修复 auto_power_off scheduler 间隔
+- [x] 6. 修复 auto_power_off scheduler 间隔
 
   **What to do**:
   - 确认 auto_power_off 的预期执行间隔（注释说 2 秒，参数为 1ms 单位）
@@ -432,7 +432,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 1)
 
-- [ ] 7. 修复 SW6306.h extern "C" 拼写
+- [x] 7. 修复 SW6306.h extern "C" 拼写
 
   **What to do**:
   - 修改 main/drivers/sw6306.h:8 将 `extern C {` 改为 `extern "C" {`
@@ -465,7 +465,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 1)
 
-- [ ] 8. 移除 SPIFFS→LittleFS 宏别名
+- [x] 8. 移除 SPIFFS→LittleFS 宏别名
 
   **What to do**:
   - 移除 main.cpp:25 `#define SPIFFS LittleFS`

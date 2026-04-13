@@ -8,6 +8,7 @@
 #include <ip2366.h>
 #include <SW6306.h>
 #include <temp.h>
+#include "settings.h"
 // 声明独立的 TwoWire 实例
 TwoWire wire1(1); // 1为I2C总线编号，ESP32等平台支持多个I2C实例
 BQ40Z80* bq = nullptr;
@@ -15,10 +16,10 @@ SW6306*  sw = nullptr;
 IP2366*  ip2366 = nullptr;
 void KKPortDevice::init()
 {
-    wire1.begin(26, 25);
+    wire1.begin(BQ_I2C_SDA, BQ_I2C_SCL);
     bq = new BQ40Z80(&wire1);
-    sw = new SW6306(0x3C, &wire1);
-    ip2366 = new IP2366( 14,&wire1);
+    sw = new SW6306(SW6306_ADDR, &wire1);
+    ip2366 = new IP2366(IP2366_INT_PIN, &wire1);
     sw->begin();
     ip2366->begin();
 }
