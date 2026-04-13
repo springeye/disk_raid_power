@@ -1,8 +1,6 @@
 Processing esp32_D0WDQ6 (board: esp32dev; platform: https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip; framework: arduino)
 --------------------------------------------------------------------------------
-Verbose mode can be enabled via `-v, --verbose` option
 PYTHONEXE updated to penv environment: C:\Users\develop\.platformio\penv\Scripts\python.exe
-CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32dev.html
 PLATFORM: Espressif 32 (55.3.30) > Espressif ESP32 Dev Module
 HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
 DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
@@ -13,7 +11,6 @@ PACKAGES:
  - tool-esptoolpy @ 5.0.2 
  - tool-mklittlefs @ 3.2.0 
  - toolchain-xtensa-esp-elf @ 14.2.0+20241119
-LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
 LDF Modes: Finder ~ chain, Compatibility ~ strict
 Found 47 compatible libraries
 Scanning dependencies...
@@ -31,16 +28,4 @@ Dependency Graph
 |-- WebServer @ 3.1.1
 *** Applied include path shortening for 269 framework paths ***
 *** Path length reduced from 32021 to ~11401 characters ***
-*** Estimated savings: 20175 characters ***
-Building in release mode
-Retrieving maximum program size .pio\build\esp32_D0WDQ6\firmware.elf
-Checking size .pio\build\esp32_D0WDQ6\firmware.elf
-Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
-RAM:   [===       ]  29.2% (used 95636 bytes from 327680 bytes)
-Flash: [====      ]  35.6% (used 1492028 bytes from 4194304 bytes)
-========================= [SUCCESS] Took 15.07 seconds =========================
-
-Environment    Status    Duration
--------------  --------  ------------
-esp32_D0WDQ6   SUCCESS   00:00:15.069
-========================= 1 succeeded in 00:00:15.069 =========================
+... (10 lines truncated)

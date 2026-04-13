@@ -52,6 +52,7 @@ void BQ40Z80::read_word(uint8_t memory_addr)
         state_flag = 1; // 通讯连接错误
         _hasError = true;
         _lastError = txResult;
+        mylog.printf("I2C Error: BQ40Z80 read_word failed, err=%d\n", txResult);
         return;
     }
 
@@ -62,6 +63,7 @@ void BQ40Z80::read_word(uint8_t memory_addr)
         state_flag = 1; // 通讯错误
         _hasError = true;
         _lastError = -1;
+        mylog.printf("I2C Error: BQ40Z80 read_word failed, err=%d\n", -1);
         return;
     }
 

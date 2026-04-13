@@ -18,7 +18,9 @@
     "ses_278cffe28ffe5lN1RUZ5Nghnev",
     "ses_278d0453dffeJSObK03vLn6xpc",
     "ses_278d02789ffes5WVGhgSgU79w5",
-    "ses_278d00569ffeixgMEN9CTtZyWv"
+    "ses_278d00569ffeixgMEN9CTtZyWv",
+    "ses_278c8e269ffekm38WIJg12gGCW",
+    "ses_278c923dcffete35JYUlMFKrzD"
   ],
   "session_origins": {
     "ses_27a90cb47ffeeLsmB6GuLioM0z": "direct",
@@ -108,6 +110,15 @@
       "agent": "Sisyphus-Junior",
       "category": "quick",
       "updated_at": "2026-04-13T14:15:04.452Z"
+    },
+    "todo:28": {
+      "task_key": "todo:28",
+      "task_label": "28",
+      "task_title": "驱动层 I2C 失败日志增强",
+      "session_id": "ses_278c923dcffete35JYUlMFKrzD",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-13T14:23:26.401Z"
     }
   }
 }

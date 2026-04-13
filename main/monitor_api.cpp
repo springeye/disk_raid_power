@@ -49,53 +49,53 @@ static void collectPortData(PortData& pd, PortType type) {
 }
 
 extern "C" {
-    uint8_t bq_get_percent(void) {
+    uint8_t battery_get_percent(void) {
         return device->getPercent();
     }
-    uint16_t bq_get_cell_voltage(uint8_t cell_index) {
+    uint16_t battery_get_cell_voltage(uint8_t cell_index) {
         return device->getCellVoltage(cell_index);
     }
-    float bg_get_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v)
+    float battery_get_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v)
     {
         return device->getWh(cell_count, cell_cutoff_v);
     }
-    float bq_get_voltage()
+    float battery_get_voltage()
     {
         return device->getTotalVoltage();
     }
-    float bq_get_current()
+    float battery_get_current()
     {
         return device->getTotalCurrent();
     }
-    float bq_get_power()
+    float battery_get_power()
     {
 
         return device->getPower();
     }
-    int16_t bg_get_temp()
+    int16_t battery_get_temp()
     {
         return device->getBatTemp();
     }
 }
 extern "C" {
-    float get2366Voltage()
+    float port_c2_get_voltage()
     {
         return device->getPortState(PortType::C2).voltage;
     }
-    float get2366Current()
+    float port_c2_get_current()
     {
         return device->getPortState(PortType::C2).current;
     }
-    float get2366Power()
+    float port_c2_get_power()
     {
         auto status = device->getPortState(PortType::C2);
         return status.voltage*status.current;
     }
-    bool is2366Charging()
+    bool port_c2_is_charging()
     {
         return device->getPortState(PortType::C2).state==PortState::Input;
     }
-    bool is2366DisCharging()
+    bool port_c2_is_discharging()
     {
         return device->getPortState(PortType::C2).state==PortState::Output;
     }

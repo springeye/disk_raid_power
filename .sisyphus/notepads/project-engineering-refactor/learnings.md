@@ -61,3 +61,15 @@
 - 为 `SW6306` 增加 `hasError()` / `getLastError()`，用类内字段记录最近一次 I2C 失败，避免上层从返回值猜测总线状态。
 - `readReg8()` / `readReg16()` 在 `endTransmission(false)` 失败时直接记录 Wire 错误码；在读取字节不足时记录 `-1`，成功读取后清空错误状态。
 - 2026-04-13：clang-format 已在根目录创建，统一采用 LLVM 风格、4 空格缩进、120 列限制，适合本项目的中文注释与嵌入式代码风格。
+
+## 2026-04-13 - Task 28 I2C 错误日志
+- 在 `BQ40Z80::read_word()` 的两处失败路径（`endTransmission(false)` 失败、`requestFrom()` 数量异常）加入 `mylog.printf("I2C Error: BQ40Z80 read_word failed, err=%d\n", ...)`，只补日志不改返回逻辑。
+- 在 `IP2366::readRegister()` 的地址阶段与 `requestFrom()` 失败处加入 `mylog.printf("I2C Error: IP2366 readRegister failed, err=%d\n", ...)`。
+- 在 `SW6306::readReg8()` / `readReg16()` 的 `endTransmission(false)`、读取字节不足、`available()` 不足处加入 `mylog.printf("I2C Error: SW6306 readReg8/readReg16 failed, err=%d\n", ...)`；同时补了 `#include <log.h>` 以便直接使用 `mylog.printf`。
+
+## 2026-04-13 - Task 31 C API 函数命名统一
+- 重命名策略：新名称写入声明（monitor_api.h）和实现（monitor_api.cpp），旧名称通过 #define 保留向后兼容
+- #define 别名放在 monitor_api.h 的最后一个 #endif 之前，位于 extern "C" 块外部，对 C/C++ 均可见
+- 调用点只有 base.cpp（bq_get_power → battery_get_power）和 cell_helper.cpp（bq_get_cell_voltage → battery_get_cell_voltage），ui_schome.c 无直接调用
+- 命名规范：电池函数统一前缀 battery_，C2 端口函数统一前缀 port_c2_，动词 is_ 改为 is_charging/is_discharging
+- updateUI() 保留原名不重命名（任务明确 MUST NOT DO）

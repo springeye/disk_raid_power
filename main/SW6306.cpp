@@ -1,4 +1,5 @@
 #include "SW6306.h"
+#include <log.h>
 #define REG_0x23 0x23
 #define REG_0x24 0x24
 #define REG_0x40 0x40
@@ -102,12 +103,14 @@ uint8_t SW6306::readReg8(uint8_t reg) {
     if (error != 0) {
         _hasError = true;
         _lastError = error;
+        mylog.printf("I2C Error: SW6306 readReg8 failed, err=%d\n", error);
         return 0xFF;
     }
     uint8_t count = _wire->requestFrom(_addr, (uint8_t)1);
     if (count < 1 || !_wire->available()) {
         _hasError = true;
         _lastError = -1;
+        mylog.printf("I2C Error: SW6306 readReg8 failed, err=%d\n", -1);
         return 0xFF;
     }
     _hasError = false;
@@ -122,18 +125,21 @@ uint16_t SW6306::readReg16(uint8_t reg) {
     if (error != 0) {
         _hasError = true;
         _lastError = error;
+        mylog.printf("I2C Error: SW6306 readReg16 failed, err=%d\n", error);
         return 0;
     }
     uint8_t count = _wire->requestFrom(_addr, (uint8_t)2);
     if (count < 2 || !_wire->available()) {
         _hasError = true;
         _lastError = -1;
+        mylog.printf("I2C Error: SW6306 readReg16 failed, err=%d\n", -1);
         return 0;
     }
     uint8_t lo = _wire->read();
     if (!_wire->available()) {
         _hasError = true;
         _lastError = -1;
+        mylog.printf("I2C Error: SW6306 readReg16 failed, err=%d\n", -1);
         return 0;
     }
     uint8_t hi = _wire->read();

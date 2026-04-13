@@ -198,6 +198,7 @@ uint8_t IP2366::readRegister(uint8_t regAddr) {
     mylog.println(txResult);
     _hasError = true;
     _lastError = txResult;
+    mylog.printf("I2C Error: IP2366 readRegister failed, err=%d\n", txResult);
     return 0;
   }
 
@@ -209,6 +210,7 @@ uint8_t IP2366::readRegister(uint8_t regAddr) {
     mylog.println(bytesRequested);
     _hasError = true;
     _lastError = bytesRequested;
+    mylog.printf("I2C Error: IP2366 readRegister failed, err=%d\n", bytesRequested);
     return 0;
   }
   delay(1);

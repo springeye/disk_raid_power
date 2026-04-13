@@ -1159,7 +1159,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 4)
 
-- [ ] 28. 驱动层 I2C 失败日志增强
+- [x] 28. 驱动层 I2C 失败日志增强
 
   **What to do**:
   - 在 BQ40Z80/IP2366/SW6306 的 I2C 通信失败点添加 mylog 日志
@@ -1206,7 +1206,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 4)
 
-- [ ] 31. 统一 C API 函数命名
+- [x] 31. 统一 C API 函数命名
 
   **What to do**:
   - monitor_api.h: bq_get_percent → battery_get_percent
