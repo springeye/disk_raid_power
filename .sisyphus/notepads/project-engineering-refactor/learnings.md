@@ -80,3 +80,9 @@
 - `cell_helper` 函数全部依赖 LVGL 运行时（`lv_obj_t*`、`lv_label_set_text` 等），无法在 native 环境直接调用。测试策略：提取等价纯 C 格式化逻辑（`snprintf`），用 `format_float_label` 存根替代 `lv_label_set_text_float`，测试字符串格式化行为。
 - `test_bridge` 在 native_test 环境中 ERRORED（链接硬件存根失败），属预存问题，与新增测试无关。
 - `pio test -e native_test` 结果：test_utils 6/6 PASSED，test_cell_helper 6/6 PASSED。
+
+## 2026-04-13 - Task 33 clang-format 全项目格式化
+- 通过 PowerShell 递归格式化 main/*.cpp|*.h|*.c 与 hal/esp32/*.cpp|*.h，并显式排除了 main/generated/、main/drivers/sw6306.c 以及 	est/。
+- 本机 clang-format 位于 Visual Studio LLVM: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin\clang-format.exe。
+- .clang-format 采用 LLVM 风格、4 空格缩进、120 列限制，格式化仅影响排版，不改逻辑。
+- 运行格式化后再编译验证是必要步骤；本次目标环境为 pio run -e esp32_D0WDQ6。

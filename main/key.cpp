@@ -10,65 +10,56 @@
 #include <ota.h>
 #include <lwbtn/lwbtn.h>
 #include "ui.h"
-static lwbtn_btn_t btns[] = {
-    {.arg = (void*)(uintptr_t)KEY_01}
-};
-void init_btn()
-{
+static lwbtn_btn_t btns[] = {{.arg = (void *)(uintptr_t)KEY_01}};
+void init_btn() {
     pinMode(KEY_01, INPUT);
-    lwbtn_init_ex(NULL, btns, std::size(btns),btn_get_state, btn_event);
+    lwbtn_init_ex(NULL, btns, std::size(btns), btn_get_state, btn_event);
 }
-void tick_btn()
-{
-     lwbtn_process_ex(NULL, millis());
+void tick_btn() {
+    lwbtn_process_ex(NULL, millis());
 }
 
-uint8_t btn_get_state(struct lwbtn* lw, struct lwbtn_btn* btn)
-{
+uint8_t btn_get_state(struct lwbtn *lw, struct lwbtn_btn *btn) {
     uint8_t pin = (uint8_t)(uintptr_t)(btn->arg);
     return (digitalRead(pin) == LOW);
 }
-long lasttime=0;
-void btn_event(struct lwbtn* lw, struct lwbtn_btn* btn, lwbtn_evt_t evt)
-{
+long lasttime = 0;
+void btn_event(struct lwbtn *lw, struct lwbtn_btn *btn, lwbtn_evt_t evt) {
 
-
-    switch (evt)
-    {
-    case LWBTN_EVT_ONPRESS:         {
-            lasttime=millis();
+    switch (evt) {
+        case LWBTN_EVT_ONPRESS: {
+            lasttime = millis();
             mylog.println("key press!");
-            mylog.printf("last_state:%d\n",btn->last_state);
-            mylog.printf("time_change:%d\n",btn->time_change);
-            mylog.printf("time_state_change:%d\n",btn->time_state_change);
+            mylog.printf("last_state:%d\n", btn->last_state);
+            mylog.printf("time_change:%d\n", btn->time_change);
+            mylog.printf("time_state_change:%d\n", btn->time_state_change);
 
             break;
-    }
-    case LWBTN_EVT_ONRELEASE:        {
+        }
+        case LWBTN_EVT_ONRELEASE: {
             mylog.println("key release!");
             break;
-    }
-    case LWBTN_EVT_ONCLICK:
-        {
+        }
+        case LWBTN_EVT_ONCLICK: {
             mylog.println("Single click!");
             break;
         }
-    case LWBTN_EVT_KEEPALIVE:        {
+        case LWBTN_EVT_KEEPALIVE: {
             mylog.println("key keepalive");
-            mylog.printf("keepalive.cnt:%d\n",btn->keepalive.cnt);
-            mylog.printf("keepalive.last_time:%d\n",btn->keepalive.last_time);
-            unsigned long i = millis()-lasttime;
-            mylog.printf("keepalive.duration:%d\n",i);
-            if (i>3000)
-            {
+            mylog.printf("keepalive.cnt:%d\n", btn->keepalive.cnt);
+            mylog.printf("keepalive.last_time:%d\n", btn->keepalive.last_time);
+            unsigned long i = millis() - lasttime;
+            mylog.printf("keepalive.duration:%d\n", i);
+            if (i > 3000) {
                 mylog.println("关机操作执行完成");
                 digitalWrite(12, LOW); // 默认拉高（符合大多数硬件需求）
 
                 break;
             }
             break;
-    }
-    default: break;
+        }
+        default:
+            break;
     }
 }
 /**

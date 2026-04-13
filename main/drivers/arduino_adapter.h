@@ -17,4 +17,4 @@ uint8_t ASYNC_I2C_Receive(uint8_t addr, uint8_t reg, uint8_t *pdata, uint8_t len
 }
 #endif
 
-#endif //DISK_RAID_POWER_ARDUINO_ADAPTER_H
+#endif // DISK_RAID_POWER_ARDUINO_ADAPTER_H

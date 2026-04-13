@@ -11,36 +11,34 @@
 #include "esp_system.h"
 #include "lvgl.h"
 #include "settings.h"
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASSWORD;
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
-AsyncWebServer* server = nullptr;
+AsyncWebServer *server = nullptr;
 
 volatile size_t ota_total_size = 0;
 volatile size_t ota_written_size = 0;
 esp_ota_handle_t ota_handle = 0;
-const esp_partition_t* update_partition = nullptr;
+const esp_partition_t *update_partition = nullptr;
 bool ota_has_error = false;
 
-void handleRoot(AsyncWebServerRequest *request)
-{
+void handleRoot(AsyncWebServerRequest *request) {
     request->redirect("/update");
 }
-//显示一个二维码
-void lv_example_qrcode_1(void)
-{
+// 显示一个二维码
+void lv_example_qrcode_1(void) {
     lv_color_t bg_color = lv_palette_lighten(LV_PALETTE_LIGHT_BLUE, 5);
     lv_color_t fg_color = lv_palette_darken(LV_PALETTE_BLUE, 4);
 
-    lv_obj_t * qr = lv_qrcode_create(lv_screen_active());
+    lv_obj_t *qr = lv_qrcode_create(lv_screen_active());
     lv_qrcode_set_size(qr, 150);
     lv_qrcode_set_dark_color(qr, fg_color);
     lv_qrcode_set_light_color(qr, bg_color);
 
     /*Set data*/
-    const char * data = "https://lvgl.io";
+    const char *data = "https://lvgl.io";
     lv_qrcode_update(qr, data, strlen(data));
     lv_obj_center(qr);
 
@@ -80,8 +78,8 @@ static bool init_wifi_ap() {
 }
 
 // 注册 Web 静态资源与进度查询路由
-static void setup_web_routes(AsyncWebServer* srv) {
-    srv->on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
+static void setup_web_routes(AsyncWebServer *srv) {
+    srv->on("/progress", HTTP_GET, [](AsyncWebServerRequest *request) {
         int percent = 0;
         if (ota_total_size > 0) {
             percent = (int)((ota_written_size * 100) / ota_total_size);
@@ -96,67 +94,73 @@ static void setup_web_routes(AsyncWebServer* srv) {
 }
 
 // 注册 OTA 固件上传路由
-static void setup_ota_upload_route(AsyncWebServer* srv) {
-    srv->on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
-        const char* message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
-        char html[128];
-        snprintf(html, sizeof(html), "<span style='font-size: 24px;'>%s</span>", message);
-        request->send(200, "text/html", html);
-        delay(500);
-        if (server) { server->end(); delete server; server = nullptr; }
-        esp_restart();
-    },
-    [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
-        if (index == 0) {
-            ota_total_size = 0;
-            ota_written_size = 0;
-            ota_has_error = false;
-            mylog.printf("Update: %s\n", filename.c_str());
-            update_partition = esp_ota_get_next_update_partition(NULL);
-            if (!update_partition) {
-                mylog.println("No OTA partition found!");
-                ota_has_error = true;
-                return;
+static void setup_ota_upload_route(AsyncWebServer *srv) {
+    srv->on(
+        "/update", HTTP_POST,
+        [](AsyncWebServerRequest *request) {
+            const char *message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
+            char html[128];
+            snprintf(html, sizeof(html), "<span style='font-size: 24px;'>%s</span>", message);
+            request->send(200, "text/html", html);
+            delay(500);
+            if (server) {
+                server->end();
+                delete server;
+                server = nullptr;
             }
-            esp_err_t err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &ota_handle);
-            if (err != ESP_OK) {
-                mylog.printf("esp_ota_begin failed: %d\n", err);
-                ota_has_error = true;
-            }
-        }
-        ota_written_size += len;
-        mylog.printf("write progress %d/%d\n", ota_written_size, request->contentLength());
-        if (!ota_has_error) {
-            esp_err_t err = esp_ota_write(ota_handle, data, len);
-            if (err != ESP_OK) {
-                mylog.printf("esp_ota_write failed: %d\n", err);
-                ota_has_error = true;
-            }
-        }
-        if (final) {
-            ota_total_size = request->contentLength();
-            if (!ota_has_error) {
-                esp_err_t err = esp_ota_end(ota_handle);
-                if (err != ESP_OK) {
-                    mylog.printf("esp_ota_end failed: %d\n", err);
+            esp_restart();
+        },
+        [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+            if (index == 0) {
+                ota_total_size = 0;
+                ota_written_size = 0;
+                ota_has_error = false;
+                mylog.printf("Update: %s\n", filename.c_str());
+                update_partition = esp_ota_get_next_update_partition(NULL);
+                if (!update_partition) {
+                    mylog.println("No OTA partition found!");
                     ota_has_error = true;
-                } else {
-                    err = esp_ota_set_boot_partition(update_partition);
+                    return;
+                }
+                esp_err_t err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &ota_handle);
+                if (err != ESP_OK) {
+                    mylog.printf("esp_ota_begin failed: %d\n", err);
+                    ota_has_error = true;
+                }
+            }
+            ota_written_size += len;
+            mylog.printf("write progress %d/%d\n", ota_written_size, request->contentLength());
+            if (!ota_has_error) {
+                esp_err_t err = esp_ota_write(ota_handle, data, len);
+                if (err != ESP_OK) {
+                    mylog.printf("esp_ota_write failed: %d\n", err);
+                    ota_has_error = true;
+                }
+            }
+            if (final) {
+                ota_total_size = request->contentLength();
+                if (!ota_has_error) {
+                    esp_err_t err = esp_ota_end(ota_handle);
                     if (err != ESP_OK) {
-                        mylog.printf("esp_ota_set_boot_partition failed: %d\n", err);
+                        mylog.printf("esp_ota_end failed: %d\n", err);
                         ota_has_error = true;
                     } else {
-                        mylog.printf("Update Success: %u bytes\n", ota_total_size);
+                        err = esp_ota_set_boot_partition(update_partition);
+                        if (err != ESP_OK) {
+                            mylog.printf("esp_ota_set_boot_partition failed: %d\n", err);
+                            ota_has_error = true;
+                        } else {
+                            mylog.printf("Update Success: %u bytes\n", ota_total_size);
+                        }
                     }
                 }
             }
-        }
-    });
+        });
 }
 
-void setup_ota()
-{
-    if (!init_wifi_ap()) return;
+void setup_ota() {
+    if (!init_wifi_ap())
+        return;
     server = new AsyncWebServer(80);
     setup_web_routes(server);
     setup_ota_upload_route(server);
@@ -170,12 +174,11 @@ void ota_loop() {
     mylog.println(WiFi.softAPgetStationNum());
 }
 
-void destory_ota()
-{
+void destory_ota() {
     // 断开所有连接的设备并关闭热点
     bool result = WiFi.softAPdisconnect(true);
 
-    if(result) {
+    if (result) {
         mylog.println("热点已成功关闭");
     } else {
         mylog.println("热点关闭失败");

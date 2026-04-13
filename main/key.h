@@ -9,4 +9,4 @@ void init_btn();
 void tick_btn();
 uint8_t btn_get_state(struct lwbtn *lw, struct lwbtn_btn *btn);
 void btn_event(struct lwbtn *lw, struct lwbtn_btn *btn, lwbtn_evt_t evt);
-#endif //DISK_RAID_POWER_KEY_H
+#endif // DISK_RAID_POWER_KEY_H

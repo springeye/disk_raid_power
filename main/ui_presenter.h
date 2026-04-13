@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // 用 SystemData 更新所有 UI 控件
-void ui_present_all(const SystemData* data);
+void ui_present_all(const SystemData *data);
 
 #ifdef __cplusplus
 }

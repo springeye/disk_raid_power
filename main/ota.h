@@ -10,8 +10,7 @@
 #include <WebServer.h>
 #include <Update.h>
 
-
 void setup_ota();
 void destory_ota();
 void ota_loop();
-#endif //DISK_RAID_POWER_OTA_H
+#endif // DISK_RAID_POWER_OTA_H

@@ -2,9 +2,7 @@
 
 #include <log.h>
 
-
-BQ40Z80::BQ40Z80(TwoWire* wire)
-{
+BQ40Z80::BQ40Z80(TwoWire *wire) {
     this->wire = wire;
     state_flag = 0;
     _hasError = false;
@@ -12,21 +10,14 @@ BQ40Z80::BQ40Z80(TwoWire* wire)
     memset(word_buf, 0, sizeof(word_buf));
 }
 
-
-uint8_t BQ40Z80::calculate_crc8(uint8_t InitialValue, uint8_t* message, uint8_t len)
-{
+uint8_t BQ40Z80::calculate_crc8(uint8_t InitialValue, uint8_t *message, uint8_t len) {
     uint8_t i, crc = InitialValue;
-    while (len--)
-    {
+    while (len--) {
         crc ^= (*message++);
-        for (i = 0; i < 8; i++)
-        {
-            if (crc & 0x80)
-            {
+        for (i = 0; i < 8; i++) {
+            if (crc & 0x80) {
                 crc = (crc << 1) ^ 0x07;
-            }
-            else
-            {
+            } else {
                 crc <<= 1;
             }
         }
@@ -34,8 +25,7 @@ uint8_t BQ40Z80::calculate_crc8(uint8_t InitialValue, uint8_t* message, uint8_t 
     return crc;
 }
 
-void BQ40Z80::read_word(uint8_t memory_addr)
-{
+void BQ40Z80::read_word(uint8_t memory_addr) {
     word_buf[0] = 0;
     word_buf[1] = 0;
     word_buf[2] = 0;
@@ -47,8 +37,7 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     wire->beginTransmission(BQ40Z80_ADDR);
     wire->write(memory_addr);
     int txResult = wire->endTransmission(false);
-    if (txResult != 0)
-    {
+    if (txResult != 0) {
         state_flag = 1; // 通讯连接错误
         _hasError = true;
         _lastError = txResult;
@@ -58,8 +47,7 @@ void BQ40Z80::read_word(uint8_t memory_addr)
 
     // 2. 请求 3 字节：LSB, MSB, CRC
     uint8_t count = wire->requestFrom(BQ40Z80_ADDR, (uint8_t)3);
-    if (count != 3)
-    {
+    if (count != 3) {
         state_flag = 1; // 通讯错误
         _hasError = true;
         _lastError = -1;
@@ -80,14 +68,11 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     crc_buf[4] = word_buf[4];             // MSB
 
     // 4. 计算 CRC 并比较
-    if (calculate_crc8(0x00, crc_buf, 5) == word_buf[5])
-    {
+    if (calculate_crc8(0x00, crc_buf, 5) == word_buf[5]) {
         state_flag = 0; // CRC 校验通过
         _hasError = false;
         _lastError = 0;
-    }
-    else
-    {
+    } else {
         state_flag = 2; // CRC 校验失败
         _hasError = true;
         _lastError = -2;
@@ -99,181 +84,127 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     }
 }
 
-int16_t BQ40Z80::read_temp()
-{
+int16_t BQ40Z80::read_temp() {
     read_word(0x08);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return ((int16_t)(word_buf[4] << 8 | word_buf[3]) - 2731);
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_voltage()
-{
+uint16_t BQ40Z80::read_voltage() {
     read_word(0x09);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-int16_t BQ40Z80::read_current()
-{
+int16_t BQ40Z80::read_current() {
     read_word(0x0A);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return (int16_t)(word_buf[4] << 8 | word_buf[3]);
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint8_t BQ40Z80::read_capacity()
-{
+uint8_t BQ40Z80::read_capacity() {
     read_word(0x0D);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_Remaining_Capacity()
-{
+uint16_t BQ40Z80::read_Remaining_Capacity() {
     read_word(0x0F);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_FullChargeCapacity()
-{
+uint16_t BQ40Z80::read_FullChargeCapacity() {
     read_word(0x10);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_RunTimeToEmpty()
-{
+uint16_t BQ40Z80::read_RunTimeToEmpty() {
     read_word(0x11);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_AverageTimeToEmpty()
-{
+uint16_t BQ40Z80::read_AverageTimeToEmpty() {
     read_word(0x12);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_AverageTimeToFull()
-{
+uint16_t BQ40Z80::read_AverageTimeToFull() {
     read_word(0x13);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_ChargingCurrent()
-{
+uint16_t BQ40Z80::read_ChargingCurrent() {
     read_word(0x14);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_ChargingVoltage()
-{
+uint16_t BQ40Z80::read_ChargingVoltage() {
     read_word(0x15);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint16_t BQ40Z80::read_CycleCount()
-{
+uint16_t BQ40Z80::read_CycleCount() {
     read_word(0x17);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[4] << 8 | word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-uint8_t BQ40Z80::read_RelativeStateOfCharge()
-{
+uint8_t BQ40Z80::read_RelativeStateOfCharge() {
     read_word(0x4F);
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return word_buf[3];
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
-//ManufacturerAccess方式读取更底层的寄存器
-uint8_t BQ40Z80::read_block(uint8_t command, uint8_t *buf, uint8_t len)
-{
+// ManufacturerAccess方式读取更底层的寄存器
+uint8_t BQ40Z80::read_block(uint8_t command, uint8_t *buf, uint8_t len) {
     wire->beginTransmission(BQ40Z80_ADDR);
     wire->write(command);
-    if (wire->endTransmission(false) != 0)
-    {
+    if (wire->endTransmission(false) != 0) {
         state_flag = 1;
         return 0;
     }
@@ -286,7 +217,8 @@ uint8_t BQ40Z80::read_block(uint8_t command, uint8_t *buf, uint8_t len)
     }
 
     uint8_t blockLen = wire->read(); // 第一个字节是数据长度
-    if (blockLen > len) blockLen = len;
+    if (blockLen > len)
+        blockLen = len;
 
     for (uint8_t i = 0; i < blockLen; i++) {
         if (wire->available())
@@ -302,15 +234,15 @@ uint8_t BQ40Z80::read_block(uint8_t command, uint8_t *buf, uint8_t len)
  * @param cell_index 1-8(电芯编号)
  * @return
  */
-uint16_t BQ40Z80::read_cell_voltage(uint8_t cell_index)
-{
-    if (cell_index < 1 || cell_index > 7) return 0;
+uint16_t BQ40Z80::read_cell_voltage(uint8_t cell_index) {
+    if (cell_index < 1 || cell_index > 7)
+        return 0;
 
     if (cell_index <= 3) {
         uint8_t buf[8];
         uint8_t n = read_block(0x71, buf, sizeof(buf));
         if (state_flag == 0 && n >= 6) {
-            return (uint16_t)buf[(cell_index-1)*2] | ((uint16_t)buf[(cell_index-1)*2+1] << 8);
+            return (uint16_t)buf[(cell_index - 1) * 2] | ((uint16_t)buf[(cell_index - 1) * 2 + 1] << 8);
         }
     } else {
         // cell4~cell7分别对应0x3F~0x3C
@@ -322,46 +254,38 @@ uint16_t BQ40Z80::read_cell_voltage(uint8_t cell_index)
     }
     return 0;
 }
-uint16_t BQ40Z80::read_battery_status()
-{
+uint16_t BQ40Z80::read_battery_status() {
     read_word(0x16); // BatteryStatus
-    if (state_flag == 0)
-    {
+    if (state_flag == 0) {
         return (word_buf[4] << 8) | word_buf[3];
     }
     return 0;
 }
 
-bool BQ40Z80::is_charging()
-{
+bool BQ40Z80::is_charging() {
     uint16_t status = read_battery_status();
     return (status & (1 << 11)) != 0; // CHARGING 位
 }
 
-bool BQ40Z80::is_discharging()
-{
+bool BQ40Z80::is_discharging() {
     uint16_t status = read_battery_status();
     return (status & (1 << 10)) != 0; // DISCHARGING 位
 }
-float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutoff_v = 3.0f)
-{
+float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutoff_v = 3.0f) {
     uint16_t remaining_mAh = read_Remaining_Capacity(); // mAh
-    uint16_t pack_mV = read_voltage();                 // mV
-    float remaining_Ah = remaining_mAh / 1000.0f;  // mAh → Ah
-    float pack_V = pack_mV / 1000.0f;              // mV → V
+    uint16_t pack_mV = read_voltage();                  // mV
+    float remaining_Ah = remaining_mAh / 1000.0f;       // mAh → Ah
+    float pack_V = pack_mV / 1000.0f;                   // mV → V
     // 瞬时能量估算
     float energy_Wh = remaining_Ah * pack_V;
 
     return energy_Wh;
 }
 
-bool BQ40Z80::hasError() const
-{
+bool BQ40Z80::hasError() const {
     return _hasError;
 }
 
-int BQ40Z80::getLastError() const
-{
+int BQ40Z80::getLastError() const {
     return _lastError;
 }
-

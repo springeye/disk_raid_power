@@ -2,4 +2,3 @@
 // SquareLine Studio version: SquareLine Studio 1.5.3
 // LVGL version: 9.2.2
 // Project name: SquareLine_Project
-

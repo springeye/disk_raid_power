@@ -6,23 +6,24 @@
 
 extern "C" {
 
-void ui_present_all(const SystemData* data) {
-    if (!data) return;
+void ui_present_all(const SystemData *data) {
+    if (!data)
+        return;
 
     // 数值标签更新
     lv_label_set_text_fmt(ui_percent, "%d%%", data->battery.percent);
     lv_label_set_text_float(ui_power, "%sWh", data->battery.wh, 2);
     lv_label_set_text_float(ui_battemp, "%s°", data->battery.temp, 2);
     lv_label_set_text_float(ui_voltage, "%sV", data->battery.voltage, 1);
-    
+
     lv_label_set_text_float(ui_ip2366current, "%sA", data->portC2.current, 2);
     lv_label_set_text_float(ui_ip2366voltage, "%sV", data->portC2.voltage, 2);
     lv_label_set_text_float(ui_ip2366power, "%sW", data->portC2.power, 1);
-    
+
     lv_label_set_text_float(ui_sw6306current, "%sA", data->portC1.current, 2);
     lv_label_set_text_float(ui_sw6306voltage, "%sV", data->portC1.voltage, 2);
     lv_label_set_text_float(ui_sw6306power, "%sW", data->portC1.power, 1);
-    
+
     lv_label_set_text_float(ui_outpower, "%sW", data->totalOutPower, 1);
     lv_label_set_text_float(ui_inpower, "%sW", data->totalInPower, 1);
     lv_label_set_text_float(ui_boardtmp, "%s°", data->boardTemp, 2);

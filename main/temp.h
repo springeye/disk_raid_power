@@ -7,4 +7,4 @@
 
 void init_temp();
 float read_temp();
-#endif //DISK_RAID_POWER_TEMP_H
+#endif // DISK_RAID_POWER_TEMP_H

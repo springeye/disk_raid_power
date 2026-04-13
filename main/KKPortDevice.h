@@ -14,9 +14,9 @@ class SW6306;
 class IP2366;
 
 class KKPortDevice : public IPortDevice {
-public:
+  public:
     // 构造函数接收外部注入的 TwoWire 实例
-    explicit KKPortDevice(TwoWire* wire);
+    explicit KKPortDevice(TwoWire *wire);
     void init() override;
     PortStatus getPortState(PortType port) override;
     uint8_t getPercent() override;
@@ -33,11 +33,11 @@ public:
 
     ~KKPortDevice() override;
 
-private:
+  private:
     PortStatus buildPortStatus(bool isCharging, bool isDischarging, float voltage, float current) const;
-    TwoWire* _wire;        // 外部注入，不 delete
-    BQ40Z80* _bq = nullptr;
-    SW6306*  _sw = nullptr;
-    IP2366*  _ip2366 = nullptr;
+    TwoWire *_wire; // 外部注入，不 delete
+    BQ40Z80 *_bq = nullptr;
+    SW6306 *_sw = nullptr;
+    IP2366 *_ip2366 = nullptr;
 };
-#endif //DISK_RAID_POWER_KKPORTDEVICE_H
+#endif // DISK_RAID_POWER_KKPORTDEVICE_H

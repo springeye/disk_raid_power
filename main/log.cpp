@@ -14,7 +14,8 @@ HWCDC USBSerial;
 
 MyLog mylog;
 
-MyLog::MyLog() {}
+MyLog::MyLog() {
+}
 
 size_t MyLog::write(uint8_t c) {
 #ifdef USE_HWCDC
@@ -36,7 +37,7 @@ size_t MyLog::write(const uint8_t *buffer, size_t size) {
     return size;
 }
 
-void MyLog::println(const char* msg) {
+void MyLog::println(const char *msg) {
 #ifdef USE_HWCDC
     USBSerial.println(msg);
     Serial.println(msg);
@@ -99,11 +100,7 @@ void MyLog::println(double val) {
 #endif
 }
 
-
-
-
-
-void MyLog::printf(const char* fmt, ...) {
+void MyLog::printf(const char *fmt, ...) {
     char buf[128]; // 缓冲区缩小为128字节
     va_list args;
     va_start(args, fmt);
@@ -176,10 +173,5 @@ void MyLog::println(unsigned int val, int base) {
     Serial.println(buf);
 #endif
 }
-
-
-
-
-
 
 #endif

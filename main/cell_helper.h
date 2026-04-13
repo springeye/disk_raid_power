@@ -10,12 +10,12 @@ typedef struct _lv_obj_t lv_obj_t;
 #ifdef __cplusplus
 extern "C" {
 #endif
-    extern lv_obj_t* ui_cell_containers[6];
-    extern lv_obj_t* ui_cells[6];
-void lv_label_set_text_float(lv_obj_t* label, const char* fmt, float val, int decimals);
+extern lv_obj_t *ui_cell_containers[6];
+extern lv_obj_t *ui_cells[6];
+void lv_label_set_text_float(lv_obj_t *label, const char *fmt, float val, int decimals);
 void init_cells();
 void update_cells();
 #ifdef __cplusplus
 }
 #endif
-#endif //DISK_RAID_POWER_CELL_HELPER_H
+#endif // DISK_RAID_POWER_CELL_HELPER_H

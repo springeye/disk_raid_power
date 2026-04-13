@@ -3,12 +3,13 @@
 #define REG_0x23 0x23
 #define REG_0x24 0x24
 #define REG_0x40 0x40
-SW6306::SW6306(uint8_t addr, TwoWire* wire) : _addr(addr), _wire(wire), _hasError(false), _lastError(0) {}
+SW6306::SW6306(uint8_t addr, TwoWire *wire) : _addr(addr), _wire(wire), _hasError(false), _lastError(0) {
+}
 
 void SW6306::begin() {
-    disableLowPower();// 关闭低功耗
-    unlockI2CWrite(true);//解锁寄存器写入
-    enableForceControlOutputPower();//启用强制设置输出输出功率
+    disableLowPower();               // 关闭低功耗
+    unlockI2CWrite(true);            // 解锁寄存器写入
+    enableForceControlOutputPower(); // 启用强制设置输出输出功率
     // 配置最大输入输出功率
     writeReg(SW6306_CTRG_PISET, 20);
     writeReg(SW6306_CTRG_POSET, 20);
@@ -21,24 +22,22 @@ void SW6306::begin() {
     writeReg(REG_0x24, v);
     delay(5);
 
-
-
-    //设置放电配置指定100W
+    // 设置放电配置指定100W
     v = readReg8(0x100);
     v |= (1 << 3);
     v = (v & ~0x07) | 0x06;
     writeReg(0x100, v);
 
     delay(5);
-    //设置充电配置指定100W
+    // 设置充电配置指定100W
     uint8_t v1 = readReg8(0x101);
     v1 |= (1 << 3);
     v1 = (v1 & ~0x07) | 0x07;
     writeReg(0x107, v1);
     delay(5);
-    writeReg(0x1FF,0x0);
+    writeReg(0x1FF, 0x0);
     delay(5);
-    unlockI2CWrite(false);//解锁寄存器写入
+    unlockI2CWrite(false); // 解锁寄存器写入
 
     // 允许放电
     enableDischarge();
@@ -46,36 +45,34 @@ void SW6306::begin() {
     feedWatchdog();
 }
 // ===== 关闭低功耗（手册要求先执行）=====
-void SW6306::disableLowPower(){
+void SW6306::disableLowPower() {
     uint8_t v = readReg8(REG_0x23);
     v |= (1 << 0); // 设置bit0为1
     writeReg(REG_0x23, v);
 }
 
 // ===== 解锁写操作 =====
-void SW6306::unlockI2CWrite(bool unlock){
-    if (unlock){
+void SW6306::unlockI2CWrite(bool unlock) {
+    if (unlock) {
         // 依次将0x20, 0x40, 0x80写入24寄存器的7-5位
-        uint8_t values[4] = {0x20, 0x40, 0x80,0x81};
+        uint8_t values[4] = {0x20, 0x40, 0x80, 0x81};
         for (int i = 0; i < 4; ++i) {
             uint8_t v = readReg8(REG_0x24);
-            v &= ~(0xE0); // 清除bit7-5
+            v &= ~(0xE0);   // 清除bit7-5
             v |= values[i]; // 设置bit7-5
             writeReg(REG_0x24, v);
             delay(5);
         }
-    }else
-    {
+    } else {
         uint8_t v = readReg8(REG_0x24);
         v &= ~(0xE0); // 清除bit7-5
-        v |= 0x0; // 设置bit7-5
+        v |= 0x0;     // 设置bit7-5
         writeReg(REG_0x24, v);
         delay(5);
     }
-
 }
-void SW6306::enableForceControlOutputPower(){
-    uint8_t v=readReg8(REG_0x40);
+void SW6306::enableForceControlOutputPower() {
+    uint8_t v = readReg8(REG_0x40);
     v |= (1 << 7) | (1 << 2);
     return writeReg(REG_0x40, v);
 }

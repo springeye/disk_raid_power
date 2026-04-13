@@ -7,7 +7,6 @@
 #include <cmath>
 #include <esp32-hal-gpio.h>
 
-
 #include <log.h>
 #include <monitor_api.h>
 #include "settings.h"
@@ -20,29 +19,23 @@ void auto_power_off() {
     // 使用全局状态变量，而非 lambda 局部静态变量，避免每次执行被覆盖
     if (fabs(bq_power) < POWER_THRESHOLD) // 如果功率持续低于阈值
     {
-        if (!g_lowPowerWindowActive)
-        {
+        if (!g_lowPowerWindowActive) {
             // 启动计时器
             g_powerCheckTimer = millis();
             g_lowPowerWindowActive = true;
             mylog.println("低功率窗口已激活");
-        }
-        else if (!g_powerShutdownDone && (millis() - g_powerCheckTimer >= POWER_WINDOW_MS))
-        {
+        } else if (!g_powerShutdownDone && (millis() - g_powerCheckTimer >= POWER_WINDOW_MS)) {
             // 持续低功率达到时间阈值，调用关机
             mylog.println("功率持续低于阈值达到设定时间，调用节能函数");
             digitalWrite(PIN_POWER_CTRL, LOW); // 默认拉高（符合大多数硬件需求）
-            g_powerShutdownDone = true; // 避免重复调用
+            g_powerShutdownDone = true;        // 避免重复调用
         }
-    }
-    else
-    {
+    } else {
         // 功率恢复时重置计时器（如果尚未触发关机）
-        if (g_lowPowerWindowActive && !g_powerShutdownDone)
-        {
+        if (g_lowPowerWindowActive && !g_powerShutdownDone) {
             mylog.println("功率恢复，重置低功率窗口");
             g_lowPowerWindowActive = false;
             g_powerCheckTimer = 0;
         }
     }
-    }
+}

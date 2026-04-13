@@ -31,13 +31,12 @@ extern "C" {
 
 ///////////////////// VARIABLES ////////////////////
 
-
 // EVENTS
 
-extern lv_obj_t * ui____initial_actions0;
+extern lv_obj_t *ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
-LV_IMG_DECLARE(ui_img_mainboard_png);    // assets/mainboard.png
+LV_IMG_DECLARE(ui_img_mainboard_png); // assets/mainboard.png
 LV_IMG_DECLARE(ui_img_ic_bat_png);    // assets/ic_bat.png
 
 // FONTS
