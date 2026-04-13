@@ -9,6 +9,7 @@
 #include <stdlib_noniso.h>
 #include <ui.h>
 #include <ui_schome.h>
+#include "settings.h"
 
 extern "C" {
 lv_obj_t *ui_cell_containers[6] = {NULL};
@@ -49,7 +50,7 @@ void init_cells() {
             lv_obj_t *item = lv_label_create(cell);
             /* 设置文字居中对齐 */
             lv_obj_set_style_text_align(item, LV_TEXT_ALIGN_CENTER, 0);
-            lv_obj_set_style_text_color(item, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_color(item, lv_color_hex(UI_COLOR_TEXT_WHITE), LV_PART_MAIN | LV_STATE_DEFAULT);
             /* 设置 label 内部内容居中（上下左右）*/
             lv_obj_set_style_pad_all(item, 0, 0); // 去掉 padding
             lv_obj_set_style_align(item, LV_ALIGN_CENTER, 0);

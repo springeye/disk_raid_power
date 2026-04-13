@@ -87,6 +87,34 @@
 #endif
 
 // -------------------------------------------------------------
+// UI 颜色配置（十六进制 RGB）
+// -------------------------------------------------------------
+// 充电中：蓝色
+#ifndef UI_COLOR_CHARGING
+#define UI_COLOR_CHARGING 0x318BD3
+#endif
+// 放电中：黄色
+#ifndef UI_COLOR_DISCHARGING
+#define UI_COLOR_DISCHARGING 0xFAD640
+#endif
+// 空闲背景：深灰
+#ifndef UI_COLOR_IDLE_BG
+#define UI_COLOR_IDLE_BG 0x262525
+#endif
+// 输入端口背景：绿色
+#ifndef UI_COLOR_PORT_IN_BG
+#define UI_COLOR_PORT_IN_BG 0x2CD16C
+#endif
+// 输出端口背景：红色
+#ifndef UI_COLOR_PORT_OUT_BG
+#define UI_COLOR_PORT_OUT_BG 0xCB3820
+#endif
+// 白色文字
+#ifndef UI_COLOR_TEXT_WHITE
+#define UI_COLOR_TEXT_WHITE 0xffffff
+#endif
+
+// -------------------------------------------------------------
 // 电源管理配置
 // -------------------------------------------------------------
 // 功率阈值（W），低于此值持续 POWER_WINDOW_MS 毫秒时触发关机

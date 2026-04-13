@@ -3,6 +3,7 @@
 #include "ui_schome.h"
 #include <cell_helper.h>
 #include "data_types.h"
+#include "settings.h"
 
 extern "C" {
 
@@ -31,42 +32,42 @@ void ui_present_all(const SystemData *data) {
     // 电池功率颜色逻辑
     float bat_power = data->battery.power;
     if (bat_power > 0.0f) {
-        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(UI_COLOR_CHARGING), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else if (bat_power < 0.0f) {
-        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(UI_COLOR_DISCHARGING), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else {
-        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(UI_COLOR_TEXT_WHITE), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
     lv_label_set_text_float(ui_batpower, "%sW", bat_power, 2);
 
     // C2 端口（IP2366）状态标签和背景颜色
     if (data->portC2.isDischarging) {
         lv_label_set_text(ui_ip2366, "OUT");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(UI_COLOR_PORT_OUT_BG), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(UI_COLOR_DISCHARGING), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else if (data->portC2.isCharging) {
         lv_label_set_text(ui_ip2366, "IN");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(UI_COLOR_PORT_IN_BG), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(UI_COLOR_CHARGING), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else {
         lv_label_set_text(ui_ip2366, "--");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x262525), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(UI_COLOR_IDLE_BG), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(UI_COLOR_TEXT_WHITE), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
 
     // C1 端口（SW6306）状态标签和背景颜色
     if (data->portC1.isDischarging) {
         lv_label_set_text(ui_sw6306, "OUT");
-        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(UI_COLOR_PORT_OUT_BG), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(UI_COLOR_DISCHARGING), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else if (data->portC1.isCharging) {
         lv_label_set_text(ui_sw6306, "IN");
-        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(UI_COLOR_PORT_IN_BG), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(UI_COLOR_CHARGING), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else {
         lv_label_set_text(ui_sw6306, "--");
-        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0x262525), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(UI_COLOR_IDLE_BG), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(UI_COLOR_TEXT_WHITE), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
 
     // 调用 cell 更新

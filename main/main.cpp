@@ -173,7 +173,7 @@ void setup() {
 }
 
 void loop() {
-    if (digitalRead(12) == LOW) {
+    if (digitalRead(PIN_POWER_CTRL) == LOW) {
         mylog.println("检测到关机信号，开始关机流程...");
         // esp_deep_sleep_start(); // 进入深度睡眠模式，模拟关机
     } else {
