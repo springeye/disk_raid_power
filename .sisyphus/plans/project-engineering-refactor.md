@@ -1057,7 +1057,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 23. 移除 monitor_api.h extern device 全局暴露
+- [x] 23. 移除 monitor_api.h extern device 全局暴露
 
   **What to do**:
   - 从 monitor_api.h 中移除 `extern IPortDevice* device;`
