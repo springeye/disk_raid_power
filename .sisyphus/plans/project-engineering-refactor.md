@@ -963,7 +963,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 20. 拆分 main.cpp setup() 为子函数
+- [x] 20. 拆分 main.cpp setup() 为子函数
 
   **What to do**:
   - 提取 init_serial()、init_storage()、init_hal()、init_ui()、init_device()、init_services()、register_tasks()

@@ -30,3 +30,12 @@
 - 所有 lv_label_*/lv_obj_set_* LVGL 调用全部移至 ui_presenter.cpp，monitor_api.cpp 零 LVGL 依赖
 - LSP 报 PortType unknown 等错误均为环境问题（宏保护 #ifdef ESP32_169），PlatformIO 实际编译通过
 - 验证命令：grep -c "lv_label\|lv_obj_set\|lvgl.h" main/monitor_api.cpp 返回 0
+
+## [Task 20] setup() 拆分为子函数
+- setup() 拆分为 8 个 static 子函数：init_serial、init_gpio、init_storage、init_hal、init_device、init_ui、init_services、register_tasks
+- init_device() 被 init_ui() 内部调用（保持原始 DI 注入顺序：ui_init → init_cells → DI → updateUI → update_cells）
+- static TwoWire s_wire(1) 保留在 init_device() 内部作为 local static，生命周期与程序相同（local static 保活）
+- try-catch 块保留在 setup() 层面，包裹所有子函数调用
+- 子函数均定义在 setup() 之前（无需 forward declaration）
+- setup() 最终仅 9 行（含空行），远低于 30 行限制
+- 桌面模拟 #ifndef ARDUINO 块的 LSP 报错（lv_init、show_gui 等）属于预期行为，原文件已存在，与本次改动无关
