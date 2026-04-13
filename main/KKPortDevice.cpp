@@ -9,31 +9,29 @@
 #include <SW6306.h>
 #include <temp.h>
 #include "settings.h"
-// 声明独立的 TwoWire 实例
-TwoWire wire1(1); // 1为I2C总线编号，ESP32等平台支持多个I2C实例
-BQ40Z80* bq = nullptr;
-SW6306*  sw = nullptr;
-IP2366*  ip2366 = nullptr;
+
+KKPortDevice::KKPortDevice(TwoWire* wire) : _wire(wire), _bq(nullptr), _sw(nullptr), _ip2366(nullptr) {}
+
 void KKPortDevice::init()
 {
-    wire1.begin(BQ_I2C_SDA, BQ_I2C_SCL);
-    bq = new BQ40Z80(&wire1);
-    sw = new SW6306(SW6306_ADDR, &wire1);
-    ip2366 = new IP2366(IP2366_INT_PIN, &wire1);
-    sw->begin();
-    ip2366->begin();
+    _wire->begin(BQ_I2C_SDA, BQ_I2C_SCL);
+    _bq = new BQ40Z80(_wire);
+    _sw = new SW6306(SW6306_ADDR, _wire);
+    _ip2366 = new IP2366(IP2366_INT_PIN, _wire);
+    _sw->begin();
+    _ip2366->begin();
 }
 float KKPortDevice::getPower()
 {
-    float bq_voltage = static_cast<float>(bq->read_voltage())/1000.0f;
-    float bq_current = static_cast<float>(bq->read_current())/1000.0f;
+    float bq_voltage = static_cast<float>(_bq->read_voltage())/1000.0f;
+    float bq_current = static_cast<float>(_bq->read_current())/1000.0f;
     float bq_power = bq_voltage*bq_current;
     return bq_power;
 }
 
 float KKPortDevice::getBatTemp()
 {
-    return static_cast<float>(bq->read_temp())/10.0f;
+    return static_cast<float>(_bq->read_temp())/10.0f;
 }
 
 PortStatus KKPortDevice::getPortState(PortType port)
@@ -41,18 +39,18 @@ PortStatus KKPortDevice::getPortState(PortType port)
     if (port==C1)
     {
 
-        bool is6306DisCharging=sw->isC1Source();
-        bool is6306Charging=sw->isC1Sink();
+        bool is6306DisCharging=_sw->isC1Source();
+        bool is6306Charging=_sw->isC1Sink();
         PortStatus status{};
         if (is6306Charging)
         {
-            status.voltage=static_cast<float>(sw->readVBUS())/1000.0f;
-            status.current=static_cast<float>(sw->readIBUS())/1000.0f;
+            status.voltage=static_cast<float>(_sw->readVBUS())/1000.0f;
+            status.current=static_cast<float>(_sw->readIBUS())/1000.0f;
             status.state=PortState::Input;
         }else if (is6306DisCharging)
         {
-            status.voltage=static_cast<float>(sw->readVBUS())/1000.0f;
-            status.current=static_cast<float>(sw->readIBUS())/1000.0f;
+            status.voltage=static_cast<float>(_sw->readVBUS())/1000.0f;
+            status.current=static_cast<float>(_sw->readIBUS())/1000.0f;
             status.state=PortState::Output;
         }else
         {
@@ -66,18 +64,18 @@ PortStatus KKPortDevice::getPortState(PortType port)
     }else if (port==C2)
     {
 
-        bool is2366DisCharging=ip2366->isDischarging();
-        bool is2366Charging=ip2366->isCharging();
+        bool is2366DisCharging=_ip2366->isDischarging();
+        bool is2366Charging=_ip2366->isCharging();
         PortStatus status{};
         if (is2366Charging)
         {
-            status.voltage=ip2366->getTypeCVoltage();
-            status.current=ip2366->getTypeCCurrent();
+            status.voltage=_ip2366->getTypeCVoltage();
+            status.current=_ip2366->getTypeCCurrent();
             status.state=PortState::Input;
         }else if (is2366DisCharging)
         {
-            status.voltage=ip2366->getTypeCVoltage();
-            status.current=ip2366->getTypeCCurrent();
+            status.voltage=_ip2366->getTypeCVoltage();
+            status.current=_ip2366->getTypeCCurrent();
             status.state=PortState::Output;
         }else
         {
@@ -94,7 +92,7 @@ PortStatus KKPortDevice::getPortState(PortType port)
 
 uint8_t KKPortDevice::getPercent()
 {
-    return bq->read_capacity();
+    return _bq->read_capacity();
 }
 
 float KKPortDevice::getTotalIn()
@@ -136,30 +134,35 @@ float KKPortDevice::getBoardTemp()
 
 float KKPortDevice::getCellVoltage(uint8_t index)
 {
-    return bq->read_cell_voltage(index);
+    return _bq->read_cell_voltage(index);
 }
 
 float KKPortDevice::getWh(uint8_t cell_count, float cell_cutoff_v)
 {
-    return bq->read_remaining_energy_wh(cell_count,cell_cutoff_v);
+    return _bq->read_remaining_energy_wh(cell_count,cell_cutoff_v);
 }
 
 float KKPortDevice::getTotalVoltage()
 {
-    return bq->read_voltage();
+    return _bq->read_voltage();
 }
 
 float KKPortDevice::getTotalCurrent()
 {
-    return bq->read_current();
+    return _bq->read_current();
 }
 
 void KKPortDevice::loop()
 {
-    if (ip2366->canCommunicate()) {
-        ip2366->readAllData();
+    if (_ip2366->canCommunicate()) {
+        _ip2366->readAllData();
     }
 }
 
 KKPortDevice::~KKPortDevice()
-= default;
+{
+    delete _bq;
+    delete _sw;
+    delete _ip2366;
+    // _wire 不 delete（外部注入）
+}

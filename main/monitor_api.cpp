@@ -9,7 +9,9 @@
 #include <log.h>
 #include <temp.h>
 #include <KKPortDevice.h>
-IPortDevice* device = new KKPortDevice();
+// 临时：持有 TwoWire 实例，Task 17 会将其移至 main.cpp 中做完整 DI
+static TwoWire s_wire(1);
+IPortDevice* device = new KKPortDevice(&s_wire);
 
 extern "C" {
     uint8_t bq_get_percent(void) {
