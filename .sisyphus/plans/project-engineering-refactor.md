@@ -1083,7 +1083,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 24. 移除 cell_helper.h 对 lvgl.h 的依赖
+- [x] 24. 移除 cell_helper.h 对 lvgl.h 的依赖
 
   **What to do**:
   - cell_helper.h 当前包含 lvgl.h 用于 lv_obj_t* 类型

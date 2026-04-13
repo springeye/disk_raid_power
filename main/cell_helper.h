@@ -4,7 +4,9 @@
 
 #ifndef DISK_RAID_POWER_CELL_HELPER_H
 #define DISK_RAID_POWER_CELL_HELPER_H
-#include <lvgl.h>
+// 前向声明：避免 cell_helper.h 直接依赖 lvgl.h
+// cell_helper.cpp 通过 ui.h/ui_schome.h 获得完整定义
+typedef struct _lv_obj_t lv_obj_t;
 #ifdef __cplusplus
 extern "C" {
 #endif
