@@ -3,11 +3,12 @@
 //
 
 #include "monitor_api.h"
-#include <lvgl.h>
-#include "ui_schome.h"
-#include <cell_helper.h>
+#include "ui_presenter.h"
+#include "data_types.h"
 #include <log.h>
 #include <temp.h>
+#include <cmath>
+
 static IPortDevice* device = nullptr;
 
 void monitor_api_set_device(IPortDevice* dev) {
@@ -15,6 +16,36 @@ void monitor_api_set_device(IPortDevice* dev) {
 }
 IPortDevice* monitor_api_get_device() {
     return device;
+}
+
+// 采集电池数据
+static void collectBatteryData(BatteryData& bd) {
+    bd.percent    = device->getPercent();
+    bd.voltage    = device->getTotalVoltage() / 1000.0f;
+    bd.current    = device->getTotalCurrent() / 1000.0f;
+    bd.power      = device->getPower();
+    bd.wh         = device->getWh(6, 3.0f);
+    bd.temp       = static_cast<int16_t>(device->getBatTemp());
+    bd.cellCount  = 6;
+    for (int i = 0; i < 6; ++i) {
+        bd.cellVoltage[i] = device->getCellVoltage(i + 1) / 1000.0f;
+    }
+}
+
+// 采集端口数据
+static void collectPortData(PortData& pd, PortType type) {
+    auto s = device->getPortState(type);
+    pd.isCharging    = (s.state == PortState::Input);
+    pd.isDischarging = (s.state == PortState::Output);
+    if (!pd.isCharging && !pd.isDischarging) {
+        pd.voltage = 0.0f;
+        pd.current = 0.0f;
+        pd.power   = 0.0f;
+    } else {
+        pd.voltage = s.voltage;
+        pd.current = std::fabs(s.current);
+        pd.power   = pd.voltage * pd.current;
+    }
 }
 
 extern "C" {
@@ -75,118 +106,28 @@ extern "C" {
 void updateUI()
 {
     device->loop();
-    float bq_voltage = bq_get_voltage()/1000.0f;
-    float bq_current = bq_get_current()/1000.0f;
-    float bq_wh=bg_get_remaining_energy_wh(6,3.0f);
-    uint8_t bq_percent=bq_get_percent();
-    float bq_power = bq_get_power();
 
-    float bq_temp=bg_get_temp();
-    // mylog.printf("updateUi:percent=%d%%\n",bq_percent);
-    // mylog.printf("updateUi:power=%.2fW\n",bq_power);
-    // mylog.printf("updateUi:voltage=%.2fV\n",bq_voltage);
-    // mylog.printf("updateUi:current=%.2fA\n",bq_current);
-    // mylog.printf("updateUi:wh=%.2fWh\n",bq_wh);
-    // mylog.printf("updateUi:temp=%.2f°\n",bq_temp);
-    float cell[6] = {0.0f};
-    for (int i = 0; i < 6; ++i) {
-        cell[i] = device->getCellVoltage(i + 1)/1000;
-    }
+    SystemData data;
 
+    // 采集电池数据
+    collectBatteryData(data.battery);
 
-    float ip2366_voltage = get2366Voltage();
-    float ip2366_current =fabs(get2366Current());
-    float ip2366_power =get2366Power();
+    // 采集端口数据
+    collectPortData(data.portC1, PortType::C1);  // SW6306
+    collectPortData(data.portC2, PortType::C2);  // IP2366
 
-    float sw6306_voltage = device->getPortState(PortType::C1).voltage;
-    float sw6306_current = fabs(device->getPortState(PortType::C1).current);
-    bool is6306DisCharging=device->getPortState(PortType::C1).state==PortState::Output;
-    bool is6306Charging=device->getPortState(PortType::C1).state==PortState::Input;
-    if (!is6306Charging && !is6306DisCharging)
-    {
-        sw6306_voltage=0.0f;
-        sw6306_current=0.0f;
-    }
-    float sw6306_power = sw6306_voltage*sw6306_current;
-    float total_out_power=0;
-    float total_in_power=0;
-    if (is6306Charging)
-    {
-        total_in_power+=sw6306_power;
-    }
-    if (is2366Charging())
-    {
-        total_in_power+=ip2366_power;
-    }
-    if (is6306DisCharging)
-    {
-        total_out_power+=sw6306_power;
-    }
-    if (is2366DisCharging())
-    {
-        total_out_power+=ip2366_power;
-    }
+    // 板温
+    data.boardTemp = device->getBoardTemp();
 
+    // 计算总输入/输出功率
+    data.totalInPower  = 0.0f;
+    data.totalOutPower = 0.0f;
+    if (data.portC1.isCharging)    data.totalInPower  += data.portC1.power;
+    if (data.portC2.isCharging)    data.totalInPower  += data.portC2.power;
+    if (data.portC1.isDischarging) data.totalOutPower += data.portC1.power;
+    if (data.portC2.isDischarging) data.totalOutPower += data.portC2.power;
 
-    lv_label_set_text_fmt(ui_percent,"%d%%", bq_percent);
-    lv_label_set_text_float(ui_power, "%sWh", bq_wh, 2);
-    lv_label_set_text_float(ui_battemp, "%s°", bq_temp, 2);
-    lv_label_set_text_float(ui_voltage, "%sV", bq_voltage, 1);
-    lv_label_set_text_float(ui_ip2366current, "%sA", ip2366_current, 2);
-    lv_label_set_text_float(ui_ip2366voltage, "%sV", ip2366_voltage, 2);
-    lv_label_set_text_float(ui_ip2366power, "%sW", ip2366_power, 1);
-    lv_label_set_text_float(ui_sw6306current, "%sA", sw6306_current, 2);
-    lv_label_set_text_float(ui_sw6306voltage, "%sV", sw6306_voltage, 2);
-    lv_label_set_text_float(ui_sw6306power, "%sW", sw6306_power, 1);
-    lv_label_set_text_float(ui_outpower, "%sW", total_out_power, 1);
-    lv_label_set_text_float(ui_inpower, "%sW", total_in_power, 1);
-    lv_label_set_text_float(ui_boardtmp, "%s°", device->getBoardTemp(), 2);
-    float bat_power = bq_get_power();
-    if (bat_power>0.0f)
-    {
-        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }else if (bat_power<0.0f){
-        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }else
-    {
-        lv_obj_set_style_text_color(ui_batpower, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }
-    lv_label_set_text_float(ui_batpower, "%sW", bat_power, 2);
-    if (is2366DisCharging())
-    {
-        lv_label_set_text(ui_ip2366,"OUT");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }else if (is2366Charging())
-    {
-        lv_label_set_text(ui_ip2366,"IN");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }else
-    {
-        lv_label_set_text(ui_ip2366,"--");
-        lv_obj_set_style_bg_color(ui_ip2366, lv_color_hex(0x262525), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_ip2366power, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }
-
-    if (is6306DisCharging)
-    {
-        lv_label_set_text(ui_sw6306,"OUT");
-        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0xCB3820), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0xFAD640), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }else if (is6306Charging)
-    {
-        lv_label_set_text(ui_sw6306,"IN");
-        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0x2CD16C), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0x318BD3), LV_PART_MAIN | LV_STATE_DEFAULT);
-    }else
-    {
-        lv_label_set_text(ui_sw6306,"--");
-        lv_obj_set_style_bg_color(ui_sw6306, lv_color_hex(0x262525), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(ui_sw6306power, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    }
-
-    update_cells();
+    // 委托 UI 展示
+    ui_present_all(&data);
 }
 }
