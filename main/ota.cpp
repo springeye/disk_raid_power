@@ -52,21 +52,19 @@ void lv_example_qrcode_1(void)
 IPAddress local_IP(AP_IP_1, AP_IP_2, AP_IP_3, AP_IP_4);
 IPAddress gateway(AP_IP_1, AP_IP_2, AP_IP_3, AP_IP_4);
 IPAddress subnet(255, 255, 255, 0);
-void setup_ota()
-{
-    // 配置ESP32为AP模式
+
+// 初始化 WiFi AP 热点
+static bool init_wifi_ap() {
     WiFi.mode(WIFI_AP);
-    // 设置固定IP
     if (!WiFi.softAPConfig(local_IP, gateway, subnet)) {
         mylog.println("AP配置失败!");
-        return;
+        return false;
     }
-    // 启动热点
     if (WiFi.softAP(ssid, password)) {
         mylog.println("热点已启动");
         mylog.print("SSID: ");
         mylog.println(ssid);
-        auto ip=WiFi.softAPIP();
+        auto ip = WiFi.softAPIP();
         mylog.print("IP地址: ");
         char ipStr3[16];
         snprintf(ipStr3, sizeof(ipStr3), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
@@ -78,9 +76,12 @@ void setup_ota()
         mylog.println("热点启动失败!");
         // lv_label_set_text(uic_ipaddr, "热点启动失败!");
     }
+    return true;
+}
 
-    server = new AsyncWebServer(80);
-    server->on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
+// 注册 Web 静态资源与进度查询路由
+static void setup_web_routes(AsyncWebServer* srv) {
+    srv->on("/progress", HTTP_GET, [](AsyncWebServerRequest *request){
         int percent = 0;
         if (ota_total_size > 0) {
             percent = (int)((ota_written_size * 100) / ota_total_size);
@@ -89,10 +90,14 @@ void setup_ota()
         snprintf(json, sizeof(json), "{\"percent\":%d}", percent);
         request->send(200, "application/json", json);
     });
-    server->on("/", HTTP_GET, handleRoot);
-    server->serveStatic("/update", LittleFS, "/web/").setDefaultFile("ota.html");
-    server->serveStatic("/", LittleFS, "/web/");
-    server->on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
+    srv->on("/", HTTP_GET, handleRoot);
+    srv->serveStatic("/update", LittleFS, "/web/").setDefaultFile("ota.html");
+    srv->serveStatic("/", LittleFS, "/web/");
+}
+
+// 注册 OTA 固件上传路由
+static void setup_ota_upload_route(AsyncWebServer* srv) {
+    srv->on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
         const char* message = ota_has_error ? "更新失败" : "更新成功。重新启动…";
         char html[128];
         snprintf(html, sizeof(html), "<span style='font-size: 24px;'>%s</span>", message);
@@ -147,6 +152,14 @@ void setup_ota()
             }
         }
     });
+}
+
+void setup_ota()
+{
+    if (!init_wifi_ap()) return;
+    server = new AsyncWebServer(80);
+    setup_web_routes(server);
+    setup_ota_upload_route(server);
     server->begin();
 }
 

@@ -10,7 +10,9 @@
     "ses_278f14855ffehFfDsE3DV3h8f2",
     "ses_278e6f6dbffeyakY3Gqqt7EmY1",
     "ses_278e0e63effeLPJnVuwGMBvr39",
-    "ses_278dda60fffeMUEQ6l5QX2IdOv"
+    "ses_278dda60fffeMUEQ6l5QX2IdOv",
+    "ses_278d8cce8ffeTiJCD5CF5oBC4F",
+    "ses_278d927f1ffeC3lrejGY3Innwy"
   ],
   "session_origins": {
     "ses_27a90cb47ffeeLsmB6GuLioM0z": "direct",
@@ -73,6 +75,15 @@
       "agent": "Sisyphus-Junior",
       "category": "unspecified-high",
       "updated_at": "2026-04-13T14:00:12.333Z"
+    },
+    "todo:21": {
+      "task_key": "todo:21",
+      "task_label": "21",
+      "task_title": "拆分 ota.cpp setup_ota() 为子函数",
+      "session_id": "ses_278d927f1ffeC3lrejGY3Innwy",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-04-13T14:05:14.326Z"
     }
   }
 }

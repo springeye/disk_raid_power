@@ -999,7 +999,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 21. 拆分 ota.cpp setup_ota() 为子函数
+- [x] 21. 拆分 ota.cpp setup_ota() 为子函数
 
   **What to do**:
   - 提取 init_wifi_ap()、setup_web_server()、setup_ota_routes()
@@ -1033,7 +1033,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 22. 拆分 KKPortDevice::getPortState() 辅助方法
+- [x] 22. 拆分 KKPortDevice::getPortState() 辅助方法
 
   **What to do**:
   - 提取私有方法 buildPortStatus(bool isCharging, bool isDischarging, float voltage, float current) → PortStatus

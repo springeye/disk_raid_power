@@ -34,6 +34,7 @@ public:
     ~KKPortDevice() override;
 
 private:
+    PortStatus buildPortStatus(bool isCharging, bool isDischarging, float voltage, float current) const;
     TwoWire* _wire;        // 外部注入，不 delete
     BQ40Z80* _bq = nullptr;
     SW6306*  _sw = nullptr;

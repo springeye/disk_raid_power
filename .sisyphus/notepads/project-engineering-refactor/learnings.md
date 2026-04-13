@@ -39,3 +39,13 @@
 - 子函数均定义在 setup() 之前（无需 forward declaration）
 - setup() 最终仅 9 行（含空行），远低于 30 行限制
 - 桌面模拟 #ifndef ARDUINO 块的 LSP 报错（lv_init、show_gui 等）属于预期行为，原文件已存在，与本次改动无关
+2026-04-13：重构 `KKPortDevice::getPortState()` 时，适合把 C1/C2 的“充电/放电/空闲”状态判断抽成统一的私有辅助方法，像 `buildPortStatus()` 这样只接收状态标志和电压/电流值，能明显压缩分支重复并让公共函数保持很短。
+2026-04-13：`getPortState()` 里只负责采集各端口原始数据并转交给辅助方法，能减少后续维护时对两个端口逻辑的同步修改成本。
+
+## [Task 21] setup_ota() 拆分为子函数
+- 将 174 行的 setup_ota() 拆分为 3 个 static 子函数：init_wifi_ap()、setup_web_routes()、setup_ota_upload_route()
+- setup_ota() 函数体压缩至 7 行（仅调用子函数 + server->begin()）
+- OTA upload lambda（约 45 行）整体移入 setup_ota_upload_route()，lambda 内通过文件作用域变量访问全局状态，无需传参
+- static 修饰确保子函数仅在本文件可见，符合封装原则
+- LSP 报 WiFi.h / ESPAsyncWebServer.h 找不到属正常现象（ESP32 SDK 头文件在 PlatformIO 构建环境中，本地 LSP 无法解析），不影响实际编译
+- pio run -e esp32_D0WDQ6 编译通过（SUCCESS）
