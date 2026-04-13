@@ -7,6 +7,8 @@ BQ40Z80::BQ40Z80(TwoWire* wire)
 {
     this->wire = wire;
     state_flag = 0;
+    _hasError = false;
+    _lastError = 0;
     memset(word_buf, 0, sizeof(word_buf));
 }
 
@@ -44,9 +46,12 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     // 1. 发送命令字
     wire->beginTransmission(BQ40Z80_ADDR);
     wire->write(memory_addr);
-    if (wire->endTransmission(false) != 0)
+    int txResult = wire->endTransmission(false);
+    if (txResult != 0)
     {
         state_flag = 1; // 通讯连接错误
+        _hasError = true;
+        _lastError = txResult;
         return;
     }
 
@@ -55,6 +60,8 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     if (count != 3)
     {
         state_flag = 1; // 通讯错误
+        _hasError = true;
+        _lastError = -1;
         return;
     }
 
@@ -74,10 +81,14 @@ void BQ40Z80::read_word(uint8_t memory_addr)
     if (calculate_crc8(0x00, crc_buf, 5) == word_buf[5])
     {
         state_flag = 0; // CRC 校验通过
+        _hasError = false;
+        _lastError = 0;
     }
     else
     {
         state_flag = 2; // CRC 校验失败
+        _hasError = true;
+        _lastError = -2;
         // 调试期间可以打印 CRC
         mylog.print("CRC fail, calc=");
         mylog.print(calculate_crc8(0x00, crc_buf, 5), HEX);
@@ -340,5 +351,15 @@ float BQ40Z80::read_remaining_energy_wh(uint8_t cell_count = 6, float cell_cutof
     float energy_Wh = remaining_Ah * pack_V;
 
     return energy_Wh;
+}
+
+bool BQ40Z80::hasError() const
+{
+    return _hasError;
+}
+
+int BQ40Z80::getLastError() const
+{
+    return _lastError;
 }
 

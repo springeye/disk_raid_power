@@ -17,6 +17,8 @@ IP2366::IP2366(uint8_t intPin, TwoWire* wire) : _intPin(intPin), _wire(wire) {
   _voltageRaw = 0;
   _currentRaw = 0;
   _powerRaw = 0;
+  _hasError = false;
+  _lastError = 0;
 }
 
 // 初始化函数
@@ -104,6 +106,16 @@ uint16_t IP2366::getSystemPowerRaw() const {
   return _powerRaw;
 }
 
+// 是否发生错误
+bool IP2366::hasError() const {
+  return _hasError;
+}
+
+// 获取最后错误码
+int IP2366::getLastError() const {
+  return _lastError;
+}
+
 // 读取充电状态
 void IP2366::readChargeStatus() {
   uint8_t status = readRegister(REG_CHARGE_STATUS);
@@ -184,6 +196,8 @@ uint8_t IP2366::readRegister(uint8_t regAddr) {
   if (txResult != 0) {
     mylog.print("I2C NACK or error on address phase: ");
     mylog.println(txResult);
+    _hasError = true;
+    _lastError = txResult;
     return 0;
   }
 
@@ -193,15 +207,21 @@ uint8_t IP2366::readRegister(uint8_t regAddr) {
   if (bytesRequested != 1) {
     mylog.print("I2C requestFrom failed, bytesRequested: ");
     mylog.println(bytesRequested);
+    _hasError = true;
+    _lastError = bytesRequested;
     return 0;
   }
   delay(1);
   if (_wire->available()) {
     uint8_t val = _wire->read();
     delay(1);
+    _hasError = false;
+    _lastError = 0;
     return val;
   }
   mylog.println("I2C read failed: no data available");
+  _hasError = true;
+  _lastError = -1;
   return 0;
 }
 

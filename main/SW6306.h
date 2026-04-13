@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-// #define SW6306_ADDR 0x3C  // 默认 I2C 地址（7bit）
+#define SW6306_ADDR 0x3C  // 默认 I2C 地址（7bit）
 
 // ---- ADC ----
 #define SW6306_CTRG_ADC_SET 0x30
@@ -45,9 +45,13 @@ public:
     bool isC1Sink();       // C1 是否作为输入
     void feedWatchdog();
     void enableDischarge();
+    bool hasError() const;
+    int getLastError() const;
 private:
     uint8_t _addr;
     TwoWire* _wire;
+    bool _hasError;
+    int _lastError;
 
     void writeReg(uint8_t reg, uint8_t val);
     uint8_t readReg8(uint8_t reg);

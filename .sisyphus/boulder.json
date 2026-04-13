@@ -12,7 +12,13 @@
     "ses_278e0e63effeLPJnVuwGMBvr39",
     "ses_278dda60fffeMUEQ6l5QX2IdOv",
     "ses_278d8cce8ffeTiJCD5CF5oBC4F",
-    "ses_278d927f1ffeC3lrejGY3Innwy"
+    "ses_278d927f1ffeC3lrejGY3Innwy",
+    "ses_278d37167ffe1EI70NeVsm813L",
+    "ses_278cfde86ffe07YemMhdg0J3AL",
+    "ses_278cffe28ffe5lN1RUZ5Nghnev",
+    "ses_278d0453dffeJSObK03vLn6xpc",
+    "ses_278d02789ffes5WVGhgSgU79w5",
+    "ses_278d00569ffeixgMEN9CTtZyWv"
   ],
   "session_origins": {
     "ses_27a90cb47ffeeLsmB6GuLioM0z": "direct",
@@ -84,6 +90,24 @@
       "agent": "Sisyphus-Junior",
       "category": "unspecified-high",
       "updated_at": "2026-04-13T14:05:14.326Z"
+    },
+    "todo:24": {
+      "task_key": "todo:24",
+      "task_label": "24",
+      "task_title": "移除 cell_helper.h 对 lvgl.h 的依赖",
+      "session_id": "ses_278d37167ffe1EI70NeVsm813L",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-13T14:10:14.439Z"
+    },
+    "todo:25": {
+      "task_key": "todo:25",
+      "task_label": "25",
+      "task_title": "BQ40Z80 添加 hasError/getLastError",
+      "session_id": "ses_278d0453dffeJSObK03vLn6xpc",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-13T14:15:04.452Z"
     }
   }
 }

@@ -2,7 +2,7 @@
 #define REG_0x23 0x23
 #define REG_0x24 0x24
 #define REG_0x40 0x40
-SW6306::SW6306(uint8_t addr, TwoWire* wire) : _addr(addr), _wire(wire) {}
+SW6306::SW6306(uint8_t addr, TwoWire* wire) : _addr(addr), _wire(wire), _hasError(false), _lastError(0) {}
 
 void SW6306::begin() {
     disableLowPower();// 关闭低功耗
@@ -98,18 +98,47 @@ void SW6306::writeReg(uint8_t reg, uint8_t val) {
 uint8_t SW6306::readReg8(uint8_t reg) {
     _wire->beginTransmission(_addr);
     _wire->write(reg);
-    _wire->endTransmission(false);
-    _wire->requestFrom(_addr, (uint8_t)1);
-    return _wire->available() ? _wire->read() : 0xFF;
+    int error = _wire->endTransmission(false);
+    if (error != 0) {
+        _hasError = true;
+        _lastError = error;
+        return 0xFF;
+    }
+    uint8_t count = _wire->requestFrom(_addr, (uint8_t)1);
+    if (count < 1 || !_wire->available()) {
+        _hasError = true;
+        _lastError = -1;
+        return 0xFF;
+    }
+    _hasError = false;
+    _lastError = 0;
+    return _wire->read();
 }
 
 uint16_t SW6306::readReg16(uint8_t reg) {
     _wire->beginTransmission(_addr);
     _wire->write(reg);
-    _wire->endTransmission(false);
-    _wire->requestFrom(_addr, (uint8_t)2);
-    uint8_t lo = _wire->available() ? _wire->read() : 0;
-    uint8_t hi = _wire->available() ? _wire->read() : 0;
+    int error = _wire->endTransmission(false);
+    if (error != 0) {
+        _hasError = true;
+        _lastError = error;
+        return 0;
+    }
+    uint8_t count = _wire->requestFrom(_addr, (uint8_t)2);
+    if (count < 2 || !_wire->available()) {
+        _hasError = true;
+        _lastError = -1;
+        return 0;
+    }
+    uint8_t lo = _wire->read();
+    if (!_wire->available()) {
+        _hasError = true;
+        _lastError = -1;
+        return 0;
+    }
+    uint8_t hi = _wire->read();
+    _hasError = false;
+    _lastError = 0;
     return (uint16_t)(lo | (hi << 8));
 }
 
@@ -126,6 +155,14 @@ void SW6306::feedWatchdog() {
 void SW6306::enableDischarge() {
     // 写 0x00 到 0x21，确保放电开关开启
     writeReg(SW6306_CTRG_DISCHG_OFF, 0x00);
+}
+
+bool SW6306::hasError() const {
+    return _hasError;
+}
+
+int SW6306::getLastError() const {
+    return _lastError;
 }
 
 // ---- 公共 API ----

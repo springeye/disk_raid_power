@@ -1108,7 +1108,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 25. BQ40Z80 添加 hasError/getLastError
+- [x] 25. BQ40Z80 添加 hasError/getLastError
 
   **What to do**:
   - bq40z80.h 添加 `bool hasError() const; int getLastError() const;`
@@ -1135,7 +1135,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 4)
 
-- [ ] 26. IP2366 添加 hasError/getLastError
+- [x] 26. IP2366 添加 hasError/getLastError
 
   **What to do**: 同 Task 25 模式，为 IP2366 添加错误查询接口
 
@@ -1147,7 +1147,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 4)
 
-- [ ] 27. SW6306 添加 hasError/getLastError
+- [x] 27. SW6306 添加 hasError/getLastError
 
   **What to do**: 同 Task 25 模式，为 SW6306 添加错误查询接口
 
@@ -1176,7 +1176,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 4)
 
-- [ ] 29. 添加 .clang-format 配置文件
+- [x] 29. 添加 .clang-format 配置文件
 
   **What to do**:
   - 在项目根目录创建 .clang-format
@@ -1238,7 +1238,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 4)
 
-- [ ] 32. 更新 utils.h static→inline
+- [x] 32. 更新 utils.h static→inline
 
   **What to do**:
   - main/utils.h 中 `static uint8_t extract_bits(...)` 改为 `inline uint8_t extract_bits(...)`

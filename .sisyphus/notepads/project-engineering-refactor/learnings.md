@@ -49,3 +49,15 @@
 - static 修饰确保子函数仅在本文件可见，符合封装原则
 - LSP 报 WiFi.h / ESPAsyncWebServer.h 找不到属正常现象（ESP32 SDK 头文件在 PlatformIO 构建环境中，本地 LSP 无法解析），不影响实际编译
 - pio run -e esp32_D0WDQ6 编译通过（SUCCESS）
+# 2026-04-13
+- 为 `BQ40Z80` 增加了 `hasError()` / `getLastError()` 状态查询接口，错误状态保存在类内而不是依赖 `state_flag` 外部推断。
+- `read_word()` 在 I2C 发送失败、读取字节数异常、CRC 校验失败时分别记录 `_hasError` 与 `_lastError`，成功时清零，便于上层直接判断最近一次采样状态。
+## 2026-04-13
+- 头文件里仅声明、实现放到 `utils.cpp`，可以避免 `static` 函数在多个编译单元里产生重复实例，也更符合常规的接口/实现分离。
+- 对于已经有 `.cpp` 文件的工具函数，优先把头文件中的 `static` 定义改成普通声明，保持函数签名不变，仅调整链接属性。
+- 为 `IP2366` 增加 `hasError()` / `getLastError()` 时，优先在 `readRegister()` 这一层统一维护 `_hasError` / `_lastError`，让上层无需分别处理不同读寄存器路径的失败状态。
+
+## 2026-04-13 - SW6306 错误状态
+- 为 `SW6306` 增加 `hasError()` / `getLastError()`，用类内字段记录最近一次 I2C 失败，避免上层从返回值猜测总线状态。
+- `readReg8()` / `readReg16()` 在 `endTransmission(false)` 失败时直接记录 Wire 错误码；在读取字节不足时记录 `-1`，成功读取后清空错误状态。
+- 2026-04-13：clang-format 已在根目录创建，统一采用 LLVM 风格、4 空格缩进、120 列限制，适合本项目的中文注释与嵌入式代码风格。

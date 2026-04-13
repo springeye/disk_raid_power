@@ -51,6 +51,12 @@ public:
   // 获取原始系统功率 (mW)
   uint16_t getSystemPowerRaw() const;
 
+  // 是否发生错误
+  bool hasError() const;
+
+  // 获取最后错误码
+  int getLastError() const;
+
 private:
   // I2C地址
   static const uint8_t WRITE_ADDR = IP2366_ADDR;
@@ -80,6 +86,8 @@ private:
   uint16_t _voltageRaw;     // 原始电压值 (mV)
   uint16_t _currentRaw;     // 原始电流值 (mA)
   uint16_t _powerRaw;       // 原始功率值 (mW)
+  bool _hasError;           // 错误状态
+  int _lastError;           // 最后错误码
 
   // 读取充电状态
   void readChargeStatus();

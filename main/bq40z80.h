@@ -41,10 +41,14 @@ public:
     bool is_charging();
     bool is_discharging();
     float read_remaining_energy_wh(uint8_t cell_count, float cell_cutoff_v);
+    bool hasError() const;
+    int getLastError() const;
 
 private:
     uint8_t calculate_crc8(uint8_t InitialValue, uint8_t *message, uint8_t len);
     void read_word(uint8_t memory_addr);
+    bool _hasError;
+    int _lastError;
 };
 
 
