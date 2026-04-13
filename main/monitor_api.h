@@ -30,6 +30,10 @@ extern "C" {
 }
 #endif
 // monitor_api.h
-extern IPortDevice* device;
+#ifdef __cplusplus
+// 依赖注入接口 — 在 setup() 中调用 set，之后通过 get 访问
+void monitor_api_set_device(IPortDevice* dev);
+IPortDevice* monitor_api_get_device();
+#endif
 
 #endif //DISK_RAID_POWER_MONITOR_API_H

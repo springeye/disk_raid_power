@@ -8,10 +8,14 @@
 #include <cell_helper.h>
 #include <log.h>
 #include <temp.h>
-#include <KKPortDevice.h>
-// 临时：持有 TwoWire 实例，Task 17 会将其移至 main.cpp 中做完整 DI
-static TwoWire s_wire(1);
-IPortDevice* device = new KKPortDevice(&s_wire);
+static IPortDevice* device = nullptr;
+
+void monitor_api_set_device(IPortDevice* dev) {
+    device = dev;
+}
+IPortDevice* monitor_api_get_device() {
+    return device;
+}
 
 extern "C" {
     uint8_t bq_get_percent(void) {

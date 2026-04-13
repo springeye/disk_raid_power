@@ -744,7 +744,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 2)
 
-- [ ] 15. 创建 data_types.h POD 数据结构体
+- [x] 15. 创建 data_types.h POD 数据结构体
 
   **What to do**:
   - 创建 main/data_types.h
@@ -784,7 +784,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 16. 重构 KKPortDevice — 驱动实例改为类成员
+- [x] 16. 重构 KKPortDevice — 驱动实例改为类成员
 
   **What to do**:
   - 将文件作用域的 TwoWire wire1(1)、BQ40Z80* bq、SW6306* sw、IP2366* ip2366 改为 KKPortDevice 私有成员
@@ -825,7 +825,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 17. DI: 移除全局 device 单例，main 中构造注入
+- [x] 17. DI: 移除全局 device 单例，main 中构造注入
 
   **What to do**:
   - monitor_api.cpp: 将 `IPortDevice* device = new KKPortDevice()` 改为 `static IPortDevice* device = nullptr;`
@@ -866,7 +866,7 @@ Wave FINAL (所有任务完成后 — 4 个并行审查):
 
   **Commit**: YES (Phase 3)
 
-- [ ] 18. 创建 ui_presenter 层
+- [x] 18. 创建 ui_presenter 层
 
   **What to do**:
   - 创建 main/ui_presenter.h 声明 `void ui_present_all(const SystemData& data);`

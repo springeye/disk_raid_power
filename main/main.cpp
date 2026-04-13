@@ -15,6 +15,8 @@
 #include <bq40z80.h>
 #include <cell_helper.h>
 #include <monitor_api.h>
+#include <Wire.h>
+#include <KKPortDevice.h>
 #include <i2c_utils.h>
 #include <ip2366.h>
 #include <SW6306.h>
@@ -134,7 +136,11 @@ void setup()
 
         ui_init();
         init_cells();
-        device->init();
+        // DI: 构造 I2C 总线和设备，注入到 monitor_api
+        static TwoWire s_wire(1);  // static 保活，不被栈销毁
+        KKPortDevice* dev = new KKPortDevice(&s_wire);
+        monitor_api_set_device(dev);
+        monitor_api_get_device()->init();
         updateUI();
         update_cells();
         setup_ota();

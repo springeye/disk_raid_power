@@ -4,7 +4,11 @@
   "session_ids": [
     "ses_27a90cb47ffeeLsmB6GuLioM0z",
     "ses_27a8d4459ffeByTbK8CtNBxK0R",
-    "ses_27a67175bffeW9QMTSTEnw4mcT"
+    "ses_27a67175bffeW9QMTSTEnw4mcT",
+    "ses_278fb68eeffevsE3nJNsXR6cSr",
+    "ses_278f6ad9effeAd0aLFqI5oyX9e",
+    "ses_278f14855ffehFfDsE3DV3h8f2",
+    "ses_278e6f6dbffeyakY3Gqqt7EmY1"
   ],
   "session_origins": {
     "ses_27a90cb47ffeeLsmB6GuLioM0z": "direct",
@@ -22,6 +26,33 @@
       "agent": "Sisyphus-Junior",
       "category": "quick",
       "updated_at": "2026-04-13T07:44:53.160Z"
+    },
+    "todo:15": {
+      "task_key": "todo:15",
+      "task_label": "15",
+      "task_title": "创建 data_types.h POD 数据结构体",
+      "session_id": "ses_278fa2939ffeQhalEe65UqbciU",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-13T13:28:11.987Z"
+    },
+    "todo:16": {
+      "task_key": "todo:16",
+      "task_label": "16",
+      "task_title": "重构 KKPortDevice — 驱动实例改为类成员",
+      "session_id": "ses_278f6ad9effeAd0aLFqI5oyX9e",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-04-13T13:33:22.986Z"
+    },
+    "todo:17": {
+      "task_key": "todo:17",
+      "task_label": "17",
+      "task_title": "DI: 移除全局 device 单例，main 中构造注入",
+      "session_id": "ses_278e6f6dbffeyakY3Gqqt7EmY1",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-04-13T13:50:25.686Z"
     }
   }
 }
