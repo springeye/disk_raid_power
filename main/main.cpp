@@ -22,7 +22,6 @@
 #include <temp.h>
 #include <math.h>
 #include "lv_conf.h"
-#define SPIFFS LittleFS  // 兼容旧代码
 #ifdef ESP32
 extern "C" {
 #include <esp_ota_ops.h>
@@ -36,8 +35,7 @@ bool runSelfTest()
 {
     // 在这里放自检逻辑：外设初始化、传感器、存储、联网等
     // 返回 true 表示 ok，false 表示失败
-    // 为演示，这里简单返回 true
-    return false;
+    return true;
 }
 
 void checkPendingAndValidate()
@@ -100,23 +98,23 @@ void setup()
         //SDC 10
         //BQSDA 17
         //BQSDC 16
-#elifdef ESP32_169
+#elif defined(ESP32_169)
         pinMode(12, OUTPUT);
         digitalWrite(12, HIGH); // 默认拉高（符合大多数硬件需求）
 #endif
         init_btn();
-        // 初始化 SPIFFS，如果挂载失败则自动格式化
-        if (!SPIFFS.begin(true))
+        // 初始化 LittleFS，如果挂载失败则自动格式化
+        if (!LittleFS.begin(true))
         {
-            mylog.println("SPIFFS 挂载失败！");
+            mylog.println("LittleFS 挂载失败！");
         }else{
-            mylog.println("SPIFFS 挂载成功");
+            mylog.println("LittleFS 挂载成功");
             // 获取文件系统信息（可选）
-            size_t total = SPIFFS.totalBytes();
-            size_t used = SPIFFS.usedBytes();
+            size_t total = LittleFS.totalBytes();
+            size_t used = LittleFS.usedBytes();
             mylog.printf("总空间: %u 字节, 已用: %u 字节\n", total, used);
-            // 用完后立即释放 SPIFFS 占用的 heap
-            // SPIFFS.end();
+            // 用完后立即释放 LittleFS 占用的 heap
+            // LittleFS.end();
         }
 
         // mylog.println("1111");
@@ -142,7 +140,7 @@ void setup()
 
 
 #ifdef ESP32_169
-        scheduler.addTask(auto_power_off, 1); // 每2秒执行一次
+        scheduler.addTask(auto_power_off, 2000); // 每2秒执行一次
 #endif
 
         // scheduler.addTask([]() {
