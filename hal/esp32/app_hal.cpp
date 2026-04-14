@@ -57,7 +57,7 @@ void hal_setup(void) {
 #else
 
 #endif
-    gfx->fillScreen(BLACK);
+    gfx->fillScreen(RGB565_BLACK);
 
     // tft.setRotation(1); // 根据你的屏幕调整方向
 
