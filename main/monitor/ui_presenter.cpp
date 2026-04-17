@@ -1,7 +1,7 @@
 #include "ui_presenter.h"
 #include <lvgl.h>
-#include "ui_schome.h"
-#include <cell_helper.h>
+#include "ui/ui_schome.h"
+#include "cell_helper.h"
 #include "data_types.h"
 #include "settings.h"
 

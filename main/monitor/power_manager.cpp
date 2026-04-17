@@ -1,14 +1,14 @@
 //
-// Created by develop on 2025/9/29.
+// power_manager.cpp — 自动关机功率管理
 //
 
-#include "base.h"
+#include "power_manager.h"
 
 #include <cmath>
 #include <esp32-hal-gpio.h>
 
-#include <log.h>
-#include <monitor_api.h>
+#include "log.h"
+#include "monitor_api.h"
 #include "settings.h"
 // 全局变量：用于低功率持续检测（避免在 lambda 内被覆盖）
 unsigned long g_powerCheckTimer = 0;

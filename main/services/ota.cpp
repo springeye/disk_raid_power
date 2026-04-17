@@ -1,11 +1,11 @@
 //
-// Created by develop on 2025/9/6.
+// ota.cpp — OTA 固件空中升级
 //
 
 #include "ota.h"
 
 #include <LittleFS.h>
-#include <log.h>
+#include "log.h"
 
 #include "esp_ota_ops.h"
 #include "esp_system.h"

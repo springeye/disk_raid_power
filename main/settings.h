@@ -1,9 +1,11 @@
-#pragma once
-// =============================================================
+//
 // settings.h — 集中配置头文件
+//
 // 所有硬编码常量均在此定义，每个宏使用 #ifndef 保护，
 // 允许通过 PlatformIO build_flags (-D<MACRO>=<value>) 覆盖。
 // =============================================================
+#ifndef DISK_RAID_POWER_SETTINGS_H
+#define DISK_RAID_POWER_SETTINGS_H
 
 // -------------------------------------------------------------
 // GPIO 引脚配置
@@ -131,3 +133,5 @@
 #ifndef CELL_COUNT
 #define CELL_COUNT 6
 #endif
+
+#endif // DISK_RAID_POWER_SETTINGS_H

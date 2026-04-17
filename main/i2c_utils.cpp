@@ -1,11 +1,11 @@
 //
-// Created by develop on 2025/6/20.
+// i2c_utils.cpp — I2C 设备扫描工具
 //
 
 #include "i2c_utils.h"
 
 #include <Arduino.h>
-#include <log.h>
+#include "log.h"
 
 void list_i2c_devices(TwoWire &wire, int num = 1) {
 

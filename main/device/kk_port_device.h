@@ -1,11 +1,11 @@
 //
-// Created by develop on 2025/9/27.
+// kk_port_device.h — KK 硬件端口设备实现
 //
 
-#ifndef DISK_RAID_POWER_KKPORTDEVICE_H
-#define DISK_RAID_POWER_KKPORTDEVICE_H
+#ifndef DISK_RAID_POWER_KK_PORT_DEVICE_H
+#define DISK_RAID_POWER_KK_PORT_DEVICE_H
 
-#include "PortDevices.h"
+#include "device/port_device.h"
 #include <Wire.h>
 
 // 前向声明驱动类，避免头文件污染
@@ -40,4 +40,4 @@ class KKPortDevice : public IPortDevice {
     SW6306 *_sw = nullptr;
     IP2366 *_ip2366 = nullptr;
 };
-#endif // DISK_RAID_POWER_KKPORTDEVICE_H
+#endif // DISK_RAID_POWER_KK_PORT_DEVICE_H

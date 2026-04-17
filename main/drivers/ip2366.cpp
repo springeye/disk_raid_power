@@ -1,6 +1,10 @@
-#include <log.h>
+//
+// ip2366.cpp — IP2366 充电管理芯片驱动
+//
 
-#include "IP2366.h"
+#include "log.h"
+
+#include "ip2366.h"
 #include <Wire.h>
 
 // 构造函数

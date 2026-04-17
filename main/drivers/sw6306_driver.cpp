@@ -1,5 +1,9 @@
-#include "SW6306.h"
-#include <log.h>
+//
+// sw6306_driver.cpp — SW6306 充放电控制芯片驱动
+//
+
+#include "sw6306_driver.h"
+#include "log.h"
 #define REG_0x23 0x23
 #define REG_0x24 0x24
 #define REG_0x40 0x40

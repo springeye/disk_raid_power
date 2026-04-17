@@ -5,10 +5,10 @@
 #include "cell_helper.h"
 
 #include <cstdio>
-#include <monitor_api.h>
+#include "monitor_api.h"
 #include <stdlib_noniso.h>
-#include <ui.h>
-#include <ui_schome.h>
+#include "ui/ui.h"
+#include "ui/ui_schome.h"
 #include "settings.h"
 
 extern "C" {

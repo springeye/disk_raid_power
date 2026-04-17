@@ -1,12 +1,12 @@
 //
-// Created by develop on 2025/9/19.
+// monitor_api.cpp — 监控 API（C++ 到 LVGL C 桥接层）
 //
 
 #include "monitor_api.h"
 #include "ui_presenter.h"
 #include "data_types.h"
-#include <log.h>
-#include <temp.h>
+#include "log.h"
+#include "drivers/temp_sensor.h"
 #include <cmath>
 
 static IPortDevice *device = nullptr;

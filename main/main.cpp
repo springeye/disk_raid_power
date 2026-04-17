@@ -1,27 +1,31 @@
-#include <base.h>
-#include <key.h>
+//
+// main.cpp — 固件主入口（setup/loop）
+//
+
+#include "monitor/power_manager.h"
+#include "drivers/key.h"
 
 #include "lvgl.h"
 #include "app_hal.h"
-#include "ui.h"
+#include "ui/ui.h"
 #include "settings.h"
 
 #include <WiFi.h>
 #include "TaskScheduler.h"
 #ifdef ARDUINO
-#include <log.h>
+#include "log.h"
 #include <Arduino.h>
-#include <bq40z80.h>
-#include <cell_helper.h>
-#include <monitor_api.h>
+#include "drivers/bq40z80.h"
+#include "monitor/cell_helper.h"
+#include "monitor/monitor_api.h"
 #include <Wire.h>
-#include <KKPortDevice.h>
-#include <i2c_utils.h>
-#include <ip2366.h>
-#include <SW6306.h>
-#include <ota.h>
+#include "device/kk_port_device.h"
+#include "i2c_utils.h"
+#include "drivers/ip2366.h"
+#include "drivers/sw6306_driver.h"
+#include "services/ota.h"
 #include <LittleFS.h>
-#include <temp.h>
+#include "drivers/temp_sensor.h"
 #include <math.h>
 #include "lv_conf.h"
 #ifdef ESP32

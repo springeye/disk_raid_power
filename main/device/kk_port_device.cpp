@@ -2,12 +2,12 @@
 // Created by develop on 2025/9/27.
 //
 
-#include "KKPortDevice.h"
+#include "kk_port_device.h"
 
-#include <bq40z80.h>
-#include <ip2366.h>
-#include <SW6306.h>
-#include <temp.h>
+#include "drivers/bq40z80.h"
+#include "drivers/ip2366.h"
+#include "drivers/sw6306_driver.h"
+#include "drivers/temp_sensor.h"
 #include "settings.h"
 
 KKPortDevice::KKPortDevice(TwoWire *wire) : _wire(wire), _bq(nullptr), _sw(nullptr), _ip2366(nullptr) {

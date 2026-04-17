@@ -1,15 +1,15 @@
 //
-// Created by develop on 2025/9/30.
+// key.cpp — 按键驱动（LwBTN）
 //
 
 #include "key.h"
 
 #include <cstdint>
 #include <Arduino.h>
-#include <log.h>
-#include <ota.h>
+#include "log.h"
+#include "services/ota.h"
 #include <lwbtn/lwbtn.h>
-#include "ui.h"
+#include "ui/ui.h"
 static lwbtn_btn_t btns[] = {{.arg = (void *)(uintptr_t)KEY_01}};
 void init_btn() {
     pinMode(KEY_01, INPUT);

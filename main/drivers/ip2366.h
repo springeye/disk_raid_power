@@ -1,5 +1,8 @@
-#ifndef IP2366_H
-#define IP2366_H
+//
+// ip2366.h — IP2366 充电管理芯片驱动
+//
+#ifndef DISK_RAID_POWER_IP2366_H
+#define DISK_RAID_POWER_IP2366_H
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -114,4 +117,4 @@ class IP2366 {
     uint16_t read16BitRegister(uint8_t lowReg, uint8_t highReg);
     void writeRegisterWithMask(uint8_t regAddr, uint8_t value, uint8_t mask);
 };
-#endif // IP2366_H
+#endif // DISK_RAID_POWER_IP2366_H

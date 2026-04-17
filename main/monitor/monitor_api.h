@@ -1,10 +1,10 @@
 //
-// Created by develop on 2025/9/19.
+// monitor_api.h — 监控 API（C++ 到 LVGL C 桥接层）
 //
 
 #ifndef DISK_RAID_POWER_MONITOR_API_H
 #define DISK_RAID_POWER_MONITOR_API_H
-#include "PortDevices.h"
+#include "device/port_device.h"
 #include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
@@ -35,19 +35,5 @@ void updateUI();
 void monitor_api_set_device(IPortDevice *dev);
 IPortDevice *monitor_api_get_device();
 #endif
-
-// 向后兼容别名（渐进迁移用）
-#define bq_get_percent battery_get_percent
-#define bq_get_cell_voltage battery_get_cell_voltage
-#define bg_get_remaining_energy_wh battery_get_remaining_energy_wh
-#define bq_get_voltage battery_get_voltage
-#define bq_get_current battery_get_current
-#define bq_get_power battery_get_power
-#define bg_get_temp battery_get_temp
-#define get2366Voltage port_c2_get_voltage
-#define get2366Current port_c2_get_current
-#define get2366Power port_c2_get_power
-#define is2366Charging port_c2_is_charging
-#define is2366DisCharging port_c2_is_discharging
 
 #endif // DISK_RAID_POWER_MONITOR_API_H

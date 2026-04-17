@@ -1,6 +1,10 @@
-#include "temp.h"
+//
+// temp_sensor.cpp — 板载 NTC 温度传感器驱动
+//
+
+#include "temp_sensor.h"
 #include <Arduino.h>
-#include <log.h>
+#include "log.h"
 #include <math.h>
 
 // ---------------- 配置区域 ----------------

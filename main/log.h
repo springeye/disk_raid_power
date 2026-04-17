@@ -1,5 +1,5 @@
 //
-// Created by develop on 2025/9/6.
+// log.h — 日志输出工具
 //
 
 #ifndef DISK_RAID_POWER_LOG_H
@@ -31,14 +31,6 @@ class MyLog : public Print {
 };
 
 extern MyLog mylog;
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif // DISK_RAID_POWER_LOG_H

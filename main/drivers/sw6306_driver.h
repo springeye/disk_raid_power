@@ -1,5 +1,8 @@
-#ifndef _SW6306_H_
-#define _SW6306_H_
+//
+// sw6306_driver.h — SW6306 充放电控制芯片驱动
+//
+#ifndef DISK_RAID_POWER_SW6306_DRIVER_H
+#define DISK_RAID_POWER_SW6306_DRIVER_H
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -59,4 +62,4 @@ class SW6306 {
     uint16_t readReg16(uint8_t reg);
     uint16_t readADC(uint8_t channel);
 };
-#endif
+#endif // DISK_RAID_POWER_SW6306_DRIVER_H

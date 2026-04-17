@@ -1,5 +1,8 @@
-#ifndef __BQ40Z80_H
-#define __BQ40Z80_H
+//
+// bq40z80.h — BQ40Z80 电量计驱动
+//
+#ifndef DISK_RAID_POWER_BQ40Z80_H
+#define DISK_RAID_POWER_BQ40Z80_H
 #include <Arduino.h>
 #include <Wire.h>
 
@@ -50,4 +53,4 @@ class BQ40Z80 {
     int _lastError;
 };
 
-#endif
+#endif // DISK_RAID_POWER_BQ40Z80_H

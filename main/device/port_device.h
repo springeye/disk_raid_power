@@ -1,9 +1,9 @@
 //
-// Created by develop on 2025/9/27.
+// port_device.h — 端口设备抽象接口
 //
 
-#ifndef DISK_RAID_POWER_PORTDEVICES_H
-#define DISK_RAID_POWER_PORTDEVICES_H
+#ifndef DISK_RAID_POWER_PORT_DEVICE_H
+#define DISK_RAID_POWER_PORT_DEVICE_H
 #include <cstdint>
 #ifdef ESP32_169
 enum PortType {
@@ -44,4 +44,4 @@ class IPortDevice {
     }
 };
 
-#endif // DISK_RAID_POWER_PORTDEVICES_H
+#endif // DISK_RAID_POWER_PORT_DEVICE_H

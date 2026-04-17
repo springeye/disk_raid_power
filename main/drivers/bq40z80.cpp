@@ -1,6 +1,9 @@
+//
+// bq40z80.cpp — BQ40Z80 电量计驱动
+//
 #include "bq40z80.h"
 
-#include <log.h>
+#include "log.h"
 
 BQ40Z80::BQ40Z80(TwoWire *wire) {
     this->wire = wire;
